@@ -5,6 +5,9 @@ import AppLayout from './layout/AppLayout.jsx'
 import Home from './components/Home.jsx'
 import About from './components/About.jsx'
 import Login from './pages/Login.jsx'
+import Test from './components/Test.jsx'
+import Instruction from './pages/Instruction.jsx'
+import Profile from './pages/Profile.jsx'
 
 const App = () => {
   return (
@@ -18,6 +21,7 @@ const App = () => {
         </Route>
 
         <Route path='/login' element={<Login />} />
+        <Route path='/profile' element={<Profile />} />
         <Route path='*' element={<Navigate to={'/'} />} />
       </Routes>
     </Suspense>
