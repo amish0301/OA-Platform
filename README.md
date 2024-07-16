@@ -9,5 +9,4 @@
 
 <h5>Images</h5>
 <div class="flex gap-2">
-    ![]
 </div>
