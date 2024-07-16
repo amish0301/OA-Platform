@@ -1,0 +1,13 @@
+<h2 align="center">Online Assessment Platform</h2>
+
+## Day Wise Contribution:
+
+### Day - 1
+- Setup Basic Frontend (Navbar, Footer and Outlet).
+- Designed Auth Part in Frontend like, Login & SignUp page.
+- Basic Backend app Initialized.
+
+<h5>Images</h5>
+<div class="flex gap-2">
+    ![]
+</div>
