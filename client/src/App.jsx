@@ -34,7 +34,7 @@ const App = () => {
 
         <Route path='/auth'>
           <Route path='login' index element={user ? <Navigate to={'/'} /> : <Login />} />
-          <Route path='forget-password' element={<ForgetPassword />}/>
+          <Route path='forget' element={<ForgetPassword />}/>
         </Route>
         <Route path='/profile' element={<Profile />} />
         <Route path='*' element={<Navigate to={'/'} />} />
