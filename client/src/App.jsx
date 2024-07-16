@@ -8,19 +8,34 @@ import Login from './pages/Login.jsx'
 import Test from './components/Test.jsx'
 import Instruction from './pages/Instruction.jsx'
 import Profile from './pages/Profile.jsx'
+import AdminLayout from './layout/AdminLayout.jsx'
+import Dashboard from './components/admin/Dashboard.jsx'
+import CreateTest from './components/admin/CreateTest.jsx'
+import ForgetPassword from './components/ForgetPassword.jsx'
 
 const App = () => {
+  const user = false;
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route path='/' element={<AppLayout />}>
-          <Route path='/' index element={<Home />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/test/:id' element={<Test />}/>
-          <Route path='/test-instruction' element={<Instruction />} />
+          <Route index element={<Home />} />
+          <Route path='about' element={<About />} />
+          <Route path='test/:id' element={user ? <Test /> : <Navigate to={'/login'} />} />
+          <Route path='test-instruction' element={<Instruction />} />
         </Route>
 
-        <Route path='/login' element={<Login />} />
+        {/* Admin routes */}
+        <Route path='/admin' element={<AdminLayout />}>
+          <Route path='dashboard' index element={<Dashboard />} />
+          <Route path='create-test/:id' element={<CreateTest />}/>
+        </Route>
+
+        <Route path='/auth'>
+          <Route path='login' index element={user ? <Navigate to={'/'} /> : <Login />} />
+          <Route path='forget-password' element={<ForgetPassword />}/>
+        </Route>
         <Route path='/profile' element={<Profile />} />
         <Route path='*' element={<Navigate to={'/'} />} />
       </Routes>
