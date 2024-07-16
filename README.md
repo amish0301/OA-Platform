@@ -7,7 +7,7 @@
 - Designed Auth Part in Frontend like, Login & SignUp page.
 - Basic Backend app Initialized.
 
-<h5>Images</h5>
+### Images
     - ![Navbar](https://github.com/amish0301/OA-Platform/blob/master/client/public/navbar.png)
     - ![Login Page](https://github.com/amish0301/OA-Platform/blob/master/client/public/login.png)
     - ![SignUp Page](https://github.com/amish0301/OA-Platform/blob/master/client/public/signup.png)
