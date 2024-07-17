@@ -7,7 +7,7 @@ const Navbar = () => {
   const [updateNav, setUpdateNav] = useState(false);
   const navigate = useNavigate();
   const user = false;
-
+  
   window.addEventListener('scroll', () => {
     if (window.scrollY > 50) {
       setUpdateNav(true)

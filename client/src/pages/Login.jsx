@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import google from '../assets/google.png'
 import sideImg from '../assets/learning.jpg'
@@ -55,6 +55,10 @@ const Login = () => {
     }
   }
 
+  const handleGoogleLogin = () => {
+    window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google/callback`, '_self');
+  }
+
   return (
     <section className='bg-gray-50 min-h-screen flex items-center justify-center'>
       <div className='bg-gray-100 flex rounded-2xl shadow-lg max-w-3xl w-full p-5 items-center'>
@@ -98,7 +102,7 @@ const Login = () => {
             <hr className='border-gray-400' />
           </div>
 
-          <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center'>
+          <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center' onClick={handleGoogleLogin}>
             <img src={google} alt="google" className='w-6 h-6' />
             <span className='ml-1 text-sm'>Continue with Google</span>
           </button>
