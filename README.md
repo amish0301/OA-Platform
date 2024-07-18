@@ -23,3 +23,11 @@
 ### Day - 3
 - Designed **Home/Landing Page** and **Footer**.
 - Created **Test Instruction Page** and Designed with all attention to Detail.
+
+### Images
+![image](https://github.com/user-attachments/assets/e0e8bb85-1508-4341-afe0-403a128c8824)
+(![image](https://github.com/user-attachments/assets/d3146755-dc16-4f61-8a81-4456ade17673)
+![image](https://github.com/user-attachments/assets/9e0a1da3-9eca-4464-a9de-8986ba29184b)
+![image](https://github.com/user-attachments/assets/af696ad4-36e7-43fd-9487-b1d67e08db21)
+![image](https://github.com/user-attachments/assets/e1582dd7-d67d-4b38-8b85-cb0db83c9ed1)
+
