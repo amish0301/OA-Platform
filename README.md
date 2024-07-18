@@ -13,9 +13,13 @@
 ![SignUp Page](https://github.com/amish0301/OA-Platform/blob/master/client/public/signup.png)
 
 ### Day - 2
-- Login/Signup with `Google OAuth` Integrated using `Passport library`.
-- User can Logged in both ways through Identity Provider(GoogleAuth) and Credentials Provider.
+- Implemented Login/Signup with `Google OAuth` using the `Passport` library.
+- Users can log in through either their Google account or by entering their credentials.
 
-<h4>Learning:</h4>
-    1. Learn How third party log in functionality works and how it interacts with our backend server <br />
-    2. Major learning was to aware about Passport.js Library and how it works.
+<h4>Key Learnings:</h4>
+1. Understanding the functioning of third-party login and its interaction with our backend server.
+2. Acquiring knowledge about the Passport.js library and its functionality.
+
+### Day - 3
+- Designed **Home/Landing Page** and **Footer**.
+- Created **Test Instruction Page** and Designed with all attention to Detail.
