@@ -29,21 +29,23 @@ const App = () => {
           <Route index element={<Home user={user} />} />
           <Route path='about' element={<About />} />
           <Route path='test/:id' element={user ? <Test /> : <Navigate to={'/login'} />} />
-          <Route path='test-instruction' element={<Instruction />} />
         </Route>
+
+        {/* auth routes */}
+        <Route path='/auth'>
+          <Route path='login' index element={user ? <Navigate to={'/'} /> : <Login />} />
+          <Route path='forget' element={<ForgetPassword />} />
+        </Route>
+
+        <Route path='/test/instruction' element={<Instruction />} />
+        <Route path='/profile' element={<Profile />} />
+        <Route path='*' element={<Navigate to={'/'} />} />
 
         {/* Admin routes */}
         <Route path='/admin' element={<AdminLayout />}>
           <Route path='dashboard' index element={<Dashboard />} />
           <Route path='create-test/:id' element={<CreateTest />} />
         </Route>
-
-        <Route path='/auth'>
-          <Route path='login' index element={user ? <Navigate to={'/'} /> : <Login />} />
-          <Route path='forget' element={<ForgetPassword />} />
-        </Route>
-        <Route path='/profile' element={<Profile />} />
-        <Route path='*' element={<Navigate to={'/'} />} />
       </Routes>
     </Suspense>
   )
