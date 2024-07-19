@@ -31,3 +31,6 @@
 ![image](https://github.com/user-attachments/assets/af696ad4-36e7-43fd-9487-b1d67e08db21)
 ![image](https://github.com/user-attachments/assets/e1582dd7-d67d-4b38-8b85-cb0db83c9ed1)
 
+### Day - 4
+- Authentication completed and tested which results in everything works fine.
+- Implemented **Cookie and Session** to improve User Experience (by including accessToken and refreshToken method).
