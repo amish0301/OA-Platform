@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const path = require("path");
-const { registerUser } = require("../controller/auth.controller");
+const { registerUser, loginUser } = require("../controller/auth.controller");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const router = express.Router();
@@ -12,7 +12,6 @@ router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
-
 // Google callback url
 router.get(
   "/google/callback",
@@ -23,22 +22,13 @@ router.get(
     successMessage: "Login success",
   }),
   (req, res) => {
-    console.log("Inside auth.route", req.user);
-    res.send("Thank you for signing in!");
+    res.send("Login success");
+    console.log('inside call back controller');
   }
 );
 
-router.get("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).send("Error logging out");
-    }
-    res.redirect(successRedirect);
-  });
-});
-
-// register user
-router.post('/login', registerUser);
+// auth
+router.post("/signup", registerUser);
+router.post("/login", loginUser);
 
 module.exports = router;

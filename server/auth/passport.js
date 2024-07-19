@@ -3,7 +3,7 @@ const User = require("../db/user.model.js");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const path = require("path");
 
-require("dotenv").config({path: path.resolve(__dirname, "../.env")});
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 passport.use(
   new GoogleStrategy(
@@ -16,7 +16,6 @@ passport.use(
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-
         if (!profile.emails || !profile.emails.length) {
           throw new Error("No emails found in profile");
         }
@@ -31,16 +30,13 @@ passport.use(
               : null,
         };
 
-        let user = await User.findOne({
-          $or: [{ email: profile.emails[0].value }, { googleId: profile.id }],
-        });
+        let user = await User.findOne({ email: profile.emails[0].value });
 
         if (!user) {
           user = await User.create(defaultUser);
           await user.save();
         }
 
-        console.log("User found or created:", user);
         return done(null, user);
       } catch (error) {
         console.error("Error in Google Strategy:", error);
@@ -50,8 +46,9 @@ passport.use(
   )
 );
 
+// storing value in session
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
@@ -60,8 +57,6 @@ passport.deserializeUser(async (id, done) => {
       console.log("Error in deserializing");
       return done(err, null);
     });
-
-    console.log("User:", user);
     if (user) done(null, user);
     else done(new Error("User not found"), null);
   } catch (error) {

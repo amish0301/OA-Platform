@@ -7,6 +7,8 @@ import { FaUser as UserIcon } from "react-icons/fa";
 import { MdEmail as MailIcon } from "react-icons/md";
 import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   document.title = 'Login | Online Assessment';
@@ -16,10 +18,10 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [formErrors, setFormErrors] = useState({});
+  const loading = false;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
   }
 
   const validateForm = () => {
@@ -38,21 +40,40 @@ const Login = () => {
     return Object.keys(errors).length === 0;
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validateForm()) {
-      alert('Form Submitted Successfully');
+      try {
+        if (isLogin) {
+          const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/login`, formData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if (res.data.success) {
+            toast.success(res.data.message);
+            // update in redux
+          }
+        } else {
+          const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/signup`, formData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          if (res.data.success) {
+            toast.success(res.data.message);
+            setIsLogin(true);
+          }
+        }
+      } catch (error) {
+        alert('Something went wrong, please try again');
+      }
     }
 
     // empty fields
-    const id = setTimeout(() => {
-      setFormData({ name: '', email: '', password: '' });
-      setFormErrors({});
-    }, [1500])
-
-    return () => {
-      window.clearTimeout(id);
-    }
+    setFormData({ name: '', email: '', password: '' });
+    setFormErrors({});
   }
 
   const handleGoogleLogin = () => {
@@ -91,8 +112,8 @@ const Login = () => {
               {formErrors.password && <p className='text-red-500 text-xs'>{formErrors.password}</p>}
             </div>
 
-            {isLogin ? (<button className='bg-[#002D74] hover:bg-[#002D74]/90 duration-300 text-white py-2 rounded-lg mt-5'>Login</button>) : (
-              <button className='bg-[#002D74] hover:bg-[#002D74]/90 duration-300 text-white py-2 rounded-lg mt-5'>Sign Up</button>
+            {isLogin ? (<button className='bg-[#002D74] hover:bg-[#002D74]/90 duration-300 text-white py-2 rounded-lg mt-5' disabled={loading}>Login</button>) : (
+              <button className='bg-[#002D74] hover:bg-[#002D74]/90 duration-300 text-white py-2 rounded-lg mt-5' disabled={loading}>Sign Up</button>
             )}
           </form>
 

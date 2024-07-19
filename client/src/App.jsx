@@ -1,8 +1,8 @@
 import React, { Suspense, useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './layout/AppLayout.jsx'
+import { ToastContainer } from 'react-toastify'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUser } from './redux/slices/userSlice.js'
 
 import Home from './components/Home.jsx'
 import About from './components/About.jsx'
@@ -14,14 +14,15 @@ import AdminLayout from './layout/AdminLayout.jsx'
 import Dashboard from './components/admin/Dashboard.jsx'
 import CreateTest from './components/admin/CreateTest.jsx'
 import ForgetPassword from './components/ForgetPassword.jsx'
+import { fetchUser } from './redux/slices/userSlice.js'
 
 const App = () => {
+  const { user, loader } = useSelector((state) => state.user)
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user.user);
 
   useEffect(() => {
-    dispatch(fetchUser())
-  }, [dispatch])
+    fetchUser();
+  }, [user])
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
@@ -47,6 +48,7 @@ const App = () => {
           <Route path='create-test/:id' element={<CreateTest />} />
         </Route>
       </Routes>
+      <ToastContainer position='top-right' />
     </Suspense>
   )
 }

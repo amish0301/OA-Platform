@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaArrowUpRightFromSquare as Icon } from "react-icons/fa6";
 
 const instructionList = [
@@ -60,6 +60,7 @@ const instructionList = [
 ]
 
 const Instruction = () => {
+  const [instructionRead, setInstructionRead] = useState(false);
   return (
     <section className='min-h-screen max-w-full bg-[#f6f6f6] p-12'>
       <div className='flex flex-col gap-2 items-start justify-left mx-14'>
@@ -77,15 +78,15 @@ const Instruction = () => {
           ))
         }
       </div>
-      
+
       <div className='mt-3 mx-16'>
         <label htmlFor="instruction-read" className='flex items-center justify-left cursor-pointer'>
-          <input type="checkbox" id="instruction-read" className='w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500' />
+          <input type="checkbox" id="instruction-read" className='w-3 h-3 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500' onChange={() => setInstructionRead(!instructionRead)} />
           <span className='text-sm font-medium ml-2 select-none'>I have read and understood the instruction</span>
         </label>
       </div>
 
-      <button className='bg-[#1c4980] hover:bg-[#2a558a] font-semibold text-[16px] hover:border-none text-white mt-3 py-3 px-7 mx-auto flex items-center rounded-lg'>
+      <button className={`bg-[#1c4980] hover:bg-[#2a558a] font-semibold text-[16px] hover:border-none text-white mt-3 py-3 px-7 mx-auto flex items-center rounded-lg ${!instructionRead ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
         Start Exam
         <Icon className='ml-2 text-sm hover:translate-x-1 transition-all duration-300' />
       </button>

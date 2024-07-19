@@ -3,6 +3,7 @@ import axios from "axios";
 
 const initialState = {
   user: null,
+  loader: false,
   isAdmin: false,
 };
 
@@ -19,6 +20,7 @@ const userSlice = createSlice({
   reducers: {
     userExists: (state, action) => {
       state.user = action.payload;
+      state.loader
     },
     userNotExists: (state) => {
       state.user = null;
