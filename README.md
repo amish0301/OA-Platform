@@ -38,3 +38,7 @@
 ### Day - 5
 - Implemented ProfileCard and UI fixed.
 - Mostly time spend on Backend to figuring Out Why Google OAuth not working.
+
+### Day - 8
+- Redundant Code is Removed from Frontend.
+- Improvised Api Response by clearing inconsistent & Redundant codes.
