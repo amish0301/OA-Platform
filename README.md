@@ -34,3 +34,7 @@
 ### Day - 4
 - Authentication completed and tested which results in everything works fine.
 - Implemented **Cookie and Session** to improve User Experience (by including accessToken and refreshToken method).
+
+### Day - 5
+- Implemented ProfileCard and UI fixed.
+- Mostly time spend on Backend to figuring Out Why Google OAuth not working.
