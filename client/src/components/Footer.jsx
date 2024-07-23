@@ -63,7 +63,7 @@ function Footer() {
           <div className='flex items-center gap-3 mt-5'>
             {
               socialMedia.map((item, index) => (
-                <div className='flex justify-center items-center bg-gray-50 w-8 h-8 rounded-full'>
+                <div key={index} className='flex justify-center items-center bg-gray-50 w-8 h-8 rounded-full'>
                   <Link to={item.href} className="text-xl scale-110 text-gray-800 hover:text-gray-700" target='_blank'>
                     {item.src}
                   </Link>

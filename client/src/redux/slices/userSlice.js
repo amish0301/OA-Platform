@@ -1,18 +1,10 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   user: null,
-  loader: false,
-  isAdmin: false,
+  isAuthenticated: false,
+  token: null
 };
-
-export const fetchUser = createAsyncThunk("user/fetchUser", async () => {
-  const response = await axios.get("http://localhost:8080/auth/user", {
-    withCredentials: true,
-  });
-  return response.data;
-});
 
 const userSlice = createSlice({
   name: "user",
@@ -20,18 +12,20 @@ const userSlice = createSlice({
   reducers: {
     userExists: (state, action) => {
       state.user = action.payload;
-      state.loader
+      state.isAuthenticated = true;
     },
     userNotExists: (state) => {
       state.user = null;
+      state.isAuthenticated = false;
     },
-  },
-  extraReducers: (builder) => {
-    builder.addCase(fetchUser.fulfilled, (state, action) => {
-      state.user = action.payload;
-    });
+    setToken: (state, action) => {
+      state.token = action.payload
+    },
+    removeToken: (state) => {
+      state.token = null
+    }
   },
 });
 
 export default userSlice;
-export const { userExists, userNotExists } = userSlice.actions;
+export const { userExists, userNotExists, setToken } = userSlice.actions;

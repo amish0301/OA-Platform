@@ -6,28 +6,29 @@ const User = require("../db/user.model");
 const isAuthenticated = async (req, res, next) => {
   try {
     const token =
-      req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer ", "");
+      req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
-    if (!token) {
+    if (!token)
       return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
 
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const user = await User.findById(decoded?.id).select(
+    if (!decoded)
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+
+    const user = await User.findById(decoded.id).select(
       "-password -refreshToken"
     );
 
-    if (!user) {
+    if (!user)
       return res
-        .status(401)
-        .json({ success: false, message: "Invalid Access Token" });
-    }
+        .status(404)
+        .json({ success: false, message: "Invalid credentials" });
 
-    req.user = user;
+    req.uId = user._id;
     next();
   } catch (error) {
-    return res.status(500).json({ success: false, message: error.message });
+    console.log("Error verifying Token", error);
+    return res.status(401).json({ success: false, message: "Token Expired" });
   }
 };
 

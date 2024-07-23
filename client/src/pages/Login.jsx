@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import google from '../assets/google.png'
 import sideImg from '../assets/learning.jpg'
@@ -9,16 +9,20 @@ import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { setToken, userExists } from '../redux/slices/userSlice';
+
 
 const Login = () => {
   document.title = 'Login | Online Assessment';
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [eyeOpen, setEyeOpen] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [formErrors, setFormErrors] = useState({});
-  const loading = false;
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,16 +48,25 @@ const Login = () => {
     e.preventDefault();
 
     if (validateForm()) {
+      setLoading(true);
       try {
         if (isLogin) {
           const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/login`, formData, {
+            withCredentials: true,
             headers: {
               'Content-Type': 'application/json'
             }
           });
           if (res.data.success) {
             toast.success(res.data.message);
-            // update in redux
+            dispatch(userExists(res.data.user));
+            // localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
+            dispatch(setToken(res.data.refreshToken));
+            navigate('/');
+          }
+
+          if(res.status === 401) {
+            toast.error(res.data.message);
           }
         } else {
           const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/signup`, formData, {
@@ -64,10 +77,14 @@ const Login = () => {
           if (res.data.success) {
             toast.success(res.data.message);
             setIsLogin(true);
+          } else {
+            toast.error(res.data?.message);
           }
         }
       } catch (error) {
-        alert('Something went wrong, please try again');
+        toast.error(error.response?.data?.message);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -77,7 +94,11 @@ const Login = () => {
   }
 
   const handleGoogleLogin = () => {
-    window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google/callback`, '_self');
+    try {
+      window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google/callback`, "_self"); 
+    } catch (error) {
+      toast.error(error?.data?.message || error);
+    }
   }
 
   return (
@@ -123,10 +144,11 @@ const Login = () => {
             <hr className='border-gray-400' />
           </div>
 
-          <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center' onClick={handleGoogleLogin}>
+          <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center' onClick={handleGoogleLogin} disabled={loading}>
             <img src={google} alt="google" className='w-6 h-6' />
             <span className='ml-1 text-sm'>Continue with Google</span>
           </button>
+
 
           {isLogin && <div className='mt-5 text-xs border-b py-4 border-gray-400 text-[#002D74] underline cursor-pointer' onClick={() => navigate('/auth/forget')}>Forget your Password?</div>}
           <div className='mt-3 text-xs flex justify-between items-center'>

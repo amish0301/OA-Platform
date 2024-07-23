@@ -5,11 +5,13 @@ const useAuth = require("../middleware/isAuth");
 const {
   logoutUser,
   refreshAccessToken,
+  userInfo,
 } = require("../controller/user.controller");
 
-router.post("/logout", useAuth, logoutUser);
-router.post("/refresh-token", refreshAccessToken);
-
 router.use(useAuth);
+
+router.post("/logout", logoutUser);
+router.post("/refresh-token", refreshAccessToken);
+router.get("/me", userInfo);
 
 module.exports = router;
