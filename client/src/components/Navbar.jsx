@@ -71,7 +71,7 @@ const Navbar = () => {
   const [updateNav, setUpdateNav] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector(state => state.user)
+  const { user } = useSelector((state) => state.user);
 
   window.addEventListener('scroll', () => {
     if (window.scrollY > 20) {
@@ -83,7 +83,12 @@ const Navbar = () => {
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/user/logout`)
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/user/logout`, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(import.meta.env.VITE_TOKEN)}`
+        }
+      })
       if (res.data.success) {
         toast.success(res.data.message)
         dispatch(userNotExists())

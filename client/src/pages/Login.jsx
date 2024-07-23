@@ -60,7 +60,7 @@ const Login = () => {
           if (res.data.success) {
             toast.success(res.data.message);
             dispatch(userExists(res.data.user));
-            // localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
+            localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
             dispatch(setToken(res.data.refreshToken));
             navigate('/');
           }
@@ -90,7 +90,7 @@ const Login = () => {
 
     // empty fields
     setFormData({ name: '', email: '', password: '' });
-    setFormErrors({});
+    if(!formErrors) setFormErrors({});
   }
 
   const handleGoogleLogin = () => {

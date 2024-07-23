@@ -5,6 +5,7 @@ const { registerUser, loginUser } = require("../controller/auth.controller");
 const User = require("../db/user.model");
 const axios = require("axios");
 const { cookieOption } = require("../utils/helper");
+const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../middleware/isAuth");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
@@ -73,9 +74,38 @@ router.get("/login/success", async (req, res) => {
         message: "Login successfully",
       });
     } else {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not Authorized" });
+      // return res
+      //   .status(403)
+      //   .json({ success: false, message: "Not Authorized" });
+
+      // check for credentials user
+      try {
+        const token =
+          req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
+
+        if (!token)
+          return res
+            .status(401)
+            .json({ success: false, message: "Unauthorized" });
+
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        if (!decoded)
+          return res
+            .status(401)
+            .json({ success: false, message: "Token Expired, Login Again" });
+
+        const user = await User.findById(decoded?.id);
+        if (!user)
+          return res
+            .status(401)
+            .json({ success: false, message: "Invalid User" });
+
+        return res
+          .status(200)
+          .json({ user, success: true, message: "Login successfully" });
+      } catch (error) {
+        console.log('error in success login route', error);
+      }
     }
   } catch (error) {
     console.log("error in success login route", error);
@@ -83,17 +113,18 @@ router.get("/login/success", async (req, res) => {
 });
 
 // login failed
-router.get("/login/failed", async (req,res) => {
-  return res.status(401).json({success: false, message: 'Google Login Failed'});
+router.get("/login/failed", async (req, res) => {
+  return res
+    .status(401)
+    .json({ success: false, message: "Google Login Failed" });
 });
 
-router.get('/logout', async (req,res) => {
-  req.logout(err => {
-    if(err) console.log("While loggout ", err);
-    res.redirect('/');
-  })
-
-})
+router.get("/logout", async (req, res) => {
+  req.logout((err) => {
+    if (err) console.log("While loggout ", err);
+    res.redirect("/");
+  });
+});
 
 // Credentials Auth Route
 router.post("/signup", registerUser);

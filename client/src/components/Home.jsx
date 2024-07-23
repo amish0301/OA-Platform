@@ -3,10 +3,6 @@ import { FaArrowRightLong as RightIcon, FaQuoteLeft as QuoteIcon } from "react-i
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
 import { BsFillQuestionSquareFill as QuestionIcon } from "react-icons/bs";
 import { IoAnalyticsSharp as AnalyticsIcon } from "react-icons/io5";
-import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
-import { userExists } from '../redux/slices/userSlice';
-import { toast } from 'react-toastify';
 
 export const ServiceCard = ({ title, desc, icon, type }) => {
   return (
@@ -61,22 +57,6 @@ const testimonials = [
 ]
 
 const Home = () => {
-  const dispatch = useDispatch()
-  const { user } = useSelector((state) => state.user)
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, { withCredentials: true });
-      dispatch(userExists(res.data.user));
-      toast.success(res.data.message);
-    } catch (error) {
-      toast.error(error?.data?.message || error?.error);
-    }
-  }
-
-  useEffect(() => {
-    fetchUser()
-  }, [dispatch])
-
   return (
     <>
       <div className='w-full px-14 py-20 mb-10 gap-10 flex items-center'>
