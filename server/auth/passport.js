@@ -26,7 +26,7 @@ const passportUtil = (app) => {
         scope: ["profile", "email"],
       },
       async (accessToken, refreshToken, profile, cb) => {
-        cb(null, profile);
+        cb(null, profile, accessToken);
       }
     )
   );

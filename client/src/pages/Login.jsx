@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { setToken, userExists } from '../redux/slices/userSlice';
+import { userExists } from '../redux/slices/userSlice';
 
 
 const Login = () => {
@@ -59,13 +59,12 @@ const Login = () => {
           });
           if (res.data.success) {
             toast.success(res.data.message);
-            dispatch(userExists(res.data.user));
-            localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
-            dispatch(setToken(res.data.refreshToken));
-            navigate('/');
+            dispatch(userExists({...res.data.user}));
+            // localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
+            navigate('/', { relative : true});
           }
 
-          if(res.status === 401) {
+          if (res.status === 401) {
             toast.error(res.data.message);
           }
         } else {
@@ -90,12 +89,12 @@ const Login = () => {
 
     // empty fields
     setFormData({ name: '', email: '', password: '' });
-    if(!formErrors) setFormErrors({});
+    if (!formErrors) setFormErrors({});
   }
 
   const handleGoogleLogin = () => {
     try {
-      window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google/callback`, "_self"); 
+      window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google/callback`, "_self");
     } catch (error) {
       toast.error(error?.data?.message || error);
     }

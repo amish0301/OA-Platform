@@ -15,14 +15,14 @@ const router = express.Router();
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: process.env.CLIENT_URI,
+    successRedirect: `${process.env.CLIENT_URI}/auth/login/success`,
     failureRedirect: `${process.env.CLIENT_URI}/auth/login/failed`,
   }),
   (req, res) => {
-    // Set the accessToken in a cookie
+    console.log('req object from google', req);
     res.cookie("accessToken", req.authInfo.accessToken, {
       httpOnly: true, // for security
-      secure: process.env.NODE_ENV === "production", // send only over HTTPS in production
+      secure: true, // send only over HTTPS in production
       maxAge: 24 * 60 * 60 * 1000, // 30 days
     });
     res.redirect(successRedirect);
@@ -54,6 +54,7 @@ router.get("/login/success", async (req, res) => {
       if (user) {
         // generate token
         const token = await user.generateAccessToken();
+        console.log('token if user exist', token);
         // save token in cookie
         res.cookie("accessToken", token, cookieOption);
       } else {
@@ -66,6 +67,7 @@ router.get("/login/success", async (req, res) => {
         await newUser.save();
         const token = await newUser.generateAccessToken();
         res.cookie("accessToken", token, cookieOption);
+        console.log('token if user not exist', token);
       }
 
       return res.status(200).json({

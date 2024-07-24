@@ -1,5 +1,5 @@
-import React, { Suspense } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import React, { Suspense, useEffect } from 'react'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import AppLayout from './layout/AppLayout.jsx'
 import { ToastContainer } from 'react-toastify'
 
@@ -17,9 +17,17 @@ import Loader from './components/Loader.jsx'
 import NotFound from './components/NotFound.jsx'
 
 const LoginSuccess = () => {
-  return (
-    <div>Thanks for Log In!</div>
-  )
+  const navigate = useNavigate()
+  useEffect(() => {
+    const id = setTimeout(() => {
+      navigate('/', { replace: true })
+    }, 2000)
+
+    return () => {
+      clearTimeout(id)
+    }
+  }, [])
+  return <div>Thanks for Login!!</div>
 }
 
 const App = () => {

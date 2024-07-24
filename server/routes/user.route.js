@@ -10,7 +10,7 @@ const {
 
 router.use(useAuth);
 
-router.post("/logout", logoutUser);
+router.get("/logout", logoutUser);
 router.post("/refresh-token", refreshAccessToken);
 router.get("/me", userInfo);
 
