@@ -11,6 +11,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { userExists } from '../redux/slices/userSlice';
+import Loader from '../components/Loader';
 
 
 const Login = () => {
@@ -59,9 +60,9 @@ const Login = () => {
           });
           if (res.data.success) {
             toast.success(res.data.message);
-            dispatch(userExists({...res.data.user}));
+            dispatch(userExists({ ...res.data.user }));
             // localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
-            navigate('/', { relative : true});
+            navigate('/', { relative: true });
           }
 
           if (res.status === 401) {
@@ -88,8 +89,15 @@ const Login = () => {
     }
 
     // empty fields
-    setFormData({ name: '', email: '', password: '' });
-    if (!formErrors) setFormErrors({});
+    setFormData({
+      name: formErrors.name ? '' : formData.name,
+      email: formErrors.email ? '' : formData.email,
+      password: formErrors.password ? '' : formData.password
+    });
+
+    if (!formErrors) {
+      setFormErrors({});
+    }
   }
 
   const handleGoogleLogin = () => {
@@ -100,9 +108,11 @@ const Login = () => {
     }
   }
 
+  if (loading) return <Loader show={loading} />
+
   return (
     <section className='bg-gray-50 min-h-screen flex items-center justify-center'>
-      <div className='bg-gray-100 flex rounded-2xl shadow-lg max-w-3xl w-full p-5 items-center'>
+      <div className='bg-gray-100 flex rounded-2xl shadow-xl max-w-3xl w-full p-5 items-center'>
         <div className='md:w-1/2 md:px-12 px-8 py-2'>
           {isLogin ? <p className='text-3xl font-bold text-[#002D74]'>Login</p> : <p className='text-3xl font-bold text-[#002D74]'>Signup</p>}
           {isLogin && <p className='text-xs font-medium mt-4 text-[#002D74]'>if you already have an account, easily <span className='text-black text-sm'>Login</span></p>}
@@ -113,28 +123,31 @@ const Login = () => {
                 <span className='m-auto border-r border-r-orange-200 absolute p-2 top-1/2 left-0 rounded-l-lg items-center z-10'>
                   <UserIcon className='text-gray-500 text-lg' />
                 </span>
-                <input type='text' className={`pl-10 pr-4 py-3 mt-8 rounded-lg border w-full ${formErrors.name ? 'border-red-500' : ''}`} placeholder='enter your name' name='name' required onChange={handleChange} value={formData.name} />
+                <input type='text' className={`pl-10 pr-4 py-3 mt-8 rounded-lg border w-full ${formErrors.name ? 'border-red-500' : ''}`} placeholder='enter your name' name='name' required onChange={handleChange} autoComplete='on' aria-label='name' value={formData.name} />
                 {formErrors.name && <p className='text-red-500 text-xs'>{formErrors.name}</p>}
               </div>
             }
             <div className='relative'>
               <span className={`m-auto border-r border-r-orange-200 absolute p-2 ${isLogin ? 'top-[40px]' : 'top-[7px]'} left-0 rounded-l-lg items-center z-10`}><MailIcon className='text-gray-500 text-lg' /></span>
-              <input type="email" className={`px-10 py-3 ${isLogin ? 'mt-8' : ''} rounded-lg border w-full`} placeholder='email' name='email' required value={formData.email} onChange={handleChange} />
+              <input type="email" className={`px-10 py-3 ${isLogin ? 'mt-8' : ''} rounded-lg border w-full`} placeholder='email' name='email' required value={formData.email} onChange={handleChange} autoComplete='on' aria-label='email' />
               {formErrors.email && <p className='text-red-500 text-xs'>{formErrors.email}</p>}
             </div>
 
             <div className='relative'>
               <span className='m-auto border-r border-r-orange-200 absolute p-2 top-[7px] rounded-l-lg left-0 items-center z-10'><PasswordIcon className='text-gray-500 text-lg' /></span>
-              <input type={`${eyeOpen ? 'text' : 'password'}`} className='px-10 py-3 rounded-lg border w-full' placeholder='password' name='password' required value={formData.password} onChange={handleChange} />
+              <input type={`${eyeOpen ? 'text' : 'password'}`} className='px-10 py-3 rounded-lg border w-full' placeholder='password' name='password' required value={formData.password} onChange={handleChange} aria-label='password' autoComplete='on' />
               <span className='text-lg absolute top-[25px] right-3 -translate-y-1/2 cursor-pointer' onClick={() => setEyeOpen(prev => !prev)}>
                 {eyeOpen ? <OpenIcon /> : <ClosedIcon />}
               </span>
               {formErrors.password && <p className='text-red-500 text-xs'>{formErrors.password}</p>}
             </div>
 
-            {isLogin ? (<button className='bg-[#002D74] hover:bg-[#002D74]/90 duration-300 text-white py-2 rounded-lg mt-5' disabled={loading}>Login</button>) : (
-              <button className='bg-[#002D74] hover:bg-[#002D74]/90 duration-300 text-white py-2 rounded-lg mt-5' disabled={loading}>Sign Up</button>
-            )}
+            <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' disabled={loading}>
+              <div className='flex justify-center items-center gap-2'>
+                <Loader show={loading} size={20} borderColor="red" />
+                <span className='text-sm font-semibold'>{isLogin ? 'Login' : 'Signup'}</span>
+              </div>
+            </button>
           </form>
 
           <div className='mt-6 grid grid-cols-3 items-center text-gray-400'>
@@ -145,7 +158,7 @@ const Login = () => {
 
           <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center' onClick={handleGoogleLogin} disabled={loading}>
             <img src={google} alt="google" className='w-6 h-6' />
-            <span className='ml-1 text-sm'>Continue with Google</span>
+            <span className='ml-1 text-sm font-semibold'>Continue with Google</span>
           </button>
 
 

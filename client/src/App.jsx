@@ -1,7 +1,8 @@
-import React, { Suspense, useEffect } from 'react'
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import React, { Suspense, useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import AppLayout from './layout/AppLayout.jsx'
 import { ToastContainer } from 'react-toastify'
+import { useSelector } from 'react-redux';
 
 import Home from './components/Home.jsx'
 import About from './components/About.jsx'
@@ -15,40 +16,53 @@ import CreateTest from './components/admin/CreateTest.jsx'
 import ForgetPassword from './components/ForgetPassword.jsx'
 import Loader from './components/Loader.jsx'
 import NotFound from './components/NotFound.jsx'
+import ProtectRoute from './lib/ProtectRoute.jsx'
 
-const LoginSuccess = () => {
-  const navigate = useNavigate()
-  useEffect(() => {
-    const id = setTimeout(() => {
-      navigate('/', { replace: true })
-    }, 2000)
+// const LoginSuccess = () => {
+//   const navigate = useNavigate()
+//   useEffect(() => {
+//     const id = setTimeout(() => {
+//       navigate('/', { replace: true })
+//     }, 2000)
 
-    return () => {
-      clearTimeout(id)
-    }
-  }, [])
-  return <div>Thanks for Login!!</div>
-}
+//     return () => {
+//       clearTimeout(id)
+//     }
+//   }, [])
+//   return <div>Thanks for Login!!</div>
+// }
 
 const App = () => {
+  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useSelector(state => state.user);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, [500]);
+
+    return () => clearTimeout(timer);
+  }, [])
+
+  if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
 
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<div>Loading..</div>}>
       <Routes>
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path='about' element={<About />} />
-          <Route path='test/:id' element={<Test />} />
+          <Route path='test/:id' element={<ProtectRoute><Test /></ProtectRoute>} />
         </Route>
 
         {/* auth routes */}
         <Route path='/auth'>
-          <Route path='login' index element={<Login />} />
+          <Route path='login' index element={<ProtectRoute redirect="/" user={!isAuthenticated}><Login /></ProtectRoute>} />
           <Route path='forget' element={<ForgetPassword />} />
-          <Route path='login/success' element={<LoginSuccess />} />
+          {/* <Route path='login/success' element={<LoginSuccess />} /> */}
         </Route>
 
-        <Route path='/test/instruction' element={<Instruction />} />
+        <Route path='/test/instruction' element={<ProtectRoute><Instruction /></ProtectRoute>} />
         <Route path='*' element={<NotFound />} />
         <Route path='/profile/:id' element={<Profile />} />
 
@@ -58,7 +72,7 @@ const App = () => {
           <Route path='create-test/:id' element={<CreateTest />} />
         </Route>
       </Routes>
-      <ToastContainer position='top-right' autoClose={1500} />
+      <ToastContainer position='top-right' autoClose={1500} theme='dark' />
     </Suspense>
   )
 }

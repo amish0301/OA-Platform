@@ -52,7 +52,7 @@ const loginUser = TryCatch(async (req, res) => {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: "User not Exists",
+      message: "User not Found with this Email",
     });
   }
 

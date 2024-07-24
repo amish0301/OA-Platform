@@ -6,7 +6,6 @@ const User = require("../db/user.model");
 const axios = require("axios");
 const { cookieOption } = require("../utils/helper");
 const jwt = require("jsonwebtoken");
-const isAuthenticated = require("../middleware/isAuth");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const router = express.Router();
