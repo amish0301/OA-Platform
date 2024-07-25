@@ -12,7 +12,6 @@ import { GoSignOut } from "react-icons/go";
 const ProfileCard = ({ logoutHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useSelector(state => state.user);
-  const uname = String(user.name);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -26,7 +25,7 @@ const ProfileCard = ({ logoutHandler }) => {
 
   return (
     <div className='cursor-pointer w-fit'>
-      <img src={user.profileImage} alt="" className='w-12 h-12 rounded-full' onClick={handleClick} />
+      <img src={user?.profileImage} alt="profile_img" className='w-10 h-10 rounded-full object-contain' onClick={handleClick} />
       <Popover
         id={id}
         open={open}
@@ -43,9 +42,9 @@ const ProfileCard = ({ logoutHandler }) => {
       >
         <div className='p-3 shadow-md shadow-zinc-300 bg-gray-200 rounded-lg'>
           <div className='flex gap-4 items-center justify-start mb-4'>
-            <img src={user.profileImage} alt="profile_img" className='w-12 h-12 rounded-full' />
-            <Link to={`/profile/${uname.split(" ").join("").toLowerCase()}`}>
-              <Typography className='text-sm font-medium text-green-600'>{user.name}</Typography>
+            <img src={user?.profileImage} alt="profile_img" className='w-8 h-8 rounded-full' />
+            <Link to={`/profile/${user?._id}`}>
+              <Typography className='text-sm font-medium text-green-600'>{user?.name}</Typography>
             </Link>
           </div>
 

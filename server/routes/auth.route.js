@@ -5,7 +5,6 @@ const { registerUser, loginUser } = require("../controller/auth.controller");
 const User = require("../db/user.model");
 const axios = require("axios");
 const { cookieOption } = require("../utils/helper");
-const jwt = require("jsonwebtoken");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const router = express.Router();
@@ -18,12 +17,6 @@ router.get(
     failureRedirect: `${process.env.CLIENT_URI}/auth/login/failed`,
   }),
   (req, res) => {
-    console.log('req object from google', req);
-    res.cookie("accessToken", req.authInfo.accessToken, {
-      httpOnly: true, // for security
-      secure: true, // send only over HTTPS in production
-      maxAge: 24 * 60 * 60 * 1000, // 30 days
-    });
     res.redirect(successRedirect);
   }
 );
@@ -50,66 +43,70 @@ router.get("/login/success", async (req, res) => {
   try {
     if (req.user) {
       const user = await User.findOne({ email: req.user._json.email });
-      if (user) {
-        // generate token
-        const token = await user.generateAccessToken();
-        console.log('token if user exist', token);
-        // save token in cookie
-        res.cookie("accessToken", token, cookieOption);
-      } else {
+      let token;
+      if(user) {
+        token = await user.generateAccessToken();
+      }else {
         const newUser = await User.create({
           name: req.user._json.name,
           email: req.user._json.email,
-          passpord: Date.now().toString(),
+          password: Date.now().toString(),
+          googleId: req.user._json.sub,
         });
-
         await newUser.save();
-        const token = await newUser.generateAccessToken();
-        res.cookie("accessToken", token, cookieOption);
-        console.log('token if user not exist', token);
+        token = await newUser.generateAccessToken();
       }
+
+      res.cookie("accessToken", token, cookieOption);
 
       return res.status(200).json({
-        user: { ...req.user, isAdmin: user?.isAdmin, _id: user?._id },
+        user: {
+          name: req.user._json.name,
+          email: req.user._json.email,
+          googleId: req.user._json.sub,
+          profileImage: req.user._json.picture,
+        },
         success: true,
         message: "Login successfully",
+        accessToken: token
       });
     } else {
-      // return res
-      //   .status(403)
-      //   .json({ success: false, message: "Not Authorized" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Not Authorized" });
 
       // check for credentials user
-      try {
-        const token =
-          req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
+      // try {
+      //   const token =
+      //     req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
-        if (!token)
-          return res
-            .status(401)
-            .json({ success: false, message: "Unauthorized" });
+      //   if (!token)
+      //     return res
+      //       .status(401)
+      //       .json({ success: false, message: "Unauthorized" });
 
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        if (!decoded)
-          return res
-            .status(401)
-            .json({ success: false, message: "Token Expired, Login Again" });
+      //   const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      //   if (!decoded)
+      //     return res
+      //       .status(401)
+      //       .json({ success: false, message: "Token Expired, Login Again" });
 
-        const user = await User.findById(decoded?.id);
-        if (!user)
-          return res
-            .status(401)
-            .json({ success: false, message: "Invalid User" });
+      //   const user = await User.findById(decoded?.id);
+      //   if (!user)
+      //     return res
+      //       .status(401)
+      //       .json({ success: false, message: "Invalid User" });
 
-        return res
-          .status(200)
-          .json({ user, success: true, message: "Login successfully" });
-      } catch (error) {
-        console.log('error in success login route', error);
-      }
+      //   return res
+      //     .status(200)
+      //     .json({ user, success: true, message: "Login successfully" });
+      // } catch (error) {
+      //   console.log('error in success login route', error);
+      // }
     }
   } catch (error) {
     console.log("error in success login route", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
 

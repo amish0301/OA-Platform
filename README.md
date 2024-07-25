@@ -47,4 +47,4 @@
 - Prevent `Data Loss` on tab refresh by Implementing Data Persitency in Redux Store.
 - Added `Loader` Component (loading spinner).
 - Form Validation Optimized.
-- Added **Protectd Route** (Attention to detail - if user logged in he can't access login Route).
+- Added **Protectd Route** (Attention to detail - if user logged in he can't access login Route). 

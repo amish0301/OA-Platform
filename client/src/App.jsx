@@ -1,8 +1,9 @@
 import React, { Suspense, useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import AppLayout from './layout/AppLayout.jsx'
 import { ToastContainer } from 'react-toastify'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios'
 
 import Home from './components/Home.jsx'
 import About from './components/About.jsx'
@@ -17,20 +18,35 @@ import ForgetPassword from './components/ForgetPassword.jsx'
 import Loader from './components/Loader.jsx'
 import NotFound from './components/NotFound.jsx'
 import ProtectRoute from './lib/ProtectRoute.jsx'
+import { userExists } from './redux/slices/userSlice.js';
 
-// const LoginSuccess = () => {
-//   const navigate = useNavigate()
-//   useEffect(() => {
-//     const id = setTimeout(() => {
-//       navigate('/', { replace: true })
-//     }, 2000)
+const LoginSuccess = () => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [loading,setLoading] = useState(true);
 
-//     return () => {
-//       clearTimeout(id)
-//     }
-//   }, [])
-//   return <div>Thanks for Login!!</div>
-// }
+  useEffect(() => {
+    const fetcUser = async () => {
+      try {
+        setLoading(true)
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, {
+          withCredentials: true
+        })
+        if (res.data.success) {
+          dispatch(userExists({ ...res.data.user }))
+          navigate('/', {replace: true})
+        }
+      } catch (error) {
+        console.log(error);
+      }finally{
+        setLoading(false)
+      }
+    }
+    fetcUser()
+  }, [])
+
+  return <Loader show={loading} size={70} color='#3a1c71' />
+}
 
 const App = () => {
   const [loading, setLoading] = useState(true);
@@ -59,7 +75,7 @@ const App = () => {
         <Route path='/auth'>
           <Route path='login' index element={<ProtectRoute redirect="/" user={!isAuthenticated}><Login /></ProtectRoute>} />
           <Route path='forget' element={<ForgetPassword />} />
-          {/* <Route path='login/success' element={<LoginSuccess />} /> */}
+          <Route path='login/success' element={<LoginSuccess />} />
         </Route>
 
         <Route path='/test/instruction' element={<ProtectRoute><Instruction /></ProtectRoute>} />
