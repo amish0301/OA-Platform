@@ -104,7 +104,7 @@ const Navbar = () => {
       <div className='hidden md:flex items-center justify-between gap-8'>
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/">Home</Link>
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/about">About</Link>
-        <Link className='link-style hover:text-blue-800 text-base font-semibold tracking-tight' to="test/instruction">Test Instruction</Link>
+        <Link className='link-style hover:text-blue-800 text-base font-semibold tracking-tight' to="/instruction">Test Instruction</Link>
         {!isAuthenticated && <button className='px-5 py-2 bg-[#605172] rounded-lg font-semibold text-base text-white shadow-md shadow-black/50 hover:bg-[#695982] hover:transition-colors duration-300' onClick={() => navigate('/auth/login')}>Login</button>}
         {isAuthenticated && <ProfileCard logoutHandler={logoutHandler} />}
       </div>

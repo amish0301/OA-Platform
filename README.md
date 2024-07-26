@@ -48,3 +48,7 @@
 - Added `Loader` Component (loading spinner).
 - Form Validation Optimized.
 - Added **Protectd Route** (Attention to detail - if user logged in he can't access login Route). 
+
+### Day - 10
+- Created Test Card.
+- Improvised Instruction Page.

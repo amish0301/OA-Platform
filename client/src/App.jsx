@@ -19,6 +19,7 @@ import Loader from './components/Loader.jsx'
 import NotFound from './components/NotFound.jsx'
 import ProtectRoute from './lib/ProtectRoute.jsx'
 import { userExists } from './redux/slices/userSlice.js';
+import AssignedTest from './pages/AssignedTest.jsx';
 
 const LoginSuccess = () => {
   const navigate = useNavigate()
@@ -68,7 +69,7 @@ const App = () => {
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path='about' element={<About />} />
-          <Route path='test/:id' element={<ProtectRoute><Test /></ProtectRoute>} />
+          <Route path='test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
         </Route>
 
         {/* auth routes */}
@@ -78,9 +79,10 @@ const App = () => {
           <Route path='login/success' element={<LoginSuccess />} />
         </Route>
 
-        <Route path='/test/instruction' element={<ProtectRoute><Instruction /></ProtectRoute>} />
+        <Route path='/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
         <Route path='*' element={<NotFound />} />
         <Route path='/profile/:id' element={<Profile />} />
+        <Route path='/atest' element={<AssignedTest />} />
 
         {/* Admin routes */}
         <Route path='/admin' element={<AdminLayout />}>
