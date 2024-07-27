@@ -52,3 +52,7 @@
 ### Day - 10
 - Created Test Card.
 - Improvised Instruction Page.
+
+### Day - 11
+- Added Test Dashboard. (Layout is completed)
+- Added Admin Login Page. (Designed completed, only API Call is remain to implement)

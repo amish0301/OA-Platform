@@ -20,11 +20,14 @@ import NotFound from './components/NotFound.jsx'
 import ProtectRoute from './lib/ProtectRoute.jsx'
 import { userExists } from './redux/slices/userSlice.js';
 import AssignedTest from './pages/AssignedTest.jsx';
+import TestDashboard from './layout/TestDashboard.jsx';
+import TestCompleted from './components/TestCompleted.jsx';
+import AdminLogin from './components/admin/Login.jsx';
 
 const LoginSuccess = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [loading,setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetcUser = async () => {
@@ -35,11 +38,11 @@ const LoginSuccess = () => {
         })
         if (res.data.success) {
           dispatch(userExists({ ...res.data.user }))
-          navigate('/', {replace: true})
+          navigate('/', { replace: true })
         }
       } catch (error) {
         console.log(error);
-      }finally{
+      } finally {
         setLoading(false)
       }
     }
@@ -82,13 +85,19 @@ const App = () => {
         <Route path='/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
         <Route path='*' element={<NotFound />} />
         <Route path='/profile/:id' element={<Profile />} />
-        <Route path='/atest' element={<AssignedTest />} />
+
+        <Route path='/test-dashboard' exact element={<TestDashboard />}>
+          <Route path='assigned' element={<AssignedTest />} />
+          <Route path='completed' element={<TestCompleted />} />
+        </Route>
 
         {/* Admin routes */}
         <Route path='/admin' element={<AdminLayout />}>
-          <Route path='dashboard' index element={<Dashboard />} />
+          <Route path='dashboard' element={<Dashboard />} />
           <Route path='create-test/:id' element={<CreateTest />} />
         </Route>
+        
+        <Route path='/admin/login' element={<AdminLogin />} />
       </Routes>
       <ToastContainer position='top-right' autoClose={1500} theme='dark' />
     </Suspense>

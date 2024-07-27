@@ -13,7 +13,6 @@ import { useDispatch } from 'react-redux';
 import { userExists } from '../redux/slices/userSlice';
 import Loader from '../components/Loader';
 
-
 const Login = () => {
   document.title = 'Login | Online Assessment';
   const navigate = useNavigate();
