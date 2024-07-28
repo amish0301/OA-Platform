@@ -2,18 +2,24 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { userExists } from '../../redux/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../Loader';
 
 
 const AdminLogin = () => {
     const [eyeOpen, setEyeOpen] = useState(false);
     // add isAdmin true in redux store
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [key, setKey] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleClick = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         // api call
         try {
             const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key }, {
@@ -21,19 +27,22 @@ const AdminLogin = () => {
             });
 
             console.log(res);
-            if (res.data.message) toast.success(res.data.message);
+            if (res.data.success) {
+                setLoading(false);
+                toast.success(res.data.message);
+                dispatch(userExists({ ...res.data.user }));
+                navigate('/admin/dashboard', { replace: true });
+            }
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong while logging in');
+            toast.error(error.response?.data?.message || 'Something went wrong while Login');
+        } finally {
+            setLoading(false);
         }
 
-        const id = setTimeout(() => {
-            setKey('');
-        }, 500);
-
-        return () => {
-            clearTimeout(id);
-        }
+        setKey('');
     }
+
+    if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
 
     return (
         <div className='bg-gray-50 min-h-screen items-center flex justify-center'>

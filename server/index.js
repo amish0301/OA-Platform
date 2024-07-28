@@ -3,6 +3,7 @@ const cors = require("cors");
 const connectDB = require("./db/connection.js");
 const authRoutes = require("./routes/auth.route.js");
 const userRoutes = require("./routes/user.route.js");
+const adminRoutes = require("./routes/admin.route.js");
 const path = require("path");
 const passport = require("./auth/passport");
 const cookieParser = require("cookie-parser");
@@ -32,6 +33,7 @@ passport(app);
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use('/admin', adminRoutes);
 
 app.listen(process.env.PORT || 5000, () => {
   console.log("Server running on port ", process.env.PORT || 5000);

@@ -23,6 +23,7 @@ import AssignedTest from './pages/AssignedTest.jsx';
 import TestDashboard from './layout/TestDashboard.jsx';
 import TestCompleted from './components/TestCompleted.jsx';
 import AdminLogin from './components/admin/Login.jsx';
+import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 
 const LoginSuccess = () => {
   const navigate = useNavigate()
@@ -54,7 +55,8 @@ const LoginSuccess = () => {
 
 const App = () => {
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = useSelector(state => state.user);
+  const { user, isAuthenticated } = useSelector(state => state.user);
+  const isAdmin = user?.isAdmin;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -92,7 +94,7 @@ const App = () => {
         </Route>
 
         {/* Admin routes */}
-        <Route path='/admin' element={<AdminLayout />}>
+        <Route path='/admin' element={<ProtectRoute user={isAuthenticated}><ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute></ProtectRoute>}>
           <Route path='dashboard' element={<Dashboard />} />
           <Route path='create-test/:id' element={<CreateTest />} />
         </Route>

@@ -56,3 +56,7 @@
 ### Day - 11
 - Added Test Dashboard. (Layout is completed)
 - Added Admin Login Page. (Designed completed, only API Call is remain to implement)
+
+### Day - 12 (Sunday)
+- Include admin routes,controller.
+- Completed admin Authentication.
