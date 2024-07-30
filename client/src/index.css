@@ -9,5 +9,5 @@
 }
 
 .profile-list {
-  @apply flex gap-4 items-center justify-start cursor-pointer hover:bg-slate-100 mt-2 p-2 w-full rounded-lg 
+  @apply flex gap-4 items-center justify-start cursor-pointer hover:bg-slate-100 mt-2 p-2 w-full rounded-lg;
 }

@@ -8,6 +8,11 @@ const isAuthenticated = async (req, res, next) => {
     const token =
       req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
+    // if (req.headers?.["X-uId"] !== null) {
+    //   req.uId = req.headers?.["X-uId"];
+    //   return next();
+    // }
+
     if (!token)
       return res.status(401).json({ success: false, message: "Unauthorized" });
 

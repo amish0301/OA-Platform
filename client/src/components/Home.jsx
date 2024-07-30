@@ -59,8 +59,8 @@ const testimonials = [
 const Home = () => {
   return (
     <>
-      <div className='w-full px-14 py-20 mb-10 gap-10 flex items-center'>
-        <div className='w-full md:w-1/2 py-10 pl-10'>
+      <div className='w-full min-h-screen px-14 gap-10 flex items-center'>
+        <div className='w-full md:w-1/2 pl-10 md:mb-32'>
           <h1 className='text-4xl py-2 text-wrap font-semibold leading-snug'>Welcome to <span className='text-blue-600'>YourPrepPartner.</span> <br /> Prepare with confidence!</h1>
           <p className='text-sm font-bold mt-2'>Excel every exam with our high yield <span className='text-blue-600'>MCQ's.</span></p>
 
@@ -70,14 +70,14 @@ const Home = () => {
           </button>
         </div>
         <div className='hidden md:block w-1/2 px-10'>
-          <img src="https://png.pngtree.com/png-vector/20220615/ourmid/pngtree-online-testing-background-vector-illustration-with-checklist-png-image_5084763.png" alt="hero_img" className='object-contain w-full' />
+          <img src="https://png.pngtree.com/png-vector/20220615/ourmid/pngtree-online-testing-background-vector-illustration-with-checklist-png-image_5084763.png" alt="hero_img" className='w-full mb-32' />
         </div>
       </div>
 
       {/* Home-2 */}
       <div className='p-20 flex flex-col justify-between gap-4 bg-[#f6f6f6]'>
         <h2 className='text-4xl font-semibold font-poppins text-[#383838]'>What We Offer?</h2>
-        <div className='grid w-full grid-cols-1 md:grid-cols-3 gap-10 py-10'>
+        <div className='grid w-full grid-cols-1 md:grid-cols-3 gap-10 py-20'>
           {
             cardDetails.map((card, index) => <ServiceCard key={index} {...card} />)
           }

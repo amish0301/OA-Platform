@@ -14,6 +14,7 @@ const AdminLogin = () => {
     // add isAdmin true in redux store
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { user } = useSelector(state => state.user);
     const [key, setKey] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -23,15 +24,18 @@ const AdminLogin = () => {
         // api call
         try {
             const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key }, {
-                withCredentials: true
+                withCredentials: true,
+                headers: {
+                    'X-uId': user?._id
+                }
             });
 
-            console.log(res);
             if (res.data.success) {
                 setLoading(false);
                 toast.success(res.data.message);
+                console.log(res.data);
                 dispatch(userExists({ ...res.data.user }));
-                navigate('/admin/dashboard', { replace: true });
+                navigate('/', { replace: true });
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong while Login');

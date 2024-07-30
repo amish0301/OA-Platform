@@ -5,5 +5,4 @@ const router = express.Router();
 
 router.post('/login', isAuthenticated, adminLogin)
 
-
 module.exports = router 

@@ -75,6 +75,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path='about' element={<About />} />
           <Route path='test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
+          <Route path='*' element={<NotFound />} />
         </Route>
 
         {/* auth routes */}
@@ -85,7 +86,6 @@ const App = () => {
         </Route>
 
         <Route path='/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
-        <Route path='*' element={<NotFound />} />
         <Route path='/profile/:id' element={<Profile />} />
 
         <Route path='/test-dashboard' exact element={<TestDashboard />}>
@@ -98,7 +98,7 @@ const App = () => {
           <Route path='dashboard' element={<Dashboard />} />
           <Route path='create-test/:id' element={<CreateTest />} />
         </Route>
-        
+
         <Route path='/admin/login' element={<AdminLogin />} />
       </Routes>
       <ToastContainer position='top-right' autoClose={1500} theme='dark' />

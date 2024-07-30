@@ -60,3 +60,8 @@
 ### Day - 12 (Sunday)
 - Include admin routes,controller.
 - Completed admin Authentication.
+
+### Day - 14 (Tuesday - 30th July)
+- Implemented test page.
+- basic prototype is done.
+- need more fixes

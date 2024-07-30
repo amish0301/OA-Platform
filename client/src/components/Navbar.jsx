@@ -2,16 +2,17 @@ import React, { Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import axios, { AxiosHeaders } from 'axios';
+import axios from 'axios';
 import { toast } from 'react-toastify';
 import { userNotExists } from '../redux/slices/userSlice';
 import { Icon, Popover, Typography } from '@mui/material';
-import { GrDocumentTest } from "react-icons/gr";
+import { GrDocumentTest, GrUserAdmin } from "react-icons/gr";
 import { GoSignOut } from "react-icons/go";
 
 const ProfileCard = ({ logoutHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useSelector(state => state.user);
+  const navigate = useNavigate();
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -59,6 +60,11 @@ const ProfileCard = ({ logoutHandler }) => {
             <Icon className='text-sm'><GoSignOut /></Icon>
             <Typography variant='body-1' className='leading-3'>Sign out</Typography>
           </div>
+
+          <div className='profile-list' onClick={() => navigate('/admin/login')}>
+            <Icon className='text-sm'><GrUserAdmin /></Icon>
+            <Typography variant='body-1' className='leading-3'>Login as Admin</Typography>
+          </div>
         </div>
       </Popover>
     </div>
@@ -104,6 +110,7 @@ const Navbar = () => {
       <div className='hidden md:flex items-center justify-between gap-8'>
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/">Home</Link>
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/about">About</Link>
+        <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/test">Test</Link>
         <Link className='link-style hover:text-blue-800 text-base font-semibold tracking-tight' to="/instruction">Test Instruction</Link>
         {!isAuthenticated && <button className='px-5 py-2 bg-[#605172] rounded-lg font-semibold text-base text-white shadow-md shadow-black/50 hover:bg-[#695982] hover:transition-colors duration-300' onClick={() => navigate('/auth/login')}>Login</button>}
         {isAuthenticated && <ProfileCard logoutHandler={logoutHandler} />}
