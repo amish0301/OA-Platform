@@ -1,7 +1,6 @@
 const { cookieOption, TryCatch } = require("../utils/helper");
 const ApiError = require("../utils/ApiError");
 const User = require("../db/user.model");
-const jwt = require("jsonwebtoken");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
@@ -46,13 +45,12 @@ const changePassword = TryCatch(async (req, res) => {
 const userInfo = TryCatch(async (req, res) => {
   const user = await User.findById(req.uId).select("-password -refreshToken");
     if (user) {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         user
       });
-    } else {
-      res.status(401).json({ success: false, message: "User not found" });
     }
+    return res.status(401).json({ success: false, message: "User not found" });
 });
 
 module.exports = { logoutUser, userInfo, changePassword };

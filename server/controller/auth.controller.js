@@ -1,6 +1,12 @@
 const User = require("../db/user.model");
-const { TryCatch, generateTokens, cookieOption, sendToken } = require("../utils/helper");
+const {
+  TryCatch,
+  generateTokens,
+  cookieOption,
+  sendToken,
+} = require("../utils/helper");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const registerUser = TryCatch(async (req, res) => {
@@ -85,21 +91,19 @@ const loginUser = TryCatch(async (req, res) => {
       success: true,
       user: loggedInUser,
       accessToken,
-      refreshToken,
       message: "Login successfully",
     });
 });
 
 const refreshAccessToken = TryCatch(async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  console.log('refreshToken : ', refreshToken);
+  const refreshToken = req.cookies?.refreshToken;
+
   if (!refreshToken)
     return res
       .status(401)
       .json({ success: false, message: "Refresh token expired" });
 
   const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-  console.log('decoded : ', decoded);
   const user = await User.findById(decoded.id);
   if (!user || user.refreshToken !== refreshToken) {
     res.clearCookie("refreshToken"); // might revoked
@@ -109,15 +113,12 @@ const refreshAccessToken = TryCatch(async (req, res) => {
   }
 
   const accessToken = await user.generateAccessToken();
-  res.cookie("accessToken", accessToken, cookieOption);
-  
-  return res
-    .status(200)
-    .json({
-      success: true,
-      message: "Access token refreshed",
-      accessToken,
-    });
+
+  return res.status(200).cookie("accessToken", accessToken, cookieOption).json({
+    success: true,
+    message: "Access token refreshed",
+    accessToken,
+  });
 });
 
 module.exports = { registerUser, loginUser, refreshAccessToken };

@@ -1,54 +1,90 @@
 import axios from "axios";
-import store from "../redux/store";
+import store from "../redux/store"; // Import your redux store
 import { setToken, userNotExists } from "../redux/slices/userSlice";
+import { toast } from "react-toastify";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URI,
   withCredentials: true,
+  headers: {
+    "Authorization" : `Bearer ${localStorage.getItem("accessToken")}`
+  }
 });
+
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const subscribeTokenRefresh = (cb) => {
+  refreshSubscribers.push(cb);
+};
+
+const onRefreshed = (newToken) => {
+  refreshSubscribers.map((cb) => cb(newToken));
+};
 
 axiosInstance.interceptors.request.use(
   async (config) => {
     const state = store.getState();
-    const accessToken = state.user.accessToken;
-
-    if (accessToken) {
-      const currentTime = Date.now() / 1000;
-      const decodedToken = await parseJwt(accessToken);
-
-      if (decodedToken.exp < currentTime) {
-        try {
-          const res = await axiosInstance.post("/auth/refresh-token");
-          const newToken = res.data.accessToken;
-
-          // redux update
-          store.dispatch(setToken(newToken));
-          config.headers.Authorization = `Bearer ${newToken}`;
-        } catch (error) {
-          console.error("Failed to refresh token:", error);
-          store.dispatch(setToken(null));
-          store.dispatch(userNotExists());
-          toast.error("Session expired, please login again");
-          // Redirect to login page or handle as needed
-        }
-      } else {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-      }
+    const token = state.user.accessToken;
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
-
     return config;
   },
-  async (err) => {
-    return Promise.reject(err);
+  (error) => {
+    return Promise.reject(error);
   }
 );
 
-async function parseJwt(token) {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch (error) {
-    return {};
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const { config, response: { status } } = error;
+    const state = store.getState();
+    const dispatch = store.dispatch;
+
+    if (status === 401 && !config._retry) {
+      console.log('refreshing token');
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((newToken) => {
+            config.headers.Authorization = `Bearer ${newToken}`;
+            resolve(axiosInstance(config));
+          });
+        });
+      }
+
+      config._retry = true;
+      isRefreshing = true;
+
+      return new Promise(async (resolve, reject) => {
+        try {
+          const response = await axiosInstance.post('/auth/refresh-token');
+          const newAccessToken = response.data.accessToken;
+
+          store.dispatch(setToken(newAccessToken));
+          localStorage.setItem("accessToken", newAccessToken);
+
+          axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+          config.headers.Authorization = `Bearer ${newAccessToken}`;
+
+          isRefreshing = false;
+          onRefreshed(newAccessToken);
+          resolve(axiosInstance(config));
+        } catch (err) {
+          isRefreshing = false;
+          dispatch(setToken(null));
+          dispatch(userNotExists());
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("reduxState");
+          toast.error("Session expired, please login again");
+          reject(err);
+        }
+      });
+    }
+
+    return Promise.reject(error);
   }
-}
+);
 
 export default axiosInstance;

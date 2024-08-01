@@ -15,11 +15,9 @@ const userSlice = createSlice({
       state.isAuthenticated = true;
     },
     userNotExists: (state) => {
-      return {
-        ...state,
-        user: null,
-        isAuthenticated: false,
-      };
+      state.user = null;
+      state.isAuthenticated = false;
+      state.accessToken = null;
     },
     setToken: (state, action) => {
       state.accessToken = action.payload;

@@ -94,6 +94,7 @@ const Navbar = () => {
         toast.success(res.data.message)
         dispatch(userNotExists())
         localStorage.removeItem("reduxState")
+        localStorage.removeItem("accessToken")
       }
     } catch (error) {
       toast.error(error.response?.data?.message)

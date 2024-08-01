@@ -20,9 +20,7 @@ const isAuthenticated = async (req, res, next) => {
           .status(401)
           .json({ success: false, message: "Unauthorized" });
 
-      const user = await User.findById(decoded.id).select(
-        "-password -refreshToken"
-      );
+      const user = await User.findById(decoded.id);
 
       if (!user)
         return res
@@ -32,7 +30,6 @@ const isAuthenticated = async (req, res, next) => {
       req.uId = user._id;
       next();
     } catch (error) {
-      console.log("Error verifying Token", error);
       return res.status(401).json({ success: false, message: "Token Expired" });
     }
   } catch (error) {

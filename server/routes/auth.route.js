@@ -62,7 +62,7 @@ router.get("/login/success", async (req, res) => {
 
         const refreshToken = await user.generateRefreshToken();
         user.refreshToken = refreshToken;
-        user.save();
+        await user.save();
       }
 
       accessToken = await user.generateAccessToken();
@@ -102,6 +102,11 @@ router.get("/login/failed", async (req, res) => {
 
 router.get("/logout", isAuthenticated, async (req, res) => {
   try {
+    const user = await User.findByIdAndDelete(req.uId);
+    if(!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
     req.logOut((err) => {
       if (err) {
         console.error("Logout error:", err);
@@ -114,7 +119,6 @@ router.get("/logout", isAuthenticated, async (req, res) => {
         .clearCookie("refreshToken")
         .json({ success: true, message: "Logout successfully" });
     });
-    await User.findByIdAndDelete(req.uId);
   } catch (error) {
     console.error("Logout process error:", error);
     return res.status(500).json({ success: false, message: "Server Error" });
