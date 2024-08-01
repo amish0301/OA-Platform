@@ -6,31 +6,35 @@ const User = require("../db/user.model");
 const isAuthenticated = async (req, res, next) => {
   try {
     const token =
-      req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
+      req.cookies?.accessToken ||
+      (req.headers.authorization && req.headers.authorization.split(" ")[1]);
 
-    // if (req.headers?.["X-uId"] !== null) {
-    //   req.uId = req.headers?.["X-uId"];
-    //   return next();
-    // }
-
-    if (!token)
+    if (!token) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    if (!decoded)
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+    try {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      if (!decoded)
+        return res
+          .status(401)
+          .json({ success: false, message: "Unauthorized" });
 
-    const user = await User.findById(decoded.id).select(
-      "-password -refreshToken"
-    );
+      const user = await User.findById(decoded.id).select(
+        "-password -refreshToken"
+      );
 
-    if (!user)
-      return res
-        .status(404)
-        .json({ success: false, message: "Invalid credentials" });
+      if (!user)
+        return res
+          .status(404)
+          .json({ success: false, message: "Invalid credentials" });
 
-    req.uId = user._id;
-    next();
+      req.uId = user._id;
+      next();
+    } catch (error) {
+      console.log("Error verifying Token", error);
+      return res.status(401).json({ success: false, message: "Token Expired" });
+    }
   } catch (error) {
     console.log("Error verifying Token", error);
     return res.status(401).json({ success: false, message: "Token Expired" });

@@ -3,45 +3,7 @@ const ApiError = require("../utils/ApiError");
 const User = require("../db/user.model");
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const { generateTokens } = require("../controller/auth.controller");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-
-// refresh access token
-const refreshAccessToken = TryCatch(async (req, res) => {
-  const incomingToken = req.cookies.refreshToken || req.body.refreshToken;
-
-  if (!incomingToken) {
-    throw new ApiError(401, "Unauthorized request");
-  }
-
-  const decoded = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
-
-  const user = await User.findById(decoded?.id).select(
-    "-password -refreshToken"
-  );
-
-  if (!user) throw new ApiError(401, "Invalid Refresh Token");
-
-  if (incomingToken !== user.refreshToken)
-    throw new ApiError(401, "Refresh token is expired or used");
-
-  // generate new tokens
-  const { accessToken, refreshToken } = await generateTokens(user);
-  if (!accessToken || !refreshToken) {
-    throw new ApiError(500, "Token generation failed");
-  }
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, cookieOption)
-    .cookie("refreshToken", refreshToken, cookieOption)
-    .json({
-      success: true,
-      message: "Access token refreshed",
-      accessToken,
-      refreshToken,
-    });
-});
 
 const logoutUser = TryCatch(async (req, res) => {
   await User.findByIdAndUpdate(
@@ -93,4 +55,4 @@ const userInfo = TryCatch(async (req, res) => {
     }
 });
 
-module.exports = { logoutUser, refreshAccessToken, userInfo, changePassword };
+module.exports = { logoutUser, userInfo, changePassword };

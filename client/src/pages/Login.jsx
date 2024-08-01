@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { userExists } from '../redux/slices/userSlice';
+import { setToken, userExists } from '../redux/slices/userSlice';
 import Loader from '../components/Loader';
 
 const Login = () => {
@@ -60,7 +60,7 @@ const Login = () => {
           if (res.data.success) {
             toast.success(res.data.message);
             dispatch(userExists({ ...res.data.user }));
-            // localStorage.setItem(import.meta.env.VITE_TOKEN, res.data.accessToken);
+            dispatch(setToken(res.data.accessToken));
             navigate('/', { relative: true });
           }
 
@@ -89,9 +89,9 @@ const Login = () => {
 
     // empty fields
     setFormData({
-      name: formErrors.name ? '' : formData.name,
-      email: formErrors.email ? '' : formData.email,
-      password: formErrors.password ? '' : formData.password
+      name: formErrors.name ? formData.name : '',
+      email: formErrors.email ? formData.email : '',
+      password: formErrors.password ? formData.password : ''
     });
 
     if (!formErrors) {

@@ -8,6 +8,7 @@ import { userNotExists } from '../redux/slices/userSlice';
 import { Icon, Popover, Typography } from '@mui/material';
 import { GrDocumentTest, GrUserAdmin } from "react-icons/gr";
 import { GoSignOut } from "react-icons/go";
+import axiosInstance from '../hooks/useAxios';
 
 const ProfileCard = ({ logoutHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -88,13 +89,11 @@ const Navbar = () => {
 
   const logoutHandler = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/user/logout`, {
-        withCredentials: true,
-      })
+      const res = await axiosInstance.get('/auth/logout');
       if (res.data.success) {
         toast.success(res.data.message)
         dispatch(userNotExists())
-        // localStorage.removeItem(import.meta.env.VITE_TOKEN) // might be revoked
+        localStorage.removeItem("reduxState")
       }
     } catch (error) {
       toast.error(error.response?.data?.message)

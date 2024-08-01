@@ -17,8 +17,8 @@ const cookieOption = {
 
 const generateTokens = async (user) => {
   try {
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
@@ -31,15 +31,11 @@ const generateTokens = async (user) => {
 
 const sendToken = async (res, statusCode, user, message) => {
   try {
-    const { accessToken, refreshToken } = await generateTokens(user);
-
     return res
       .status(statusCode)
-      .cookie("accessToken", accessToken, cookieOption)
       .json({
         success: true,
         message,
-        accessToken,
       });
   } catch (error) {
     console.log("errr in sendtoken", error);

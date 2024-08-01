@@ -1,10 +1,15 @@
 const express = require("express");
 const passport = require("passport");
 const path = require("path");
-const { registerUser, loginUser } = require("../controller/auth.controller");
+const {
+  registerUser,
+  loginUser,
+  refreshAccessToken,
+} = require("../controller/auth.controller");
 const User = require("../db/user.model");
 const axios = require("axios");
 const { cookieOption } = require("../utils/helper");
+const isAuthenticated = require("../middleware/isAuth");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const router = express.Router();
@@ -42,71 +47,49 @@ router.get("/google", async (req, res) => {
 router.get("/login/success", async (req, res) => {
   try {
     if (req.user) {
-      const user = await User.findOne({ email: req.user._json.email });
-      let token;
-      if(user) {
-        token = await user.generateAccessToken();
-      }else {
-        const newUser = await User.create({
+      let user = await User.findOne({ email: req.user._json.email });
+      let accessToken;
+
+      if (!user) {
+        user = await User.create({
           name: req.user._json.name,
           email: req.user._json.email,
           password: Date.now().toString(),
           googleId: req.user._json.sub,
+          profileImage: req.user._json.picture,
         });
-        await newUser.save();
-        token = await newUser.generateAccessToken();
+        await user.save();
+
+        const refreshToken = await user.generateRefreshToken();
+        user.refreshToken = refreshToken;
+        user.save();
       }
 
-      res.cookie("accessToken", token, cookieOption);
-
-      return res.status(200).json({
-        user: {
-          name: req.user._json.name,
-          email: req.user._json.email,
-          googleId: req.user._json.sub,
-          profileImage: req.user._json.picture,
-        },
-        success: true,
-        message: "Login successfully",
-        accessToken: token
-      });
+      accessToken = await user.generateAccessToken();
+      return res
+        .status(200)
+        .cookie("accessToken", accessToken, cookieOption)
+        .cookie("refreshToken", user.refreshToken, cookieOption)
+        .json({
+          user: {
+            name: req.user._json.name,
+            email: req.user._json.email,
+            googleId: req.user._json.sub,
+            profileImage: req.user._json.picture,
+          },
+          success: true,
+          message: "Login successfully",
+          accessToken,
+        });
     } else {
       return res
         .status(403)
-        .json({ success: false, message: "Not Authorized" });
-
-      // check for credentials user
-      // try {
-      //   const token =
-      //     req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
-
-      //   if (!token)
-      //     return res
-      //       .status(401)
-      //       .json({ success: false, message: "Unauthorized" });
-
-      //   const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      //   if (!decoded)
-      //     return res
-      //       .status(401)
-      //       .json({ success: false, message: "Token Expired, Login Again" });
-
-      //   const user = await User.findById(decoded?.id);
-      //   if (!user)
-      //     return res
-      //       .status(401)
-      //       .json({ success: false, message: "Invalid User" });
-
-      //   return res
-      //     .status(200)
-      //     .json({ user, success: true, message: "Login successfully" });
-      // } catch (error) {
-      //   console.log('error in success login route', error);
-      // }
+        .json({ success: false, message: "You're Not Authorized" });
     }
   } catch (error) {
-    console.log("error in success login route", error);
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 });
 
@@ -117,15 +100,30 @@ router.get("/login/failed", async (req, res) => {
     .json({ success: false, message: "Google Login Failed" });
 });
 
-router.get("/logout", async (req, res) => {
-  req.logout((err) => {
-    if (err) console.log("While loggout ", err);
-    res.redirect("/");
-  });
+router.get("/logout", isAuthenticated, async (req, res) => {
+  try {
+    req.logOut((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ success: false, message: err });
+      }
+
+      return res
+        .status(200)
+        .clearCookie("accessToken")
+        .clearCookie("refreshToken")
+        .json({ success: true, message: "Logout successfully" });
+    });
+    await User.findByIdAndDelete(req.uId);
+  } catch (error) {
+    console.error("Logout process error:", error);
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
 });
 
 // Credentials Auth Route
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
+router.post("/refresh-token", refreshAccessToken);
 
 module.exports = router;

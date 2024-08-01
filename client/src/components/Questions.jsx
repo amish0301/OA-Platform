@@ -4,11 +4,9 @@ import Loader from './Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateResult } from '../redux/slices/resultSlice';
 
-const Questions = ({ onChecked }) => {
+const Questions = () => {
 
     const { isLoading, data, isError } = useFetchQuestion();
-    const [check, setCheck] = useState(undefined);
-    const { trace } = useSelector(state => state.question)
     const dispatch = useDispatch();
 
     // fetching questions info
@@ -16,15 +14,17 @@ const Questions = ({ onChecked }) => {
     const questionNo = node.trace;
     const questions = node.queue[questionNo];
 
+    const selectedOption = useSelector(state => state.result.result[questionNo]);
+
+    const [selected, setSelected] = useState(selectedOption || false);
     const handleOptionSelect = (index) => {
-        setCheck(index);
-        onChecked(index);
+        setSelected(index);
+        dispatch(updateResult({ questionNo, selected: index }));
     }
 
     useEffect(() => {
-        // update result array
-        dispatch(updateResult({ trace, check }));
-    }, [dispatch])
+        setSelected(selectedOption);
+    }, [selectedOption])
 
     if (isLoading) return <Loader show={isLoading} />
     if (isError) return <h3>{isError || "Unknown Error"}</h3>
@@ -38,8 +38,8 @@ const Questions = ({ onChecked }) => {
                         questions?.options?.map((option, index) => {
                             return (
                                 <div className='flex items-center justify-start gap-2 w-fit'>
-                                    <input type="radio" name='options' value={false} key={index} id={`q${questionNo}-${index + 1}-checked`} className='w-4 h-4' onChange={() => handleOptionSelect(index)} />
-                                    <label htmlFor={`q${questionNo}-${index + 1}-checked`} key={index} aria-label='option' id={index} className='font-normal mx-2 cursor-pointer'>{option}</label>
+                                    <input type="radio" name={`question${questionNo}`} checked={selected == index} value={option} aria-label='option-input' id={`option${index}`} key={option} className='w-4 h-4' onChange={() => handleOptionSelect(index)} />
+                                    <label htmlFor={`option${index}`} className='font-normal mx-2 cursor-pointer'>{option}</label>
                                 </div>
                             )
                         })

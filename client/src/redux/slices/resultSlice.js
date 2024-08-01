@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  result: [],
+  result: {},
   userId: null,
 };
 
@@ -9,15 +9,18 @@ const resultSlice = createSlice({
   name: "result",
   initialState,
   reducers: {
-    setResult: (state, action) => {
-      state.result.push(action.payload);
-    },
     updateResult: (state, action) => {
-      const { trace, check } = action.payload;
-      state.result.fill(check, trace, trace + 1);
+      const { questionNo, selected } = action.payload;
+      return {
+        ...state,
+        result: {
+          ...state.result,
+          [questionNo]: selected,
+        }
+      };
     },
   },
 });
 
 export default resultSlice;
-export const { setResult, updateResult } = resultSlice.actions;
+export const { updateResult } = resultSlice.actions;
