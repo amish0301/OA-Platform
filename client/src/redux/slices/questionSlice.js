@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   queue: [], // list of questions
   answers: [], // list of correct answers
-  trace: 0, // user choosen option
+  trace: 0, // q. no
 };
 
 const questionSlice = createSlice({
@@ -43,9 +43,13 @@ const questionSlice = createSlice({
         trace: state.queue.length - 1,
       };
     },
+
+    reset: (state) => {
+      state.trace = 0;
+    }
   },
 });
 
 export default questionSlice;
-export const { setQuestions, setAnswers, moveToNext, moveToPrevious } =
+export const { setQuestions, setAnswers, moveToNext, moveToPrevious, reset } =
   questionSlice.actions;

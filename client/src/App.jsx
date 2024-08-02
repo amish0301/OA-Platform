@@ -75,9 +75,9 @@ const App = () => {
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path='about' element={<About />} />
-          <Route path='test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
           <Route path='*' element={<NotFound />} />
         </Route>
+          <Route path='test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
 
         {/* auth routes */}
         <Route path='/auth'>

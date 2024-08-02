@@ -19,7 +19,7 @@ const Questions = () => {
     const [selected, setSelected] = useState(selectedOption || false);
     const handleOptionSelect = (index) => {
         setSelected(index);
-        dispatch(updateResult({ questionNo, selected: index }));
+        dispatch(updateResult({ questionNo, selected : index }));
     }
 
     useEffect(() => {
@@ -30,16 +30,16 @@ const Questions = () => {
     if (isError) return <h3>{isError || "Unknown Error"}</h3>
 
     return (
-        <div className='container w-full select-none'>
-            <div className='py-3 bg-green-300 w-full'>
+        <div className='container w-full select-none px-10 py-5'>
+            <div className='container w-ful rounded-lg bg-[#e5e5e5] p-10 text-[#333333]'>
                 <h3 className='text-xl my-3'>{`${questionNo + 1}. ${questions?.question}`}</h3>
-                <ul className='list-inside' key={questionNo}>
+                <ul className='list-inside'>
                     {
                         questions?.options?.map((option, index) => {
                             return (
-                                <div className='flex items-center justify-start gap-2 w-fit'>
+                                <div className='flex items-center justify-start gap-2 w-fit ml-2' key={index}>
                                     <input type="radio" name={`question${questionNo}`} checked={selected == index} value={option} aria-label='option-input' id={`option${index}`} key={option} className='w-4 h-4' onChange={() => handleOptionSelect(index)} />
-                                    <label htmlFor={`option${index}`} className='font-normal mx-2 cursor-pointer'>{option}</label>
+                                    <label htmlFor={`option${index}`} className='font-normal my-2 pl-2 cursor-pointer'>{option}</label>
                                 </div>
                             )
                         })

@@ -11,16 +11,13 @@ const resultSlice = createSlice({
   reducers: {
     updateResult: (state, action) => {
       const { questionNo, selected } = action.payload;
-      return {
-        ...state,
-        result: {
-          ...state.result,
-          [questionNo]: selected,
-        }
-      };
+      state.result[questionNo] = selected;
+    },
+    resetResult: (state, action) => {
+      state.result = initialState;
     },
   },
 });
 
 export default resultSlice;
-export const { updateResult } = resultSlice.actions;
+export const { updateResult, resetResult } = resultSlice.actions;
