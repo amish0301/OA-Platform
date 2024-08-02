@@ -65,3 +65,8 @@
 - Implemented test page.
 - basic prototype is done.
 - need more fixes
+
+### Day - 15 (Friday - 2nd August)
+- Fix some authentication related Bugs.
+- Added Security Features for Test Environment.
+- Completely Tested.
