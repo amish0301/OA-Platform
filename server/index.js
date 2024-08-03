@@ -3,6 +3,7 @@ const cors = require("cors");
 const connectDB = require("./db/connection.js");
 const authRoutes = require("./routes/auth.route.js");
 const userRoutes = require("./routes/user.route.js");
+const testRoutes = require("./routes/test.route.js");
 const adminRoutes = require("./routes/admin.route.js");
 const path = require("path");
 const passport = require("./auth/passport");
@@ -33,6 +34,7 @@ passport(app);
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use('/test', testRoutes);
 app.use('/admin', adminRoutes);
 
 app.listen(process.env.PORT || 5000, () => {

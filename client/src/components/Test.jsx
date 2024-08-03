@@ -12,6 +12,12 @@ const Test = () => {
   const { result } = useSelector(state => state.result);   // result array choose by user
   const [isTestSubmitted, setIsTestSubmitted] = useState(false);
 
+  // function pointCnt(result) {
+  //   Object.keys(result).forEach(key => {
+  //     console.log(key, result[key]);
+  //   })
+  // }
+
   const handleNextQuestion = () => {
     dispatch(moveToNext())
   }
@@ -21,13 +27,12 @@ const Test = () => {
   }
 
   const handleSubmit = () => {
-    console.log(result);
 
-    document.exitFullscreen();
     toast.success("Test Submitted");
     setIsTestSubmitted(true);
     dispatch(resetResult());
     dispatch(reset());
+    // pointCnt(result);
     return () => cleanUp();
   }
 

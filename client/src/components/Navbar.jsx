@@ -27,7 +27,7 @@ const ProfileCard = ({ logoutHandler }) => {
 
   return (
     <div className='cursor-pointer w-fit'>
-      <img src={user?.profileImage} alt="profile_img" className='w-10 h-10 rounded-full object-contain' onClick={handleClick} />
+      <img src={user.profileImage ? user.profileImage : 'https://cdn-icons-png.flaticon.com/512/6596/6596121.png'} alt="profile_img" className='w-10 h-10 rounded-full object-contain' onClick={handleClick} />
       <Popover
         id={id}
         open={open}
