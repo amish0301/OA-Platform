@@ -1,11 +1,11 @@
 import React from 'react';
-import notFoundImg from '../assets/404.jpg';
+import notFoundImg from '../assets/404.png';
 
 const NotFound = () => {
   return (
     <div className='min-h-screen flex items-center px-20 bg-[#f9fafe]'>
       <div className='w-1/2 hidden md:block ml-20'>
-        <img src={'https://cdn.discordapp.com/attachments/1266063809362133034/1267513446761762929/image.png?ex=66a90f62&is=66a7bde2&hm=1e4f8fda57f170329923992baafc94fffb97eb36287e04b0c55b3bc7b3142c3e&'} alt="404Page" className='object-cover h-50' />
+        <img src={notFoundImg} alt="404Page" className='object-cover h-50' />
       </div>
       <div className='w-full md:w-1/2 flex-col items-start space-y-2'>
         <div>

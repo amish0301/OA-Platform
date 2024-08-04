@@ -77,7 +77,7 @@ const App = () => {
           <Route path='about' element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>
-          <Route path='test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
+          <Route path='/test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
 
         {/* auth routes */}
         <Route path='/auth'>
@@ -89,7 +89,7 @@ const App = () => {
         <Route path='/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
         <Route path='/profile/:id' element={<Profile />} />
 
-        <Route path='/test-dashboard' exact element={<TestDashboard />}>
+        <Route path='/test/dashboard' exact element={<TestDashboard />}>
           <Route path='assigned' element={<AssignedTest />} />
           <Route path='completed' element={<TestCompleted />} />
         </Route>
@@ -97,7 +97,7 @@ const App = () => {
         {/* Admin routes */}
         <Route path='/admin' element={<ProtectRoute user={isAuthenticated}><ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute></ProtectRoute>}>
           <Route path='dashboard' element={<Dashboard />} />
-          <Route path='create-test/:id' element={<CreateTest />} />
+          <Route path='create/:id' element={<CreateTest />} />
         </Route>
 
         <Route path='/admin/login' element={<AdminLogin />} />

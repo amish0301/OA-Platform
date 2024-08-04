@@ -9,17 +9,17 @@ const navLinks = [
     {
         name: "Dashboard",
         Icon: <MdSpaceDashboard />,
-        path: '/test-dashboard'
+        path: '/test/dashboard'
     },
     {
         name: "Completed Tests",
         Icon: <FaTasks />,
-        path: '/test-dashboard/completed'
+        path: '/test/dashboard/completed'
     },
     {
         name: "Assigned Tests",
         Icon: <MdAssignment />,
-        path: '/test-dashboard/assigned'
+        path: '/test/dashboard/assigned'
     }
 ];
 
@@ -78,11 +78,11 @@ const Navigation = () => {
 
 const TestDashboard = () => {
     return (
-        <Grid container minHeight={'100vh'}>
-            <Grid item lg={3} sx={{ display: { xs: 'none', sm: 'block' }, bgcolor: '#f4f4f4', height: '100vh' }}>
+        <Grid container minHeight={'100vh'} minWidth={'100%'}>
+            <Grid item lg={3} xs={3} sx={{ display: { xs: 'none', sm: 'block' }, bgcolor: '#f4f4f4', height: '100vh' }}>
                 <Navigation />
             </Grid>
-            <Grid item>
+            <Grid item xs={9}>
                 <Outlet />
             </Grid>
         </Grid>

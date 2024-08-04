@@ -46,6 +46,12 @@ const testSchema = new mongoose.Schema(
       type: String, // Form of "HH:MM:SS"
       required: true,
     },
+    assignedTo: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
