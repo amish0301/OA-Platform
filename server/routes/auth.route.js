@@ -71,12 +71,13 @@ router.get("/login/success", async (req, res) => {
         .cookie("accessToken", accessToken, cookieOption)
         .cookie("refreshToken", user.refreshToken, cookieOption)
         .json({
-          user: {
-            name: req.user._json.name,
-            email: req.user._json.email,
-            googleId: req.user._json.sub,
-            profileImage: req.user._json.picture,
-          },
+          // user: {
+          //   name: req.user._json.name,
+          //   email: req.user._json.email,
+          //   googleId: req.user._json.sub,
+          //   profileImage: req.user._json.picture,
+          // },
+          user,
           success: true,
           message: "Login successfully",
           accessToken,
@@ -102,6 +103,7 @@ router.get("/login/failed", async (req, res) => {
 
 router.get("/logout", isAuthenticated, async (req, res) => {
   try {
+    console.log('req.uId', req.uId);
     const user = await User.findByIdAndDelete(req.uId);
     if(!user) {
       return res.status(404).json({ success: false, message: "User not found" });

@@ -103,7 +103,16 @@ const refreshAccessToken = TryCatch(async (req, res) => {
       .status(401)
       .json({ success: false, message: "Refresh token expired" });
 
-  const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  let decoded;
+  try {
+    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  } catch (error) {
+    res.clearCookie("refreshToken");
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid Refresh Token" });
+  }
+
   const user = await User.findById(decoded.id);
   if (!user || user.refreshToken !== refreshToken) {
     res.clearCookie("refreshToken"); // might revoked

@@ -6,9 +6,9 @@ import { toast } from "react-toastify";
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URI,
   withCredentials: true,
-  headers: {
-    "Authorization" : `Bearer ${localStorage.getItem("accessToken")}`
-  }
+  // headers: {
+  //   "Authorization" : `Bearer ${localStorage.getItem("accessToken")}`
+  // }
 });
 
 let isRefreshing = false;
@@ -20,10 +20,12 @@ const subscribeTokenRefresh = (cb) => {
 
 const onRefreshed = (newToken) => {
   refreshSubscribers.map((cb) => cb(newToken));
+  refreshSubscribers = [];
 };
 
+// if user logged in through Oauth then we're storing tokens in redux state
 axiosInstance.interceptors.request.use(
-  async (config) => {
+  (config) => {
     const state = store.getState();
     const token = state.user.accessToken;
     if (token) {
@@ -44,11 +46,10 @@ axiosInstance.interceptors.response.use(
     const dispatch = store.dispatch;
 
     if (status === 401 && !config._retry) {
-      console.log('refreshing token');
       if (isRefreshing) {
         return new Promise((resolve) => {
           subscribeTokenRefresh((newToken) => {
-            config.headers.Authorization = `Bearer ${newToken}`;
+            config.headers["Authorization"] = `Bearer ${newToken}`;
             resolve(axiosInstance(config));
           });
         });
@@ -59,14 +60,17 @@ axiosInstance.interceptors.response.use(
 
       return new Promise(async (resolve, reject) => {
         try {
-          const response = await axiosInstance.post('/auth/refresh-token');
+          const response = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/refresh-token`, null , {
+            withCredentials: true
+          })
+
           const newAccessToken = response.data.accessToken;
 
           store.dispatch(setToken(newAccessToken));
           localStorage.setItem("accessToken", newAccessToken);
 
           axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-          config.headers.Authorization = `Bearer ${newAccessToken}`;
+          config.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
           isRefreshing = false;
           onRefreshed(newAccessToken);

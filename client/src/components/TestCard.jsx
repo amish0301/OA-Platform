@@ -5,7 +5,7 @@ import { IoDocumentTextOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 
-const TestCard = ({ title = "Test Title", description = "Test Description", category = "domain", subCategory = "subdomain", time, totalQuestions }) => {
+const TestCard = ({ title = "Test Title", description = "Test Description", category = "domain", subCategory = "subdomain", time, totalQuestions, id = null }) => {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -43,6 +43,11 @@ const TestCard = ({ title = "Test Title", description = "Test Description", cate
         gap: '12px',
     };
 
+    const handleClick = async () => {
+        // redirect to test page
+
+    }
+
     return (
         <Card style={{
             maxWidth: 400,
@@ -79,7 +84,7 @@ const TestCard = ({ title = "Test Title", description = "Test Description", cate
 
             </CardContent>
             <CardActions>
-                <Button size="small" variant="contained" color="primary" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Button size="small" variant="contained" color="primary" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={handleClick}>
                     Start Test
                     <Icon>
                         <FaArrowUpRightFromSquare className='mt-1 text-sm' />

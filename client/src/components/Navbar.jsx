@@ -50,10 +50,10 @@ const ProfileCard = ({ logoutHandler }) => {
             </Link>
           </div>
 
-          <div className='profile-list'>
+          <div className='profile-list' onClick={() => navigate('/test/dashboard')}>
             <Icon className='text-sm'><GrDocumentTest /></Icon>
             <Typography className='leading-3' variant='body-1'>
-              My Tests
+              Test Dashboard
             </Typography>
           </div>
 

@@ -7,8 +7,7 @@ import Loader from '../components/Loader.jsx';
 const AssignedTest = () => {
 
     // one fetch call will be made to get all the assigned tests
-
-    const [checkTests, setCheckTests] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const tests = [
         {
@@ -29,30 +28,26 @@ const AssignedTest = () => {
         },
     ];
 
-    useEffect(() => {
-        // fetch assigned test
-        const fetchTests = async () => {
-            setCheckTests(true);
-            try {
-                const res = await axiosInstance.get('/test/assigned');
-                console.log(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-            setCheckTests(false);
+    const fetchTests = async () => {
+        setLoading(true);
+        try {
+            const res = await axiosInstance.get('/test/assigned');
+            console.log(res.data);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
+    }
 
-        // fetchTests();
-    }, [checkTests]);
-
-    if(checkTests) return <Loader show={checkTests}/>
+    if(loading) return <Loader show={loading}/>
 
     return (
         <div>
             <Container sx={{ minWidth: '100%' }} className="p-4 min-h-screen" >
                 <div className='flex justify-between items-center my-5'>
                     <h1 className="text-2xl font-bold mb-4">Assigned Tests</h1>
-                    <button type="button" className='py-3 text-sm px-4 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300' onClick={() => setCheckTests(prev => !prev)}>Check if Any test is assigned</button>
+                    <button type="button" className='py-3 text-sm px-4 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300' onClick={fetchTests}>Check if Any test is assigned</button>
                 </div>
                 <Grid container spacing={3} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     {tests.length ? tests.map((test, index) => (
@@ -64,6 +59,7 @@ const AssignedTest = () => {
                                 time={test.time}
                                 category={test.category}
                                 subCategory={test.subCategory}
+                                id={test._id}
                             />
                         </Grid>
                     ))
