@@ -103,7 +103,6 @@ router.get("/login/failed", async (req, res) => {
 
 router.get("/logout", isAuthenticated, async (req, res) => {
   try {
-    console.log('req.uId', req.uId);
     const user = await User.findByIdAndDelete(req.uId);
     if(!user) {
       return res.status(404).json({ success: false, message: "User not found" });

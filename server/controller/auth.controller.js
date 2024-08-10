@@ -41,6 +41,8 @@ const registerUser = TryCatch(async (req, res) => {
     });
   }
 
+  await user.save();
+
   sendToken(res, 201, user, "User created successfully");
 });
 
@@ -96,32 +98,34 @@ const loginUser = TryCatch(async (req, res) => {
 });
 
 const refreshAccessToken = TryCatch(async (req, res) => {
-  const refreshToken = req.cookies?.refreshToken;
+  const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
-  if (!refreshToken)
+  if (!refreshToken) {
+    await User.findByIdAndDelete(req.uId);
     return res
       .status(401)
       .json({ success: false, message: "Refresh token expired" });
+  }
 
   let decoded;
   try {
     decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    console.log('decoded', decoded);
   } catch (error) {
-    res.clearCookie("refreshToken");
     return res
       .status(401)
-      .json({ success: false, message: "Invalid Refresh Token" });
+      .json({ success: false, message: "Invalid or Expired Refresh Token" });
   }
 
   const user = await User.findById(decoded.id);
   if (!user || user.refreshToken !== refreshToken) {
-    res.clearCookie("refreshToken"); // might revoked
     return res
       .status(401)
       .json({ success: false, message: "Invalid Refresh Token" });
   }
 
   const accessToken = await user.generateAccessToken();
+  console.log('new accessToken generated', accessToken);
 
   return res.status(200).cookie("accessToken", accessToken, cookieOption).json({
     success: true,

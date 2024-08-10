@@ -20,10 +20,6 @@ const questionSchema = new mongoose.Schema({
 
 const testSchema = new mongoose.Schema(
   {
-    testId: {
-      type: String,
-      required: true,
-    },
     title: {
       type: String,
       required: true,

@@ -4,6 +4,7 @@ import { Grid, Typography, styled, Stack } from '@mui/material'
 import { MdSpaceDashboard, MdAssignment } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
 import { GoSignOut } from 'react-icons/go';
+import axiosInstance from '../hooks/useAxios';
 
 const navLinks = [
     {
@@ -48,8 +49,19 @@ const Navigation = () => {
 
     const location = useLocation();
 
-    const logoutHandler = () => {
-        console.log('logout');
+    const logoutHandler = async () => {
+        try {
+            const res = await axiosInstance.get('/auth/logout');
+            console.log(res);
+            if (res.data.success) {
+                toast.success(res.data.message)
+                dispatch(userNotExists())
+                localStorage.removeItem("reduxState")
+                localStorage.removeItem("accessToken")
+            }
+        } catch (error) {
+            console.log('error whie logging out', error)
+        }
     }
 
     return (

@@ -1,14 +1,10 @@
 const mongoose = require("mongoose");
 const Test = require("../db/test.model");
-const User = require("../db/user.model");
 const { TryCatch } = require("../utils/helper");
 
 const createTest = TryCatch(async (req, res) => {
   const { title, questions, duration, description, category, subCategory } =
     req.body;
-  const { testId } = req.params;
-
-  // convert id to object id
 
   // optional - validate if any of the field is not present
   if (!title || !questions || !category || !subCategory || !duration) {
@@ -18,7 +14,6 @@ const createTest = TryCatch(async (req, res) => {
   }
 
   const test = await Test.create({
-    testId,
     title,
     questions,
     category,
@@ -37,26 +32,36 @@ const createTest = TryCatch(async (req, res) => {
 const assignTest = TryCatch(async (req, res) => {
   const { testId, userIds } = req.body;
 
-  const test = await Test.find({ testId });
+  if(!userIds) return res.status(400).json({ success: false, message: "Please provide user ids" });
 
-  userIds.forEach(async (userId) => {
-    const user = await User.findById(userId);
-    if (user) user.assignedTests.push(test._id);
+  const test = await Test.findByIdAndUpdate(
+    testId,
+    {
+      $addToSet: { assignedTo: { $each: userIds } },
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!test)
+    return res.status(404).json({ success: false, message: "Test not found" });
+
+  return res.status(200).json({
+    success: true,
+    message: "Test assigned successfully",
+    test,
   });
-
-  // await test.save();
-  return res
-    .status(200)
-    .json({ success: true, message: "Test assigned successfully" });
 });
 
 const getAssignedTest = TryCatch(async (req, res) => {
-  const userId = req.uId;
-  const test = await Test.find({ assignedTo: userId });
+  const tests = await Test.find({ assignedTo: req.uId }).select("-assignedTo");
 
-  return res
-    .status(200)
-    .json({ success: true, message: "Test fetched successfully", test });
+  return res.status(200).json({
+    success: true,
+    message: tests.length ? "Test fetched successfully" : "No test are assigned",
+    tests,
+  });
 });
 
 module.exports = { createTest, getAssignedTest, assignTest };

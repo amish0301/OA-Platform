@@ -2,7 +2,6 @@ import React, { Fragment } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import { userNotExists } from '../redux/slices/userSlice';
 import { Icon, Popover, Typography } from '@mui/material';
@@ -77,7 +76,7 @@ const Navbar = () => {
   const [updateNav, setUpdateNav] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector(state => state.user);
+  const { isAuthenticated, user } = useSelector(state => state.user);
 
   window.addEventListener('scroll', () => {
     if (window.scrollY > 20) {
@@ -92,9 +91,8 @@ const Navbar = () => {
       const res = await axiosInstance.get('/auth/logout');
       if (res.data.success) {
         toast.success(res.data.message)
-        dispatch(userNotExists())
-        localStorage.removeItem("reduxState")
-        localStorage.removeItem("accessToken")
+        dispatch(userNotExists());
+        navigate('/');
       }
     } catch (error) {
       toast.error(error.response?.data?.message)
@@ -113,7 +111,7 @@ const Navbar = () => {
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/test">Test</Link>
         <Link className='link-style hover:text-blue-800 text-base font-semibold tracking-tight' to="/instruction">Test Instruction</Link>
         {!isAuthenticated && <button className='px-5 py-2 bg-[#605172] rounded-lg font-semibold text-base text-white shadow-md shadow-black/50 hover:bg-[#695982] hover:transition-colors duration-300' onClick={() => navigate('/auth/login')}>Login</button>}
-        {isAuthenticated && <ProfileCard logoutHandler={logoutHandler} />}
+        {user && <ProfileCard logoutHandler={logoutHandler} />}
       </div>
     </nav>
   )

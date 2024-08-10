@@ -11,7 +11,7 @@ const TryCatch = (fn) => (req, res) => {
 
 const cookieOption = {
   httpOnly: true,
-  secure: true,
+  secure: process.env.NODE_ENV === "production",
   sameSite: "none",
 };
 

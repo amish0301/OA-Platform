@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, Button, CardActions, Icon, Stack, Modal, Box } from '@mui/material';
+import { Card, CardContent, Typography, Button, CardActions, Icon, Stack, Modal, Box, Tooltip } from '@mui/material';
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 
-const TestCard = ({ title = "Test Title", description = "Test Description", category = "domain", subCategory = "subdomain", time, totalQuestions, id = null }) => {
+const TestCard = ({ title, description, category, subCategory, duration, totalQuestions, id = null }) => {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -45,7 +45,6 @@ const TestCard = ({ title = "Test Title", description = "Test Description", cate
 
     const handleClick = async () => {
         // redirect to test page
-
     }
 
     return (
@@ -65,14 +64,18 @@ const TestCard = ({ title = "Test Title", description = "Test Description", cate
                     </Typography>
 
                     <Stack direction="row" alignItems="center" gap={"1.2rem"} style={{ userSelect: 'none' }}>
-                        <div className='flex items-center gap-1'>
-                            <IoDocumentTextOutline className='text-xl' />
-                            <Typography variant='subtitle1' className='pt-1'>{totalQuestions}</Typography>
-                        </div>
-                        <div className='flex items-center gap-1'>
-                            <IoTimeOutline className='text-xl' />
-                            <Typography variant='subtitle1' className='pt-1'>{time}</Typography>
-                        </div>
+                        <Tooltip title="Total Questions">
+                            <div className='flex items-center gap-1'>
+                                <IoDocumentTextOutline className='text-xl' />
+                                <Typography variant='subtitle1' className='pt-1'>{totalQuestions}</Typography>
+                            </div>
+                        </Tooltip>
+                        <Tooltip title="Test Duration">
+                            <div className='flex items-center gap-1'>
+                                <IoTimeOutline className='text-xl' />
+                                <Typography variant='subtitle1' className='pt-1'>{duration} min</Typography>
+                            </div>
+                        </Tooltip>
                     </Stack>
                 </Stack>
                 <Typography style={{
@@ -118,7 +121,7 @@ const TestCard = ({ title = "Test Title", description = "Test Description", cate
 
                             <Typography variant='subtitle1'>
                                 <strong>Sub Category: </strong>
-                                {subCategory}
+                                {...subCategory.join(', ')}
                             </Typography>
 
                             <Typography variant='subtitle1'>
@@ -128,7 +131,7 @@ const TestCard = ({ title = "Test Title", description = "Test Description", cate
 
                             <Typography variant='subtitle1'>
                                 <strong>Time: </strong>
-                                {time}
+                                {duration} Min
                             </Typography>
 
                         </Stack>

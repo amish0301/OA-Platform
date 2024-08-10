@@ -21,7 +21,6 @@ const isAuthenticated = async (req, res, next) => {
           .json({ success: false, message: "Unauthorized" });
 
       const user = await User.findById(decoded.id);
-
       if (!user)
         return res
           .status(404)

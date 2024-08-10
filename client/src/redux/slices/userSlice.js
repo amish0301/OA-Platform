@@ -17,7 +17,6 @@ const userSlice = createSlice({
     userNotExists: (state) => {
       state.user = null;
       state.isAuthenticated = false;
-      state.accessToken = null;
     },
     setToken: (state, action) => {
       state.accessToken = action.payload;

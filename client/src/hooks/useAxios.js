@@ -1,14 +1,10 @@
 import axios from "axios";
 import store from "../redux/store"; // Import your redux store
 import { setToken, userNotExists } from "../redux/slices/userSlice";
-import { toast } from "react-toastify";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URI,
   withCredentials: true,
-  // headers: {
-  //   "Authorization" : `Bearer ${localStorage.getItem("accessToken")}`
-  // }
 });
 
 let isRefreshing = false;
@@ -26,8 +22,7 @@ const onRefreshed = (newToken) => {
 // if user logged in through Oauth then we're storing tokens in redux state
 axiosInstance.interceptors.request.use(
   (config) => {
-    const state = store.getState();
-    const token = state.user.accessToken;
+    const token = store.getState().user?.accessToken;
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -41,7 +36,10 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const { config, response: { status } } = error;
+    const {
+      config,
+      response: { status },
+    } = error;
     const state = store.getState();
     const dispatch = store.dispatch;
 
@@ -60,16 +58,25 @@ axiosInstance.interceptors.response.use(
 
       return new Promise(async (resolve, reject) => {
         try {
-          const response = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/refresh-token`, null , {
-            withCredentials: true
-          })
+          const response = await axios.post(
+            `${import.meta.env.VITE_SERVER_URI}/auth/refresh-token`,
+            {
+              refreshToken: state.user.user.refreshToken,
+            },
+            { withCredentials: true }
+          );
 
-          const newAccessToken = response.data.accessToken;
+          // console.log('response from refresh token', response);
+          console.log('refresh token in store', state.user.user?.refreshToken);
+          const newAccessToken = response.data?.accessToken;
+          console.log('new access token', newAccessToken);
 
-          store.dispatch(setToken(newAccessToken));
+          dispatch(setToken(newAccessToken)); // -store.dispatch
           localStorage.setItem("accessToken", newAccessToken);
 
-          axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+          axiosInstance.defaults.headers.common[
+            "Authorization"
+          ] = `Bearer ${newAccessToken}`;
           config.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
           isRefreshing = false;
@@ -81,8 +88,7 @@ axiosInstance.interceptors.response.use(
           dispatch(userNotExists());
           localStorage.removeItem("accessToken");
           localStorage.removeItem("reduxState");
-          toast.error("Session expired, please login again");
-          reject(err);
+          reject('Token Expired Login Again');
         }
       });
     }

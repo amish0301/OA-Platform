@@ -30,12 +30,6 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    assignedTests: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Test",
-      },
-    ],
     givenTests: [
       {
         type: mongoose.Schema.Types.ObjectId,

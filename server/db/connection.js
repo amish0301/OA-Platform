@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 const connectMongoDB = async (uri) => {
   await mongoose
     .connect(uri)
-    .then((data) => {
-      console.log(`Connected to DB: ${data.connection.name}`);
+    .then(() => {
+      console.log("Connected to MongoDB");
     })
     .catch((err) => {
-      throw err;
+      console.log(err);
     });
 };
 
