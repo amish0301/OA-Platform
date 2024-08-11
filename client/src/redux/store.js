@@ -13,9 +13,9 @@ const store = configureStore({
     result: resultSlice.reducer,
   },
   preloadedState: {
-    user: persistedState?.user || undefined,
-    question: persistedState?.question || undefined,
-    result: persistedState?.result || undefined,
+    user: persistedState?.user || null,
+    question: persistedState?.question || null,
+    result: persistedState?.result || null,
   },
 });
 

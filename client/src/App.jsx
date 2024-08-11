@@ -17,13 +17,14 @@ import ForgetPassword from './components/ForgetPassword.jsx'
 import Loader from './components/Loader.jsx'
 import NotFound from './components/NotFound.jsx'
 import ProtectRoute from './lib/ProtectRoute.jsx'
-import { setToken, userExists } from './redux/slices/userSlice.js';
+import { setToken, userExists, userNotExists } from './redux/slices/userSlice.js';
 import AssignedTest from './pages/AssignedTest.jsx';
 import TestDashboard from './layout/TestDashboard.jsx';
 import TestCompleted from './components/TestCompleted.jsx';
 import AdminLogin from './components/admin/Login.jsx';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import axios from 'axios';
+import axiosInstance from './hooks/useAxios.js';
 
 const LoginSuccess = () => {
   const navigate = useNavigate()
@@ -64,6 +65,21 @@ const App = () => {
       setLoading(false)
     }, [500]);
 
+    const fetchUser = async () => {
+      try {
+        const res = await axiosInstance.get('/user/me', {
+          withCredentials: true
+        });
+
+        if (res.status === 401) {
+          dispatch(userNotExists());
+        }
+      } catch (error) {
+        console.error('failed to fetch user', error);
+      }
+    }
+
+    if (user) fetchUser();
     return () => clearTimeout(timer);
   }, [])
 
@@ -77,7 +93,7 @@ const App = () => {
           <Route path='about' element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>
-          <Route path='/test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
+        <Route path='/test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
 
         {/* auth routes */}
         <Route path='/auth'>

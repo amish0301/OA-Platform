@@ -1,39 +1,32 @@
-import axios from 'axios';
 import React, { useState } from 'react'
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { userExists } from '../../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../Loader';
+import axiosInstance from '../../hooks/useAxios';
 
 
 const AdminLogin = () => {
     const [eyeOpen, setEyeOpen] = useState(false);
-    // add isAdmin true in redux store
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { user } = useSelector(state => state.user);
     const [key, setKey] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleClick = async (e) => {
         e.preventDefault();
         setLoading(true);
-        // api call
         try {
-            const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key }, {
+            const res = await axiosInstance.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key }, {
                 withCredentials: true,
-                headers: {
-                    'X-uId': user?._id
-                }
             });
 
             if (res.data.success) {
                 setLoading(false);
                 toast.success(res.data.message);
-                console.log(res.data);
                 dispatch(userExists({ ...res.data.user }));
                 navigate('/', { replace: true });
             }
