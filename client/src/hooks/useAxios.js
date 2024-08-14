@@ -65,11 +65,8 @@ axiosInstance.interceptors.response.use(
             },
             { withCredentials: true }
           );
-
-          // console.log('response from refresh token', response);
-          console.log('refresh token in store', state.user.user?.refreshToken);
+          
           const newAccessToken = response.data?.accessToken;
-          console.log('new access token', newAccessToken);
 
           dispatch(setToken(newAccessToken)); // -store.dispatch
           localStorage.setItem("accessToken", newAccessToken);
