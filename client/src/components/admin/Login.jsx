@@ -28,7 +28,7 @@ const AdminLogin = () => {
                 setLoading(false);
                 toast.success(res.data.message);
                 dispatch(userExists({ ...res.data.user }));
-                navigate('/', { replace: true });
+                navigate('/admin', { replace: true });
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong while Login');

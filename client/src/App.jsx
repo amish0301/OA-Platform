@@ -26,6 +26,10 @@ import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import axios from 'axios';
 import axiosInstance from './hooks/useAxios.js';
 
+// Admin Pages
+import UserManagement from './components/admin/pages/UserManagement.jsx';
+import TestManagement from './components/admin/pages/TestManagement.jsx';
+
 const LoginSuccess = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -65,21 +69,21 @@ const App = () => {
       setLoading(false)
     }, [500]);
 
-    const fetchUser = async () => {
-      try {
-        const res = await axiosInstance.get('/user/me', {
-          withCredentials: true
-        });
+    // const fetchUser = async () => {
+    //   try {
+    //     const res = await axiosInstance.get('/user/me', {
+    //       withCredentials: true
+    //     });
 
-        if (res.status === 401) {
-          dispatch(userNotExists());
-        }
-      } catch (error) {
-        console.error('failed to fetch user', error);
-      }
-    }
+    //     if (res.status === 401) {
+    //       dispatch(userNotExists());
+    //     }
+    //   } catch (error) {
+    //     console.error('failed to fetch user', error);
+    //   }
+    // }
 
-    if (user) fetchUser();
+    // if (user) fetchUser();
     return () => clearTimeout(timer);
   }, [])
 
@@ -113,7 +117,9 @@ const App = () => {
         {/* Admin routes */}
         <Route path='/admin' element={<ProtectRoute user={isAuthenticated}><ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute></ProtectRoute>}>
           <Route path='dashboard' element={<Dashboard />} />
-          <Route path='create/:id' element={<CreateTest />} />
+          <Route path='create' element={<CreateTest />} />
+          <Route path='users' element={<UserManagement />} />
+          <Route path='tests' element={<TestManagement />} />
         </Route>
 
         <Route path='/admin/login' element={<AdminLogin />} />

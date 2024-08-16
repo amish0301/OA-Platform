@@ -110,7 +110,6 @@ const refreshAccessToken = TryCatch(async (req, res) => {
   let decoded;
   try {
     decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    console.log('decoded', decoded);
   } catch (error) {
     return res
       .status(401)
@@ -125,7 +124,6 @@ const refreshAccessToken = TryCatch(async (req, res) => {
   }
 
   const accessToken = await user.generateAccessToken();
-  console.log('new accessToken generated', accessToken);
 
   return res.status(200).cookie("accessToken", accessToken, cookieOption).json({
     success: true,

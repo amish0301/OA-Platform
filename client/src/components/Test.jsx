@@ -28,12 +28,18 @@ const Test = () => {
 
   const handleSubmit = () => {
 
+    // exit fullscreen mode
+    if(document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+
     toast.success("Test Submitted");
     setIsTestSubmitted(true);
+
+    // cleanUp data
     dispatch(resetResult());
     dispatch(reset());
     // pointCnt(result);
-    return () => cleanUp();
   }
 
   useEffect(() => {

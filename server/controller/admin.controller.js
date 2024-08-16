@@ -36,4 +36,11 @@ const adminLogout = TryCatch(async (req, res) => {
     .json({ success: true, message: "Admin logout successfully", user });
 });
 
-module.exports = { adminLogin, adminLogout };
+const fetchUsers = TryCatch(async (req, res) => {
+  const users = await User.find({});
+  return res
+    .status(200)
+    .json({ success: true, message: "Fetched All users", users });
+});
+
+module.exports = { adminLogin, adminLogout, fetchUsers };
