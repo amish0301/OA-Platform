@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Icon } from '@mui/material';
+import { Avatar } from '@mui/material';
 import Table from '../../../shared/Table';
 import axiosInstance from '../../../hooks/useAxios'
 import Loader from '../../Loader';
@@ -43,7 +43,9 @@ const UserManagement = () => {
     if (isLoading) return <Loader show={isLoading} size={70} color='#3a1c71' />
 
     return (
-        <Table rows={rows} cols={columns} heading={'All Users'} rowHeight={40} />
+        <div>
+            <Table rows={rows} cols={columns} heading={'All Users'} rowHeight={40} />
+        </div>
     )
 }
 

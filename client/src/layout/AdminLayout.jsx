@@ -1,14 +1,11 @@
 import React, { useState } from 'react'
-import { Box, Drawer, Grid, IconButton, Stack, Typography, styled } from '@mui/material'
+import { Box, Grid, IconButton, Stack, Typography, styled } from '@mui/material'
 import { MdDashboard as DashboardIcon, MdMenu as MenuIcon, MdManageAccounts as ManageAccountsIcon, MdLogout as ExitToAppIcon } from "react-icons/md";
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { useLocation, Link as LinkComponent, Navigate, Outlet } from 'react-router-dom'
-import { toast } from 'react-toastify';
-import axiosInstance from '../hooks/useAxios';
-import { userExists } from '../redux/slices/userSlice';
-import Loader from '../components/Loader';
+import AppBar from '../components/admin/AppBar';
 
 const Link = styled(LinkComponent)(
     `text-decoration: none;
@@ -50,29 +47,9 @@ const TabItem = ({ Icon, name }) => {
 
 const SideBar = ({ w = '100%' }) => {
     const location = useLocation();
-    const dispatch = useDispatch();
-    const [isLoading, setIsLoading] = useState(false);
-
-    const logoutHandler = async () => {
-        try {
-            setIsLoading(true);
-            const res = await axiosInstance.get('/admin/logout');
-
-            if (res.data.success) {
-                toast.success(res.data.message);
-                dispatch(userExists({ ...res.data.user, isAdmin: false }));
-            }
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong');
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    if (isLoading) return <Loader show={isLoading} size={70} color='#3a1c71' />
 
     return (
-        <Stack width={w} sx={{ padding: '2rem', height: '100vh' }} spacing={'2rem'}>
+        <Stack width={w} sx={{ padding: '2rem', height: '100%', bgcolor: '#676767' }} spacing={'2rem'}>
             <Typography variant='h5' textTransform={'uppercase'}>OA-Platform</Typography>
 
             {/* admin tabs */}
@@ -88,10 +65,6 @@ const SideBar = ({ w = '100%' }) => {
                     ))
                 }
             </Stack>
-
-            <Link onClick={logoutHandler}>
-                <TabItem Icon={<ExitToAppIcon />} name={'Logout'} />
-            </Link>
         </Stack>
     );
 }
@@ -119,6 +92,7 @@ const AdminLayout = () => {
                 <SideBar />
             </Grid>
             <Grid item xs={12} md={8} lg={9}>
+                <AppBar />
                 <Outlet />
             </Grid>
 
