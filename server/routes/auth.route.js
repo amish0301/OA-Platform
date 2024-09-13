@@ -45,33 +45,67 @@ router.get("/google", async (req, res) => {
 
 // success login
 router.get("/login/success", async (req, res) => {
+  // try {
+  //   if (req.user) {
+  //     let user = await User.findOne({ email: req.user._json.email });
+  //     let accessToken;
+
+  //     // check if user already exists
+  //     if (!user) {
+  //       user = new User({
+  //         name: req.user._json.name,
+  //         email: req.user._json.email,
+  //         password: Date.now().toString(),
+  //         googleId: req.user._json.sub,
+  //         profileImage: req.user._json.picture,
+  //       });
+
+  //       const refreshToken = await user.generateRefreshToken();
+  //       user.refreshToken = refreshToken;
+
+  //       await user.save();
+  //     } else {
+  //       // Ensure refreshToken exists for existing users
+  //       if (!user.refreshToken) {
+  //         user.refreshToken = await user.generateRefreshToken();
+  //         await user.save();
+  //       }
+  //     }
+
+  //     accessToken = await user.generateAccessToken();
+
+  //     return res
+  //       .status(200)
+  //       .cookie("accessToken", accessToken, cookieOption)
+  //       .cookie("refreshToken", user.refreshToken, cookieOption)
+  //       .json({
+  //         user,
+  //         success: true,
+  //         message: "Login successfully",
+  //         accessToken,
+  //       });
+  //   } else {
+  //     console.log("User is not authenticated. req.user is null or undefined.");
+  //     return res
+  //       .status(403)
+  //       .json({ success: false, message: "You're Not Authorized" });
+  //   }
+  // } catch (error) {
+  //   return res
+  //     .status(500)
+  //     .json({ success: false, message: "Internal server error" });
+  // }
+
   try {
     if (req.user) {
-      let user = await User.findOne({ email: req.user._json.email });
-      let accessToken;
+      const accessToken = await req.user.generateAccessToken();
 
-      if (!user) {
-        user = await User.create({
-          name: req.user._json.name,
-          email: req.user._json.email,
-          password: Date.now().toString(),
-          googleId: req.user._json.sub,
-          profileImage: req.user._json.picture,
-        });
-        await user.save();
-
-        const refreshToken = await user.generateRefreshToken();
-        user.refreshToken = refreshToken;
-        await user.save();
-      }
-
-      accessToken = await user.generateAccessToken();
       return res
         .status(200)
         .cookie("accessToken", accessToken, cookieOption)
-        .cookie("refreshToken", user.refreshToken, cookieOption)
+        .cookie("refreshToken", req.user.refreshToken, cookieOption)
         .json({
-          user,
+          user: req.user,
           success: true,
           message: "Login successfully",
           accessToken,
@@ -82,6 +116,7 @@ router.get("/login/success", async (req, res) => {
         .json({ success: false, message: "You're Not Authorized" });
     }
   } catch (error) {
+    console.error("Error during login success:", error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -98,8 +133,10 @@ router.get("/login/failed", async (req, res) => {
 router.get("/logout", isAuthenticated, async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.uId);
-    if(!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     req.logOut((err) => {

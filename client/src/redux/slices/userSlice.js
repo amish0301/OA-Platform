@@ -23,7 +23,7 @@ const userSlice = createSlice({
     },
     removeToken: (state) => {
       state.accessToken = null;
-    }
+    },
   },
 });
 

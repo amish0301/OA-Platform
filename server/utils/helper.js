@@ -13,6 +13,7 @@ const cookieOption = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: "none",
+  maxAge: null,
 };
 
 const generateTokens = async (user) => {
@@ -31,12 +32,10 @@ const generateTokens = async (user) => {
 
 const sendToken = async (res, statusCode, user, message) => {
   try {
-    return res
-      .status(statusCode)
-      .json({
-        success: true,
-        message,
-      });
+    return res.status(statusCode).json({
+      success: true,
+      message,
+    });
   } catch (error) {
     console.log("errr in sendtoken", error);
     return res.status(500).json({

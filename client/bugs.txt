@@ -1,0 +1,1 @@
+1. in TestBoard Logout functionality has some issues.

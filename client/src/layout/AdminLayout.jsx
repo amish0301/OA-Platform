@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { Box, Grid, IconButton, Stack, Typography, styled } from '@mui/material'
+import { Box, Drawer, Grid, IconButton, Stack, Typography, styled } from '@mui/material'
 import { MdDashboard as DashboardIcon, MdMenu as MenuIcon, MdManageAccounts as ManageAccountsIcon, MdLogout as ExitToAppIcon } from "react-icons/md";
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { IoCreateOutline as Create } from "react-icons/io5";
 
 import { useLocation, Link as LinkComponent, Navigate, Outlet } from 'react-router-dom'
 import AppBar from '../components/admin/AppBar';
+import { setIsMobile } from '../redux/slices/misc';
 
 const Link = styled(LinkComponent)(
     `text-decoration: none;
@@ -33,6 +35,11 @@ const adminTabs = [
         name: "Tests",
         icon: <TestIcon />,
         path: "/admin/tests",
+    },
+    {
+        name: 'Create Test',
+        icon: <Create />,
+        path: '/admin/tests/create'
     }
 ];
 
@@ -49,56 +56,102 @@ const SideBar = ({ w = '100%' }) => {
     const location = useLocation();
 
     return (
-        <Stack width={w} sx={{ padding: '2rem', height: '100%', bgcolor: '#676767' }} spacing={'2rem'}>
-            <Typography variant='h5' textTransform={'uppercase'}>OA-Platform</Typography>
+        <Stack
+            width={{ xs: '100%', sm: '80%', md: w || '70%' }}
+            sx={{
+                padding: { xs: '1rem', sm: '2rem' },
+                height: '100%',
+                bgcolor: '#286675',
+                position: 'sticky',
+                top: '0',
+                overflow: 'auto',
+            }}
+            spacing={{ xs: '1rem', sm: '2rem' }}
+        >
+            {/* Platform Title */}
+            <Typography
+                variant="h5"
+                textTransform="capitalize"
+                sx={{
+                    fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.75rem' },
+                    textAlign: { xs: 'center', sm: 'left' },
+                    color: '#eefafc'
+                }}
+            >
+                OA-Platform
+            </Typography>
 
-            {/* admin tabs */}
-            <Stack spacing={'2rem'} style={{ marginTop: '3rem' }}>
-                {
-                    adminTabs.map((tab, i) => (
-                        <Link key={tab.path} to={tab.path} sx={location.pathname === tab.path && {
-                            bgcolor: '#030303',
-                            color: 'white'
-                        }}>
-                            <TabItem Icon={tab.icon} name={tab.name} />
-                        </Link>
-                    ))
-                }
+            {/* Admin Tabs */}
+            <Stack spacing={{ xs: '1.5rem', sm: '2rem' }} sx={{ mt: { xs: '2rem', sm: '3rem' } }}>
+                {adminTabs.map((tab, i) => (
+                    <Link
+                        key={tab.path}
+                        to={tab.path}
+                        sx={{
+                            textDecoration: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '4px',
+                            transition: 'background-color 0.3s ease',
+                            ...(location.pathname === tab.path && {
+                                bgcolor: '#030303',
+                                color: '#cecfce',
+                            }),
+                            '&:hover': {
+                                bgcolor: '#333333',
+                                color: 'white',
+                            },
+                            color: '#cecfce'
+                        }}
+                    >
+                        <TabItem Icon={tab.icon} name={tab.name} />
+                    </Link>
+                ))}
             </Stack>
         </Stack>
+
     );
 }
 
 
 const AdminLayout = () => {
-    const [isMobile, setIsMobile] = useState(false);
+    const { isMobile } = useSelector(state => state.misc);
+    const dispatch = useDispatch();
     const handleMobile = () => {
-        setIsMobile(!isMobile);
+        dispatch(setIsMobile(!isMobile));
     }
 
     const isAdmin = useSelector(state => state.user.user?.isAdmin)
-    // const hadnleClose = () => setIsMobile(false);
+    const handleClose = () => dispatch(setIsMobile(false))
 
     if (!isAdmin) return <Navigate to={'/admin/login'} />
 
     return (
         <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9' }}>
-            <Box sx={{ display: { xs: 'block', sm: 'none' }, position: 'fixed', right: '1rem', top: '0.5rem' }}>
+            <Box sx={{ display: { xs: 'block', sm: 'none' }, position: 'fixed', right: '1rem', top: '0.5rem', zIndex: 100 }}>
                 <IconButton onClick={handleMobile}>
                     {isMobile ? <CloseIcon /> : <MenuIcon />}
                 </IconButton>
             </Box>
-            <Grid item md={4} lg={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Grid item xs={12} sm={4} md={3} lg={2} sx={{
+                display: { xs: 'none', sm: 'block' },
+            }}>
                 <SideBar />
             </Grid>
-            <Grid item xs={12} md={8} lg={9}>
+            <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflow: 'auto', p: { xs: 2, md: 1 }, height: '100vh', bgcolor: '#eff7f9' }}>
                 <AppBar />
                 <Outlet />
             </Grid>
 
-            {/* <Drawer open={isMobile} onClose={hadnleClose}>
-                <SideBar w={'50vw'} />
-            </Drawer> */}
+            <Drawer
+                open={isMobile}
+                onClose={handleClose}
+                sx={{
+                    display: { xs: 'block', sm: 'none' },
+                    '& .MuiDrawer-paper': { width: '60vw', maxWidth: '300px' },
+                }}
+            >
+                <SideBar />
+            </Drawer>
         </Grid>
     )
 }

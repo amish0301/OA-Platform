@@ -36,32 +36,34 @@ const LoginSuccess = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetcUser = async () => {
+    const fetchUser = async () => {
       try {
         setLoading(true)
         const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, {
           withCredentials: true
         });
-        if (res.data.success) {
-          dispatch(userExists({ ...res.data.user }))
+
+        if (res.data.success && res.data.user) {
+          dispatch(userExists(res.data.user))
           dispatch(setToken(res.data.accessToken))
-          navigate('/', { replace: true })
         }
+        navigate('/', { replace: true })
       } catch (error) {
         console.error('login failed', error);
       } finally {
         setLoading(false)
       }
     }
-    fetcUser()
-  }, [dispatch])
+    fetchUser()
+  }, [dispatch, navigate])
 
   return <Loader show={loading} size={70} color='#3a1c71' />
 }
 
 const App = () => {
   const [loading, setLoading] = useState(true);
-  const { user, isAuthenticated } = useSelector(state => state.user);
+  const { user, isAuthenticated } = useSelector(state => state.user || {});
+  const dispatch = useDispatch();
   const isAdmin = user?.isAdmin;
 
   useEffect(() => {
@@ -71,19 +73,16 @@ const App = () => {
 
     // const fetchUser = async () => {
     //   try {
-    //     const res = await axiosInstance.get('/user/me', {
+    //     await axiosInstance.get('/user/me', {
     //       withCredentials: true
     //     });
-
-    //     if (res.status === 401) {
-    //       dispatch(userNotExists());
-    //     }
     //   } catch (error) {
+    //     dispatch(userNotExists());
     //     console.error('failed to fetch user', error);
     //   }
     // }
 
-    // if (user) fetchUser();
+    // fetchUser();
     return () => clearTimeout(timer);
   }, [])
 
@@ -116,8 +115,8 @@ const App = () => {
 
         {/* Admin routes */}
         <Route path='/admin' element={<ProtectRoute user={isAuthenticated}><ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute></ProtectRoute>}>
-          <Route path='dashboard' element={<Dashboard />} />
-          <Route path='create' element={<CreateTest />} />
+          <Route index path='dashboard' element={<Dashboard />} />
+          <Route path='tests/create' element={<CreateTest />} />
           <Route path='users' element={<UserManagement />} />
           <Route path='tests' element={<TestManagement />} />
         </Route>

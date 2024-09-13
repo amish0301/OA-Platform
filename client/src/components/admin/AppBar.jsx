@@ -15,7 +15,7 @@ const SearchField = ({ search, setSearch }) => {
     }, [])
 
     return (
-        <Box sx={{ padding: '0.5rem', borderRadius: '.5rem', width: '40%', bgcolor: '#eff7f9', display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ padding: '0.5rem', borderRadius: '.5rem', width: '40%', display: 'flex', alignItems: 'center', bgcolor: '#eff7f9' }}>
             <SearchIcon className={`text-xl opacity-50 ${search && 'hidden'}`} />
             <span className='ml-2 w-full'>
                 <input type='text' placeholder='Search here...' className='border-none outline-none bg-transparent py-1 w-full' onChange={e => setSearch(e.target.value)} value={search} />
@@ -39,7 +39,7 @@ const AppBar = () => {
     }
 
     return (
-        <Paper elevation={1} sx={{ padding: '1rem', margin: '1.5rem 1rem', borderRadius: '1rem', minWidth: '50vw' }}>
+        <Paper elevation={1} sx={{ padding: '1rem', margin: '0 1rem', borderRadius: '1rem', minWidth: '70vw', bgcolor: '#ffffff', position: 'sticky', top: 0 }}>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <SearchField search={search} setSearch={setSearch} />
                 <Stack direction={'row'} alignItems={'center'} spacing={'1rem'}>

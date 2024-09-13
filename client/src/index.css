@@ -8,10 +8,37 @@
   padding: 0;
 }
 
+
+*::-webkit-scrollbar {
+  width: 12px; 
+  height: 12px; 
+  opacity: 0.5;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: #f1f1f1; 
+  border-radius: 8px; 
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #6b7280d1; 
+  border-radius: 8px; 
+  border: 3px solid #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #4b5563ba; 
+}
+
+
 .profile-list {
   @apply flex gap-4 items-center justify-start cursor-pointer hover:bg-slate-100 mt-2 p-2 w-full rounded-lg;
 }
 
 .primary-btn {
   @apply py-3 text-lg mt-10 px-6 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300
+}
+
+.create_test_edit {
+  @apply flex cursor-pointer w-full justify-end items-center pr-10 hover:underline border-green-600;
 }

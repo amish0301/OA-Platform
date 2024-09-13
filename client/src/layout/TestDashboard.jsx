@@ -4,7 +4,8 @@ import { Grid, Typography, styled, Stack } from '@mui/material'
 import { MdSpaceDashboard, MdAssignment } from "react-icons/md";
 import { FaTasks } from "react-icons/fa";
 import { GoSignOut } from 'react-icons/go';
-import axiosInstance from '../hooks/useAxios';
+import axiosInstance from '../hooks/useAxios.js';
+import { toast } from 'react-toastify';
 
 const navLinks = [
     {
@@ -52,7 +53,6 @@ const Navigation = () => {
     const logoutHandler = async () => {
         try {
             const res = await axiosInstance.get('/auth/logout');
-            console.log(res);
             if (res.data.success) {
                 toast.success(res.data.message)
                 dispatch(userNotExists())
