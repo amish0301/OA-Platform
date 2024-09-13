@@ -137,7 +137,7 @@ const AdminLayout = () => {
             }}>
                 <SideBar />
             </Grid>
-            <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflow: 'auto', p: { xs: 2, md: 1 }, height: '100vh', bgcolor: '#eff7f9' }}>
+            <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflowY: 'auto', p: { xs: 2, md: 1 }, height: '100vh', bgcolor: '#eff7f9' }}>
                 <AppBar />
                 <Outlet />
             </Grid>

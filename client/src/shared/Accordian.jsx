@@ -5,8 +5,9 @@ import { MdDeleteOutline as DeleteIcon, MdExpandMore as ExpandMoreIcon } from "r
 import QuestionList from '../components/admin/QuestionList';
 import { setIsQuestionAdd } from '../redux/slices/admin';
 import { useDispatch, useSelector } from 'react-redux';
+import { QuestionModal } from '../lib/Modal';
 
-const CustomAccordian = ({ title, content, index, addQuestionHandler }) => {
+const CustomAccordian = ({ title, content, index }) => {
 
     const [expanded, setExpanded] = useState(false);
     const handleExpansion = () => {
@@ -68,7 +69,7 @@ const CustomAccordian = ({ title, content, index, addQuestionHandler }) => {
                                     </Button>
                                     <Button variant='outlined' color='error' startIcon={<DeleteIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#ffffff' }}>Delete Question</Button>
                                 </div>
-                                { }
+                                {isQuestionAdd && <QuestionModal isQuestionAdd={isQuestionAdd} dispatch={dispatch}  />}
                             </Fragment>
                         )
                     }

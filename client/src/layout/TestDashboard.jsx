@@ -1,11 +1,11 @@
-import React from 'react'
-import { Link as LinkComponent, useLocation, Outlet } from 'react-router-dom'
-import { Grid, Typography, styled, Stack } from '@mui/material'
-import { MdSpaceDashboard, MdAssignment } from "react-icons/md";
+import { Grid, Stack, Typography, styled } from '@mui/material';
+import React from 'react';
 import { FaTasks } from "react-icons/fa";
-import { GoSignOut } from 'react-icons/go';
-import axiosInstance from '../hooks/useAxios.js';
+import { MdAssignment, MdSpaceDashboard } from "react-icons/md";
+import { Link as LinkComponent, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axiosInstance from '../hooks/useAxios.js';
+import { RxExit as Exit } from "react-icons/rx";
 
 const navLinks = [
     {
@@ -22,7 +22,7 @@ const navLinks = [
         name: "Assigned Tests",
         Icon: <MdAssignment />,
         path: '/test/dashboard/assigned'
-    }
+    },
 ];
 
 const Link = styled(LinkComponent)(
@@ -65,24 +65,83 @@ const Navigation = () => {
     }
 
     return (
-        <Stack p={'2rem'} spacing={'4rem'} height={'100%'} sx={{ position: 'relative' }}>
-            <Typography variant='h5' textTransform={'capitalize'} textAlign={'left'} sx={{ fontWeight: '600', color: '#3a1c71' }}>test dashboard</Typography>
+        <Stack
+            width={{ xs: '100%', sm: '80%', md: '65%' }}
+            sx={{
+                padding: { xs: '1rem', sm: '2rem' },
+                height: '100vh',
+                bgcolor: '#286675',
+                position: 'relative',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+            }}
+            spacing={{ xs: '1rem', sm: '2rem' }}
+        >
+            {/* Platform Title */}
+            <Typography
+                variant="h5"
+                textTransform="capitalize"
+                sx={{
+                    fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.75rem' },
+                    textAlign: { xs: 'center', sm: 'left' },
+                    color: '#eefafc',
+                    cursor: 'pointer',
+                }}
+                onClick={() => window.location.replace('/')}
+            >
+                OA-Platform
+            </Typography>
 
-            <Stack spacing={'2rem'} width={'100%'}>
-                {
-                    navLinks.map((tab, index) => (
-                        <Link key={index} to={tab.path} sx={location.pathname === tab.path ? { backgroundColor: '#A9A9A9' } : { backgroundColor: 'transparent' }}>
-                            <TabItem Icon={tab.Icon} name={tab.name} />
-                        </Link>
-                    ))
-                }
+            {/* Navigation Links */}
+            <Stack
+                spacing={{ xs: '1.5rem', sm: '2rem' }}
+                sx={{ mt: { xs: '2rem', sm: '3rem' }, flexGrow: 1 }}
+            >
+                {navLinks.map((tab, i) => (
+                    <Link
+                        key={tab.path}
+                        to={tab.path}
+                        sx={{
+                            textDecoration: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '4px',
+                            transition: 'background-color 0.3s ease',
+                            ...(location.pathname === tab.path && {
+                                bgcolor: '#030303',
+                                color: '#cecfce',
+                            }),
+                            '&:hover': {
+                                bgcolor: '#333333',
+                                color: 'white',
+                            },
+                            color: '#cecfce',
+                        }}
+                    >
+                        <TabItem Icon={tab.Icon} name={tab.name} />
+                    </Link>
+                ))}
             </Stack>
-            <Stack sx={{ position: 'absolute', bottom: '2rem', width: '100%', right: '0' }}>
-                <Link onClick={logoutHandler} >
-                    <TabItem Icon={<GoSignOut />} name={'Logout'} />
-                </Link>
-            </Stack>
+
+            <Link
+                to="/"
+                onClick={logoutHandler}
+                sx={{
+                    mt: 'auto',
+                    textDecoration: 'none',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '4px',
+                    transition: 'background-color 0.3s ease',
+                    color: '#cecfce',
+                    '&:hover': {
+                        bgcolor: '#333333',
+                        color: 'white',
+                    },
+                }}
+            >
+                <TabItem Icon={<Exit />} name="Logout" />
+            </Link>
         </Stack>
+
     )
 }
 
@@ -90,11 +149,13 @@ const Navigation = () => {
 
 const TestDashboard = () => {
     return (
-        <Grid container minHeight={'100vh'} minWidth={'100%'}>
-            <Grid item lg={3} xs={3} sx={{ display: { xs: 'none', sm: 'block' }, bgcolor: '#f4f4f4', height: '100vh' }}>
+        <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9' }} >
+            <Grid item xs={12} sm={4} md={5} lg={4} sx={{
+                height: '100vh',
+            }}>
                 <Navigation />
             </Grid>
-            <Grid item xs={9}>
+            <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflowY: 'auto', p: { xs: 2, md: 1 }, height: '100%', bgcolor: '#eff7f9' }}>
                 <Outlet />
             </Grid>
         </Grid>

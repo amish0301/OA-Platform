@@ -13,7 +13,7 @@ const CreateTest = () => {
 
   const [name, setName] = useState('Test Name');
   const dispatch = useDispatch();
-  const { isQuestionAdd, isEditTestName } = useSelector(state => state.admin);
+  const { isEditTestName } = useSelector(state => state.admin);
 
   useEffect(() => {
 
@@ -25,10 +25,10 @@ const CreateTest = () => {
       <Typography variant="h4" sx={{ fontWeight: '600', color: 'GrayText', marginBottom: '.5rem' }}>
         Create Test
       </Typography>
-      <Paper elevation={2} sx={{ padding: '1.5rem', minHeight: 'calc(100vh - 12rem)', borderRadius: '1rem', display: { xs: 'row', sm: 'flex' }, flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', bgcolor: 'white' }}>
+      <Paper elevation={2} sx={{ padding: '1.5rem', minHeight: '100%', borderRadius: '1rem', display: { xs: 'row', sm: 'flex' }, flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', bgcolor: 'white' }}>
 
         {/* left */}
-        <Box sx={{ width: { xs: '100%', sm: '50%' } }}>
+        <Box sx={{ width: { xs: '100%', sm: '50%' }, height: '100%', overflowY: 'auto' }}>
           <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', marginBottom: '.5rem' }}>
             {
               !isEditTestName ? <Typography variant='h6' sx={{ width: '100%', fontWeight: '600', color: 'GrayText' }}>{name}</Typography> : <input type="text" value={name} onChange={(e) => setName(e.target.value)} />

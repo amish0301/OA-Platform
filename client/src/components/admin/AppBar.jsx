@@ -39,7 +39,7 @@ const AppBar = () => {
     }
 
     return (
-        <Paper elevation={1} sx={{ padding: '1rem', margin: '0 1rem', borderRadius: '1rem', minWidth: '70vw', bgcolor: '#ffffff', position: 'sticky', top: 0 }}>
+        <Paper elevation={1} sx={{ padding: '1rem', margin: '1rem', borderRadius: '1rem', minWidth: '70vw', bgcolor: '#ffffff', position: 'sticky', top: 0 }}>
             <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
                 <SearchField search={search} setSearch={setSearch} />
                 <Stack direction={'row'} alignItems={'center'} spacing={'1rem'}>
