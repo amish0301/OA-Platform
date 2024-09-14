@@ -4,7 +4,7 @@ import { BiSolidEdit as EditIcon } from "react-icons/bi";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
 import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsEditTestName, setTestName } from '../../../redux/slices/admin';
+import { resetAdminState, setIsEditTestName, setTestName } from '../../../redux/slices/admin';
 import CustomAccordian from '../../../shared/Accordian';
 import QuestionList from '../QuestionList';
 
@@ -12,7 +12,7 @@ const CreateTest = () => {
 
   const [name, setName] = useState('');
   const dispatch = useDispatch();
-  const { isEditTestName, questions, testName, testDuration } = useSelector(state => state.admin);
+  const { isEditTestName, questions, testName, testDuration, categories } = useSelector(state => state.admin);
 
   const closeEditTestName = () => {
     dispatch(setIsEditTestName(false));
@@ -28,6 +28,11 @@ const CreateTest = () => {
     e.preventDefault();
 
     // API call to create test
+    // const formData = new FormData();
+    // formData.append('testName', testName);
+    // formData.append('testDuration', testDuration);
+    // formData.append('categories', JSON.stringify(categories));
+    // formData.append('questions', JSON.stringify(questions));
   }
 
   return (
@@ -67,6 +72,7 @@ const CreateTest = () => {
             <CustomAccordian title={'Results'} index={2} />
             <CustomAccordian title={'Test Duration'} index={3} />
             <CustomAccordian title={'Add Category'} index={4} />
+            <CustomAccordian title={'Add Description'} index={5} />
           </Stack>
         </Box>
 

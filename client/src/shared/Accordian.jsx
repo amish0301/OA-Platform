@@ -1,26 +1,35 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Fade, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Fade, TextField, Typography } from '@mui/material';
 import React, { Fragment, useState } from 'react';
 import { IoIosAddCircleOutline as AddIcon } from "react-icons/io";
 import { MdDeleteOutline as DeleteIcon, MdExpandMore as ExpandMoreIcon } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
 import QuestionList from '../components/admin/QuestionList';
 import Results from '../components/admin/Results';
+import TestCategory from '../components/admin/TestCategory';
 import TestDuration from '../components/admin/TestDuration';
 import { DeleteQuestionModal, QuestionModal } from '../lib/Modal';
-import { setIsDeleteQuestion, setIsQuestionAdd } from '../redux/slices/admin';
-import TestCategory from '../components/admin/TestCategory';
+import { setIsDeleteQuestion, setIsEditTestDescription, setIsQuestionAdd, setTestDescription } from '../redux/slices/admin';
 
 const CustomAccordian = ({ title, content, index }) => {
 
     const [expanded, setExpanded] = useState(false);
+    const { isQuestionAdd, isDeleteQuestion, isEditTestDescription, trace, testDuration, testDescription, questions, categories } = useSelector(state => state.admin);
+    const [desc, setDesc] = useState(testDescription || '');
 
     const handleExpansion = () => {
         setExpanded(prev => !prev);
     }
+    const handleIsEditTestDescription = () => {
+        dispatch(setIsEditTestDescription(true));
+    }
+
+    const handleSaveTestDescription = () => {
+        dispatch(setTestDescription(desc));
+        dispatch(setIsEditTestDescription(false));
+    }
 
     const dispatch = useDispatch();
 
-    const { isQuestionAdd, isDeleteQuestion, trace, testDuration, questions } = useSelector(state => state.admin);
 
     return (
         <div>
@@ -79,7 +88,27 @@ const CustomAccordian = ({ title, content, index }) => {
                     }
                     {index == 2 && <Results dispatch={dispatch} questions={questions} />}
                     {index == 3 && <TestDuration testDuration={testDuration} dispatch={dispatch} />}
-                    {index == 4 && <TestCategory />}
+                    {index == 4 && <TestCategory dispatch={dispatch} categories={categories} />}
+                    {index == 5 &&
+                        <div className='space-x-2 flex items-center'>
+                            <TextField
+                                label="Test Description"
+                                variant="outlined"
+                                multiline
+                                rows={3}
+                                sx={{ p: '.5rem', mt: '.5rem', width: '100%' }}
+                                value={desc}
+                                onChange={e => setDesc(e.target.value)}
+                                disabled={!isEditTestDescription}
+                            />
+                            <Button
+                                variant='contained'
+                                sx={{ mt: '1rem 0', padding: '0.5rem 1rem', bgcolor: '#286675' }}
+                                onClick={isEditTestDescription ? handleSaveTestDescription : handleIsEditTestDescription}
+                            >
+                                {isEditTestDescription ? 'Save' : 'Edit'}
+                            </Button>
+                        </div>}
                 </AccordionDetails>
             </Accordion>
         </div>

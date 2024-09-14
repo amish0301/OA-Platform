@@ -4,6 +4,8 @@ const initialState = {
   isQuestionAdd: false,
   isDeleteQuestion: false,
   isEditTestName: false,
+  isEditTestDuration: false,
+  isEditTestDescription: false,
   newQuestion: {
     id: 0,
     question: "",
@@ -14,7 +16,8 @@ const initialState = {
   trace: 0,
   testName: "",
   testDuration: 0,
-  isEditTestDuration: true,
+  categories: [],
+  testDescription: "",
 };
 
 const adminSlice = createSlice({
@@ -70,9 +73,22 @@ const adminSlice = createSlice({
     setIsEditTestDuration: (state, action) => {
       state.isEditTestDuration = action.payload;
     },
+    setIsEditTestDescription: (state, action) => {
+      state.isEditTestDescription = action.payload;
+    },
     setTestDuration: (state, action) => {
       state.testDuration = action.payload;
     },
+
+    setCategory: (state, action) => {
+      state.categories = action.payload;
+    },
+
+    setTestDescription: (state, action) => {
+      state.testDescription = action.payload;
+    },
+
+    resetAdminState: (state) => state = initialState
   },
 });
 
@@ -90,4 +106,8 @@ export const {
   setTestName,
   setTestDuration,
   setIsEditTestDuration,
+  setIsEditTestDescription,
+  setCategory,
+  setTestDescription,
+  resetAdminState
 } = adminSlice.actions;

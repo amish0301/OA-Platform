@@ -1,21 +1,21 @@
 import { Button, Chip, Stack, TextField } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { MdOutlineDeleteOutline as DeleteIcon } from "react-icons/md";
+import { setCategory } from '../../redux/slices/admin';
 
-const TestCategory = () => {
-    const [categories, setCategories] = useState([]);
+const TestCategory = ({ dispatch, categories }) => {
     const [newCategory, setNewCategory] = useState('');
     const inputRef = useRef(null);
 
     const handleAddCategory = () => {
         if (newCategory.trim() && !categories.includes(newCategory.trim())) {
-            setCategories([...categories, newCategory.trim()]);
+            dispatch(setCategory([...categories, newCategory.trim()]));
             setNewCategory('');
         }
     };
 
     const handleDeleteCategory = (categoryToDelete) => {
-        setCategories(categories.filter(category => category !== categoryToDelete));
+        dispatch(setCategory(categories.filter(category => category !== categoryToDelete)));
     };
 
     // key press 
@@ -23,7 +23,9 @@ const TestCategory = () => {
         const handleKeyDown = (event) => {
             if (event.key === '/') {
                 inputRef.current?.focus();
-            };
+            } else if (event.key === 'Escape') {
+                inputRef.current?.blur();
+            }
         }
         document.addEventListener('keydown', handleKeyDown);
 
@@ -42,10 +44,8 @@ const TestCategory = () => {
                     fullWidth
                     inputRef={inputRef}
                     value={newCategory}
+                    onKeyDown={(e) => { if (e.key === 'Enter') handleAddCategory() }}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddCategory();
-                    }}
                 />
                 <Button
                     variant="contained"
@@ -58,7 +58,7 @@ const TestCategory = () => {
             </Stack>
 
             <Stack direction="row" spacing={1} flexWrap="wrap">
-                {categories.map((category, index) => (
+                {categories?.map((category, index) => (
                     <Chip
                         key={index}
                         label={category}
