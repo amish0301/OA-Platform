@@ -1,23 +1,32 @@
-import { Box, IconButton, Paper, Stack, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Box, Button, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
+import React, { useState } from 'react';
 import { BiSolidEdit as EditIcon } from "react-icons/bi";
-import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
-import CustomAccordian from '../../../shared/Accordian';
+import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsEditTestName } from '../../../redux/slices/admin';
+import { setIsEditTestName, setTestName } from '../../../redux/slices/admin';
+import CustomAccordian from '../../../shared/Accordian';
 import QuestionList from '../QuestionList';
 
 const CreateTest = () => {
 
-  const [name, setName] = useState('Test Name');
+  const [name, setName] = useState('');
   const dispatch = useDispatch();
-  const { isEditTestName, questions } = useSelector(state => state.admin);
+  const { isEditTestName, questions, testName } = useSelector(state => state.admin);
 
-  useEffect(() => {
+  const closeEditTestName = () => {
+    dispatch(setIsEditTestName(false));
+    setName('');
+  }
 
-  }, [dispatch])
+  const setTestNameHandler = () => {
+    dispatch(setTestName(name));
+    closeEditTestName();
+  }
 
+  const createTestHandler = (e) => {
+    e.preventDefault();
+  }
 
   return (
     <Stack sx={{ p: '1rem', height: '100%' }} spacing={3}>
@@ -30,18 +39,20 @@ const CreateTest = () => {
         <Box sx={{ width: { xs: '100%', sm: '50%' }, height: '100%', overflowY: 'auto' }}>
           <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', marginBottom: '.5rem' }}>
             {
-              !isEditTestName ? <Typography variant='h6' sx={{ width: '100%', fontWeight: '600', color: 'GrayText' }}>{name}</Typography> : <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+              !isEditTestName ? <Typography variant='h6' sx={{ width: '100%', fontWeight: '600', color: 'GrayText' }}>{
+                testName ? testName : 'Test Name'
+              }</Typography> : <TextField label="Test Name" variant="outlined" size='small' sx={{ p: '.5rem', mt: '.5rem' }} onChange={(e) => setName(e.target.value)} />
             }
             {
-              !isEditTestName ? <div className='create_test_edit' onClick={() => dispatch(setIsEditTestName(!isEditTestName))}>
+              !isEditTestName ? <div className='create_test_edit' onClick={() => dispatch(setIsEditTestName(true))}>
                 <EditIcon style={{ color: 'green', fontSize: '1.2rem' }} />
                 <span style={{ marginLeft: '.3rem', color: 'green' }}>Edit Testname</span>
               </div> : (
                 <div className='space-x-2 flex items-center'>
-                  <IconButton onClick={() => dispatch(setIsEditTestName(false))} size='medium'>
+                  <IconButton onClick={closeEditTestName} size='medium'>
                     <CrossIcon className='text-red-500' />
                   </IconButton>
-                  <IconButton onClick={() => dispatch(setIsEditTestName(false))} size='medium'>
+                  <IconButton onClick={setTestNameHandler} size='medium'>
                     <CheckIcon className='text-green-500' />
                   </IconButton>
                 </div>
@@ -51,22 +62,28 @@ const CreateTest = () => {
 
           <Stack direction={'column'} sx={{ width: '100%', padding: '0 2rem', marginTop: '2rem' }} spacing={3}>
             <CustomAccordian title={'Questions'} content={questions} index={1} />
-            <CustomAccordian title={'Results'} content={'See results'} />
-            <CustomAccordian title={'Time Settings'} content={'timer'} />
+            <CustomAccordian title={'Results'} index={2} />
+            <CustomAccordian title={'Test Duration'} index={3} />
           </Stack>
         </Box>
 
         {/* right */}
-        <Box sx={{ width: { xs: '100%', sm: '50%', overflowY: 'auto' }, maxHeight: '100%' }}>
+        <Box sx={{ width: { xs: '100%', sm: '50%', overflowY: 'auto', display: 'flex', flexDirection: 'column' }, maxHeight: '100%' }}>
+          <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', marginBottom: '.5rem' }}>
+            <Typography variant="h6" sx={{ fontWeight: '600', color: 'GrayText', marginBottom: '.5rem' }}>
+              Preview
+            </Typography>
+            <Button variant='contained' size='medium' color='success' sx={{ ml: 'auto', mb: '.5rem' }} onClick={createTestHandler}>Create</Button>
+          </Stack>
           <Box sx={{ width: '100%', height: '100%', overflowY: 'auto', padding: '1rem', border: '1px solid black', borderRadius: '1rem' }}>
-            <QuestionList questions={questions} isPreview={true}/>
+            {
+              questions.length ? <QuestionList questions={questions} isPreview={true} /> : <Typography variant='h6' textTransform={'capitalize'} sx={{ fontWeight: '600', color: 'GrayText', textAlign: 'center', marginY: '50%' }}>No Questions added</Typography>
+            }
           </Box>
         </Box>
       </Paper>
     </Stack>
   )
 }
-
-// for rendering questions - we can resue same questionList component with optional rendernig
 
 export default CreateTest

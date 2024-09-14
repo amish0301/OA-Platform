@@ -4,20 +4,22 @@ import { IoIosAddCircleOutline as AddIcon } from "react-icons/io";
 import { MdDeleteOutline as DeleteIcon, MdExpandMore as ExpandMoreIcon } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
 import QuestionList from '../components/admin/QuestionList';
+import Results from '../components/admin/Results';
+import TestDuration from '../components/admin/TestDuration';
 import { DeleteQuestionModal, QuestionModal } from '../lib/Modal';
 import { setIsDeleteQuestion, setIsQuestionAdd } from '../redux/slices/admin';
 
 const CustomAccordian = ({ title, content, index }) => {
 
     const [expanded, setExpanded] = useState(false);
+
     const handleExpansion = () => {
         setExpanded(prev => !prev);
     }
 
     const dispatch = useDispatch();
 
-    const { isQuestionAdd, isDeleteQuestion, trace } = useSelector(state => state.admin);
-
+    const { isQuestionAdd, isDeleteQuestion, trace, testDuration } = useSelector(state => state.admin);
 
     return (
         <div>
@@ -69,11 +71,13 @@ const CustomAccordian = ({ title, content, index }) => {
                                     </Button>
                                     <Button variant='outlined' color='error' startIcon={<DeleteIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#ffffff' }} onClick={() => dispatch(setIsDeleteQuestion(true))}>Delete Question</Button>
                                 </div>
-                                {isQuestionAdd && <QuestionModal isQuestionAdd={isQuestionAdd} dispatch={dispatch} questionId={trace}/>}
+                                {isQuestionAdd && <QuestionModal isQuestionAdd={isQuestionAdd} dispatch={dispatch} questionId={trace} />}
                                 {isDeleteQuestion && <DeleteQuestionModal isDeleteQuestion={isDeleteQuestion} dispatch={dispatch} />}
                             </Fragment>
                         )
                     }
+                    {index == 2 && <Results dispatch={dispatch} />}
+                    {index == 3 && <TestDuration testDuration={testDuration} dispatch={dispatch} />}
                 </AccordionDetails>
             </Accordion>
         </div>

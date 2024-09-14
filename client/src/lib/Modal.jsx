@@ -105,7 +105,6 @@ export const DeleteQuestionModal = (props) => {
     const handleDelete = (e) => {
         e.preventDefault();
 
-        // TODO: delete questions
         input.trimStart().trimEnd();
         if(input === 'all') {
             dispatch(resetQuestions());

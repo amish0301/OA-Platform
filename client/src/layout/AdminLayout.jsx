@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import { Box, Drawer, Grid, IconButton, Stack, Typography, styled } from '@mui/material'
-import { MdDashboard as DashboardIcon, MdMenu as MenuIcon, MdManageAccounts as ManageAccountsIcon, MdLogout as ExitToAppIcon } from "react-icons/md";
+import { Box, Drawer, Grid, IconButton, Stack, Typography, styled } from '@mui/material';
+import React from 'react';
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
-import { useDispatch, useSelector } from "react-redux";
 import { IoCreateOutline as Create } from "react-icons/io5";
+import { MdDashboard as DashboardIcon, MdManageAccounts as ManageAccountsIcon, MdMenu as MenuIcon } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
 
-import { useLocation, Link as LinkComponent, Navigate, Outlet } from 'react-router-dom'
+import { Link as LinkComponent, Outlet, useLocation } from 'react-router-dom';
 import AppBar from '../components/admin/AppBar';
 import { setIsMobile } from '../redux/slices/misc';
 
@@ -120,11 +120,8 @@ const AdminLayout = () => {
         dispatch(setIsMobile(!isMobile));
     }
 
-    const isAdmin = useSelector(state => state.user.user?.isAdmin)
     const handleClose = () => dispatch(setIsMobile(false))
-
-    if (!isAdmin) return <Navigate to={'/admin/login'} />
-
+    
     return (
         <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9' }}>
             <Box sx={{ display: { xs: 'block', sm: 'none' }, position: 'fixed', right: '1rem', top: '0.5rem', zIndex: 100 }}>
