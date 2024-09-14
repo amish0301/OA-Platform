@@ -2,10 +2,10 @@ import { Accordion, AccordionDetails, AccordionSummary, Button, Fade, Typography
 import React, { Fragment, useState } from 'react';
 import { IoIosAddCircleOutline as AddIcon } from "react-icons/io";
 import { MdDeleteOutline as DeleteIcon, MdExpandMore as ExpandMoreIcon } from "react-icons/md";
-import QuestionList from '../components/admin/QuestionList';
-import { setIsQuestionAdd } from '../redux/slices/admin';
 import { useDispatch, useSelector } from 'react-redux';
-import { QuestionModal } from '../lib/Modal';
+import QuestionList from '../components/admin/QuestionList';
+import { DeleteQuestionModal, QuestionModal } from '../lib/Modal';
+import { setIsDeleteQuestion, setIsQuestionAdd } from '../redux/slices/admin';
 
 const CustomAccordian = ({ title, content, index }) => {
 
@@ -16,7 +16,7 @@ const CustomAccordian = ({ title, content, index }) => {
 
     const dispatch = useDispatch();
 
-    const { isQuestionAdd } = useSelector(state => state.admin);
+    const { isQuestionAdd, isDeleteQuestion, trace } = useSelector(state => state.admin);
 
 
     return (
@@ -62,14 +62,15 @@ const CustomAccordian = ({ title, content, index }) => {
                             <Fragment>
                                 <QuestionList questions={content} />
                                 <div className='w-full flex flex-col sticky bottom-0 z-1 '>
-                                    <Button variant='contained' startIcon={<AddIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#286675' }} onClick={() => dispatch(setIsQuestionAdd(!isQuestionAdd))}>
+                                    <Button variant='contained' startIcon={<AddIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#286675' }} onClick={() => dispatch(setIsQuestionAdd(true))}>
                                         {
                                             isQuestionAdd ? 'Cancel' : 'Add Question'
                                         }
                                     </Button>
-                                    <Button variant='outlined' color='error' startIcon={<DeleteIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#ffffff' }}>Delete Question</Button>
+                                    <Button variant='outlined' color='error' startIcon={<DeleteIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#ffffff' }} onClick={() => dispatch(setIsDeleteQuestion(true))}>Delete Question</Button>
                                 </div>
-                                {isQuestionAdd && <QuestionModal isQuestionAdd={isQuestionAdd} dispatch={dispatch}  />}
+                                {isQuestionAdd && <QuestionModal isQuestionAdd={isQuestionAdd} dispatch={dispatch} questionId={trace}/>}
+                                {isDeleteQuestion && <DeleteQuestionModal isDeleteQuestion={isDeleteQuestion} dispatch={dispatch} />}
                             </Fragment>
                         )
                     }

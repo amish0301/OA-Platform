@@ -2,16 +2,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   isQuestionAdd: false,
+  isDeleteQuestion: false,
   isEditTestName: false,
-  deleteQuestions: [],
-  questions: [
-    {
-      id: null,
-      question: "",
-      options: [],
-      answer: null,
-    },
-  ],
+  newQuestion: {
+    id: 0,
+    question: "",
+    options: [],
+    answer: null,
+  },
+  questions: [],
+  trace: 0,
 };
 
 const adminSlice = createSlice({
@@ -21,26 +21,34 @@ const adminSlice = createSlice({
     setIsQuestionAdd: (state, action) => {
       state.isQuestionAdd = action.payload;
     },
-
+    setIsDeleteQuestion: (state, action) => {
+      state.isDeleteQuestion = action.payload;
+    },
     setIsEditTestName: (state, action) => {
       state.isEditTestName = action.payload;
     },
-    setDeleteQuestions: (state, action) => {
-      state.deleteQuestions = action.payload;
+    setQuestions: (state) => {
+      state.questions = [...state.questions, state.newQuestion];
+      state.trace = state.trace + 1;
     },
-
-    // might fix needed
-    setQuestions: (state, action) => {
-      state.questions = [...state.questions, ...action.payload];
-    },
-
     resetQuestions: (state) => {
       state.questions = initialState.questions;
+      state.trace = initialState.trace;
     },
-
-    updateOptions: (state, action) => {
-      const { index, value } = action.payload;
-      state.questions[index].options = value;
+    setNewQuestion: (state, action) => {
+      state.newQuestion = {
+        question: action.payload.desc,
+        options: action.payload.options,
+        answer: action.payload.answer,
+        id: action.payload.id,
+      };
+    },
+    resetNewQuestion: (state) => {
+      state.newQuestion = initialState.newQuestion;
+    },
+    deleteQuestions: (state, action) => {
+      const nums = action.payload;
+      state.questions = state.questions.filter((q) => !nums?.includes(q.id));
     },
   },
 });
@@ -48,9 +56,11 @@ const adminSlice = createSlice({
 export default adminSlice;
 export const {
   setIsQuestionAdd,
-  setDeleteQuestions,
   setQuestions,
   resetQuestions,
   setIsEditTestName,
-  updateOptions,
+  resetNewQuestion,
+  setNewQuestion,
+  setIsDeleteQuestion,
+  deleteQuestions,
 } = adminSlice.actions;

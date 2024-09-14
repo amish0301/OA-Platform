@@ -4,7 +4,6 @@ import { BiSolidEdit as EditIcon } from "react-icons/bi";
 import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
 import CustomAccordian from '../../../shared/Accordian';
-import { questions } from '../../../constants/sampleData';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsEditTestName } from '../../../redux/slices/admin';
 import QuestionList from '../QuestionList';
@@ -13,7 +12,7 @@ const CreateTest = () => {
 
   const [name, setName] = useState('Test Name');
   const dispatch = useDispatch();
-  const { isEditTestName } = useSelector(state => state.admin);
+  const { isEditTestName, questions } = useSelector(state => state.admin);
 
   useEffect(() => {
 
@@ -60,7 +59,7 @@ const CreateTest = () => {
         {/* right */}
         <Box sx={{ width: { xs: '100%', sm: '50%', overflowY: 'auto' }, maxHeight: '100%' }}>
           <Box sx={{ width: '100%', height: '100%', overflowY: 'auto', padding: '1rem', border: '1px solid black', borderRadius: '1rem' }}>
-            <QuestionList questions={questions} />
+            <QuestionList questions={questions} isPreview={true}/>
           </Box>
         </Box>
       </Paper>
