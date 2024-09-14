@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { IoClose as CloseIcon } from 'react-icons/io5';
 import { toast } from 'react-toastify';
 import { deleteQuestions, resetNewQuestion, resetQuestions, setIsDeleteQuestion, setIsQuestionAdd, setNewQuestion, setQuestions } from '../redux/slices/admin';
+import { validateInput } from './feature';
 
 export const QuestionModal = (props) => {
 
@@ -93,7 +94,7 @@ export const QuestionModal = (props) => {
 }
 
 export const DeleteQuestionModal = (props) => {
-    const { isDeleteQuestion, dispatch } = props;
+    const { isDeleteQuestion, dispatch, questions } = props;
 
     const [input, setInput] = useState('');
 
@@ -105,22 +106,24 @@ export const DeleteQuestionModal = (props) => {
     const handleDelete = (e) => {
         e.preventDefault();
 
-        input.trimStart().trimEnd();
-        if(input === 'all') {
+        const errorMessage = validateInput(input, questions);
+
+        if (errorMessage) {
+            return toast.error(errorMessage);
+        }
+
+        input.trim();
+
+        if (input === 'all') {
             dispatch(resetQuestions());
             handleClose();
             return toast.success('All questions deleted successfully');
-        }else if(input.length === 1) {
-            dispatch(deleteQuestions([parseInt(input)]));
-            handleClose();
-            return toast.success('Question deleted successfully');  
         }
 
-        // if there multiple input then
-        const nums = input.split(',');
-        const filtered = nums.filter(num => num !== '').flatMap(num => parseInt(num));
-        dispatch(deleteQuestions(filtered))
+        const nums = input.split(',').map(num => parseInt(num.trim()));
+        dispatch(deleteQuestions(nums))
         handleClose();
+        return toast.success('Questions deleted successfully');
     }
 
     return (

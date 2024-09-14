@@ -51,7 +51,7 @@ const adminSlice = createSlice({
     },
     deleteQuestions: (state, action) => {
       const nums = action.payload;
-      state.questions = state.questions.filter((q) => !nums?.includes(q.id));
+      state.questions = state.questions.filter((q) => !nums.includes(q.id));
 
       // reset trace if no questions
       if (state.questions.length == 0) {

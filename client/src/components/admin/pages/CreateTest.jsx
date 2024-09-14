@@ -12,7 +12,7 @@ const CreateTest = () => {
 
   const [name, setName] = useState('');
   const dispatch = useDispatch();
-  const { isEditTestName, questions, testName } = useSelector(state => state.admin);
+  const { isEditTestName, questions, testName, testDuration } = useSelector(state => state.admin);
 
   const closeEditTestName = () => {
     dispatch(setIsEditTestName(false));
@@ -26,6 +26,8 @@ const CreateTest = () => {
 
   const createTestHandler = (e) => {
     e.preventDefault();
+
+    // API call to create test
   }
 
   return (
@@ -64,6 +66,7 @@ const CreateTest = () => {
             <CustomAccordian title={'Questions'} content={questions} index={1} />
             <CustomAccordian title={'Results'} index={2} />
             <CustomAccordian title={'Test Duration'} index={3} />
+            <CustomAccordian title={'Add Category'} index={4} />
           </Stack>
         </Box>
 

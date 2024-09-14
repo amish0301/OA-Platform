@@ -8,6 +8,7 @@ import Results from '../components/admin/Results';
 import TestDuration from '../components/admin/TestDuration';
 import { DeleteQuestionModal, QuestionModal } from '../lib/Modal';
 import { setIsDeleteQuestion, setIsQuestionAdd } from '../redux/slices/admin';
+import TestCategory from '../components/admin/TestCategory';
 
 const CustomAccordian = ({ title, content, index }) => {
 
@@ -19,7 +20,7 @@ const CustomAccordian = ({ title, content, index }) => {
 
     const dispatch = useDispatch();
 
-    const { isQuestionAdd, isDeleteQuestion, trace, testDuration } = useSelector(state => state.admin);
+    const { isQuestionAdd, isDeleteQuestion, trace, testDuration, questions } = useSelector(state => state.admin);
 
     return (
         <div>
@@ -72,12 +73,13 @@ const CustomAccordian = ({ title, content, index }) => {
                                     <Button variant='outlined' color='error' startIcon={<DeleteIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#ffffff' }} onClick={() => dispatch(setIsDeleteQuestion(true))}>Delete Question</Button>
                                 </div>
                                 {isQuestionAdd && <QuestionModal isQuestionAdd={isQuestionAdd} dispatch={dispatch} questionId={trace} />}
-                                {isDeleteQuestion && <DeleteQuestionModal isDeleteQuestion={isDeleteQuestion} dispatch={dispatch} />}
+                                {isDeleteQuestion && <DeleteQuestionModal isDeleteQuestion={isDeleteQuestion} dispatch={dispatch} questions={questions} />}
                             </Fragment>
                         )
                     }
-                    {index == 2 && <Results dispatch={dispatch} />}
+                    {index == 2 && <Results dispatch={dispatch} questions={questions} />}
                     {index == 3 && <TestDuration testDuration={testDuration} dispatch={dispatch} />}
+                    {index == 4 && <TestCategory />}
                 </AccordionDetails>
             </Accordion>
         </div>

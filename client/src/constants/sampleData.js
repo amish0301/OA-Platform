@@ -41,4 +41,10 @@ export const questions = [
         answer: 1,
         options: ["Ottawa", "Toronto", "Vancouver", "Calgary"],
     },
+    {
+        id: 8,
+        question: "What is the largest ocean in the world?",
+        answer: 1,
+        options: ["Pacific", "Atlantic", "Indian", "Arctic"],
+    },
 ];
