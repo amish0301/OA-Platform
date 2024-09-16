@@ -1,25 +1,29 @@
 import axios from "axios";
 import store from "../redux/store"; // Import your redux store
 import { setToken, userNotExists } from "../redux/slices/userSlice";
+import { serverURI } from "../lib/config";
+
+class TokenRefreshManager {
+  isRefreshing = false;
+  refreshSubscribers = [];
+
+  subscribeTokenRefresh(cb) {
+    this.refreshSubscribers.push(cb);
+  }
+
+  onRefreshed = (newToken) => {
+    this.refreshSubscribers.forEach((cb) => cb(newToken));
+    this.refreshSubscribers = [];
+  };
+}
+
+const tokenManager = new TokenRefreshManager();
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_URI,
+  baseURL: serverURI,
   withCredentials: true,
 });
 
-let isRefreshing = false;
-let refreshSubscribers = [];
-
-const subscribeTokenRefresh = (cb) => {
-  refreshSubscribers.push(cb);
-};
-
-const onRefreshed = (newToken) => {
-  refreshSubscribers.map((cb) => cb(newToken));
-  refreshSubscribers = [];
-};
-
-// if user logged in through Oauth then we're storing tokens in redux state
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = store.getState().user?.accessToken;
@@ -36,62 +40,66 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const {
-      config,
-      response: { status },
-    } = error;
-    const state = store.getState();
-    const dispatch = store.dispatch;
+    const originalRequest = error.config;
+    const { status } = error.response || {};
 
-    if (status === 401 && !config._retry) {
-      if (isRefreshing) {
+    if (status === 401 && !originalRequest._retry) {
+      if (tokenManager.isRefreshing) {
         return new Promise((resolve) => {
-          subscribeTokenRefresh((newToken) => {
-            config.headers["Authorization"] = `Bearer ${newToken}`;
-            resolve(axiosInstance(config));
+          tokenManager.subscribeTokenRefresh((newToken) => {
+            originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            resolve(axiosInstance(originalRequest));
           });
         });
       }
 
-      config._retry = true;
-      isRefreshing = true;
+      originalRequest._retry = true;
+      tokenManager.isRefreshing = true;
 
-      return new Promise(async (resolve, reject) => {
-        try {
-          const response = await axios.post(
-            `${import.meta.env.VITE_SERVER_URI}/auth/refresh-token`,
-            {
-              refreshToken: state.user.user.refreshToken,
-            },
-            { withCredentials: true }
-          );
-          
-          const newAccessToken = response.data?.accessToken;
+      try {
+        const response = await axios.post(
+          `${serverURI}/auth/refresh-token`,
+          {
+            refreshToken: store.getState().user?.refreshToken,
+          },
+          { withCredentials: true }
+        );
+        const newAccessToken = response.data?.accessToken;
 
-          dispatch(setToken(newAccessToken)); // -store.dispatch
+        if (newAccessToken) {
+          store.dispatch(setToken(newAccessToken));
           localStorage.setItem("accessToken", newAccessToken);
-
           axiosInstance.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${newAccessToken}`;
-          config.headers["Authorization"] = `Bearer ${newAccessToken}`;
+          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
 
-          isRefreshing = false;
-          onRefreshed(newAccessToken);
-          resolve(axiosInstance(config));
-        } catch (err) {
-          isRefreshing = false;
-          dispatch(setToken(null));
-          dispatch(userNotExists());
-          localStorage.removeItem("accessToken");
-          localStorage.removeItem("reduxState");
-          reject('Token Expired Login Again');
+          tokenManager.isRefreshing = false;
+          tokenManager.onRefreshed(newAccessToken);
+          return axiosInstance(originalRequest);
         }
-      });
+      } catch (refreshError) {
+        return handleAuthError(refreshError);
+      } finally {
+        tokenManager.isRefreshing = false;
+      }
+    }
+
+    if (status == 403) {
+      return handleAuthError(error);
     }
 
     return Promise.reject(error);
   }
 );
+
+function handleAuthError(error) {
+  tokenManager.isRefreshing = false;
+  store.dispatch(setToken(null));
+  store.dispatch(userNotExists());
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("reduxState");
+  return Promise.reject("Authentication failed. Please log in again.");
+}
 
 export default axiosInstance;

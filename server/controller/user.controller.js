@@ -4,23 +4,26 @@ const User = require("../db/user.model");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
-const logoutUser = TryCatch(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.uId,
-    {
-      $set: { refreshToken: undefined },
-    },
-    { new: true }
-  );
-  return res
-    .status(200)
-    .clearCookie("accessToken", cookieOption)
-    .clearCookie("refreshToken", cookieOption)
-    .json({
-      success: true,
-      message: "Logged out successfully",
-    });
-});
+// const logoutUser = TryCatch(async (req, res) => {
+//   // await User.findByIdAndUpdate(
+//   //   req.uId,
+//   //   {
+//   //     $set: { refreshToken: undefined },
+//   //   },
+//   //   { new: true }
+//   // );
+
+//   await User.findByIdAndDelete(req.uId);
+  
+//   return res
+//     .status(200)
+//     .clearCookie("accessToken", cookieOption)
+//     .clearCookie("refreshToken", cookieOption)
+//     .json({
+//       success: true,
+//       message: "Logged out successfully",
+//     });
+// });
 
 const changePassword = TryCatch(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
@@ -53,4 +56,4 @@ const userInfo = TryCatch(async (req, res) => {
     return res.status(401).json({ success: false, message: "User not found" });
 });
 
-module.exports = { logoutUser, userInfo, changePassword };
+module.exports = {  userInfo, changePassword };

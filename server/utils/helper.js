@@ -11,9 +11,9 @@ const TryCatch = (fn) => (req, res) => {
 
 const cookieOption = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "none",
-  maxAge: null,
+  secure: process.env.NODE_ENV === "PRODUCTION",
+  sameSite: "strict",
+  maxAge: 1000 * 60 * 60 * 24,
 };
 
 const generateTokens = async (user) => {
@@ -37,7 +37,6 @@ const sendToken = async (res, statusCode, user, message) => {
       message,
     });
   } catch (error) {
-    console.log("errr in sendtoken", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",

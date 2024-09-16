@@ -8,7 +8,6 @@ router.use(isAuthenticated);
 router.post('/login', adminLogin)
 router.get('/logout', adminLogout);
 
-
 // fetch All users
 router.get('/users', fetchUsers);
 

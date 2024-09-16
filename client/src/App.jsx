@@ -1,34 +1,34 @@
-import React, { Suspense, useEffect, useState } from 'react'
-import { Route, Routes, useNavigate } from 'react-router-dom'
-import AppLayout from './layout/AppLayout.jsx'
-import { ToastContainer } from 'react-toastify'
+import React, { Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import AppLayout from './layout/AppLayout.jsx';
 
-import Home from './components/Home.jsx'
-import About from './components/About.jsx'
-import Login from './pages/Login.jsx'
-import Test from './components/Test.jsx'
-import Instruction from './pages/Instruction.jsx'
-import Profile from './pages/Profile.jsx'
-import AdminLayout from './layout/AdminLayout.jsx'
-import Dashboard from './components/admin/Dashboard.jsx'
-import CreateTest from './components/admin/pages/CreateTest.jsx'
-import ForgetPassword from './components/ForgetPassword.jsx'
-import Loader from './components/Loader.jsx'
-import NotFound from './components/NotFound.jsx'
-import ProtectRoute from './lib/ProtectRoute.jsx'
-import { setToken, userExists, userNotExists } from './redux/slices/userSlice.js';
-import AssignedTest from './pages/AssignedTest.jsx';
-import TestDashboard from './layout/TestDashboard.jsx';
-import TestCompleted from './components/TestCompleted.jsx';
-import AdminLogin from './components/admin/Login.jsx';
-import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import axios from 'axios';
+import About from './components/About.jsx';
+import Dashboard from './components/admin/Dashboard.jsx';
+import AdminLogin from './components/admin/Login.jsx';
+import CreateTest from './components/admin/pages/CreateTest.jsx';
+import ForgetPassword from './components/ForgetPassword.jsx';
+import Home from './components/Home.jsx';
+import Loader from './components/Loader.jsx';
+import NotFound from './components/NotFound.jsx';
+import Test from './components/Test.jsx';
+import TestCompleted from './components/TestCompleted.jsx';
 import axiosInstance from './hooks/useAxios.js';
+import AdminLayout from './layout/AdminLayout.jsx';
+import TestDashboard from './layout/TestDashboard.jsx';
+import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
+import ProtectRoute from './lib/ProtectRoute.jsx';
+import AssignedTest from './pages/AssignedTest.jsx';
+import Instruction from './pages/Instruction.jsx';
+import Login from './pages/Login.jsx';
+import Profile from './pages/Profile.jsx';
+import { setToken, userExists } from './redux/slices/userSlice.js';
 
 // Admin Pages
-import UserManagement from './components/admin/pages/UserManagement.jsx';
 import TestManagement from './components/admin/pages/TestManagement.jsx';
+import UserManagement from './components/admin/pages/UserManagement.jsx';
 
 const LoginSuccess = () => {
   const navigate = useNavigate()
@@ -45,11 +45,11 @@ const LoginSuccess = () => {
 
         if (res.data.success && res.data.user) {
           dispatch(userExists(res.data.user))
-          dispatch(setToken(res.data.accessToken))
+          dispatch(setToken(res.data.refreshToken))
+          navigate('/', { replace: true })
         }
-        navigate('/', { replace: true })
       } catch (error) {
-        console.error('login failed', error);
+        throw error
       } finally {
         setLoading(false)
       }
@@ -57,34 +57,29 @@ const LoginSuccess = () => {
     fetchUser()
   }, [dispatch, navigate])
 
-  return <Loader show={loading} size={70} color='#3a1c71' />
+  if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
 }
 
 const App = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { user, isAuthenticated } = useSelector(state => state.user || {});
   const dispatch = useDispatch();
   const isAdmin = user?.isAdmin;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, [500]);
+    const fetchUser = async () => {
+      try {
+        const { data } = await axiosInstance.get('/user/me');
+        dispatch(userExists(data.user));
+      } catch (error) {
+        throw error
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    // const fetchUser = async () => {
-    //   try {
-    //     await axiosInstance.get('/user/me', {
-    //       withCredentials: true
-    //     });
-    //   } catch (error) {
-    //     dispatch(userNotExists());
-    //     console.error('failed to fetch user', error);
-    //   }
-    // }
-
-    // fetchUser();
-    return () => clearTimeout(timer);
-  }, [])
+    fetchUser();
+  }, [dispatch])
 
   if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
 

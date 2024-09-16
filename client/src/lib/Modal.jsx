@@ -2,7 +2,7 @@ import { Box, Button, IconButton, Modal, Stack, TextField, Typography } from '@m
 import React, { useState } from 'react';
 import { IoClose as CloseIcon } from 'react-icons/io5';
 import { toast } from 'react-toastify';
-import { deleteQuestions, resetNewQuestion, resetQuestions, setIsDeleteQuestion, setIsQuestionAdd, setNewQuestion, setQuestions } from '../redux/slices/admin';
+import { deleteQuestions, resetQuestions, setIsDeleteQuestion, setIsQuestionAdd, setQuestions } from '../redux/slices/admin';
 import { validateInput } from './feature';
 
 export const QuestionModal = (props) => {
@@ -10,11 +10,10 @@ export const QuestionModal = (props) => {
     const { isQuestionAdd, dispatch, questionId } = props;
     const [desc, setDesc] = useState('');
     const [answer, setAnswer] = useState(null);
-    const [options, setOptions] = useState(['', '', '', '',])
+    const [options, setOptions] = useState(['', '', '', ''])
 
     const handleClose = () => {
         dispatch(setIsQuestionAdd(false));
-        dispatch(resetNewQuestion());
         setDesc('');
         setOptions(['', '', '', '', '']);
         setAnswer(null);
@@ -28,9 +27,8 @@ export const QuestionModal = (props) => {
             return;
         }
 
-        dispatch(setNewQuestion({ desc, answer, options, id: questionId + 1 }));
         toast.success('Question added successfully');
-        dispatch(setQuestions());
+        dispatch(setQuestions({ question:desc, answer, options, id: questionId + 1 }));
         handleClose();
     }
 

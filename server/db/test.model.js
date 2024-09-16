@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 // question schema
 const questionSchema = new mongoose.Schema({
-  questionText: {
+  question: {
     type: String,
     required: true,
   },
@@ -12,27 +12,22 @@ const questionSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  correctOption: {
-    type: Number,
+  answer: {
+    type: String,
     required: true,
   },
 });
 
 const testSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: true,
     },
     questions: [questionSchema],
-    category: {
-      type: String,
-      required: true,
-    },
-    subCategory: [
+    categories: [
       {
         type: String,
-        required: true,
       },
     ],
     description: {

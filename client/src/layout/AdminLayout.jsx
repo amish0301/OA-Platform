@@ -75,8 +75,10 @@ const SideBar = ({ w = '100%' }) => {
                 sx={{
                     fontSize: { xs: '1.2rem', sm: '1.5rem', md: '1.75rem' },
                     textAlign: { xs: 'center', sm: 'left' },
-                    color: '#eefafc'
+                    color: '#eefafc',
+                    cursor: 'pointer',
                 }}
+                onClick={() => window.location.href = '/'}
             >
                 OA-Platform
             </Typography>

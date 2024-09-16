@@ -6,12 +6,6 @@ const initialState = {
   isEditTestName: false,
   isEditTestDuration: false,
   isEditTestDescription: false,
-  newQuestion: {
-    id: 0,
-    question: "",
-    options: [],
-    answer: null,
-  },
   questions: [],
   trace: 0,
   testName: "",
@@ -33,32 +27,22 @@ const adminSlice = createSlice({
     setIsEditTestName: (state, action) => {
       state.isEditTestName = action.payload;
     },
-    setQuestions: (state) => {
-      state.questions = [...state.questions, state.newQuestion];
+    setQuestions: (state, action) => {
+      const newQuestion = action.payload;
+      state.questions = [...state.questions, newQuestion];
       state.trace = state.trace + 1;
     },
     resetQuestions: (state) => {
       state.questions = initialState.questions;
       state.trace = initialState.trace;
     },
-    setNewQuestion: (state, action) => {
-      state.newQuestion = {
-        question: action.payload.desc,
-        options: action.payload.options,
-        answer: action.payload.answer,
-        id: action.payload.id,
-      };
-    },
-    resetNewQuestion: (state) => {
-      state.newQuestion = initialState.newQuestion;
-    },
+
     deleteQuestions: (state, action) => {
       const nums = action.payload;
       state.questions = state.questions.filter((q) => !nums.includes(q.id));
 
-      // reset trace if no questions
       if (state.questions.length == 0) {
-        state.trace = 0;
+        state.trace = initialState.trace;
       }
     },
 
@@ -81,11 +65,20 @@ const adminSlice = createSlice({
     },
 
     setCategory: (state, action) => {
-      state.categories = action.payload;
+      if (
+        !state.categories.includes(action.payload.toLowerCase()) ||
+        state.categories.length == 0
+      )
+        state.categories.push(action.payload.toLowerCase());
     },
 
     setTestDescription: (state, action) => {
       state.testDescription = action.payload;
+    },
+
+    deleteCategory: (state, action) => {
+      if (action.payload == "") state.categories = [];
+      state.categories = state.categories.filter((c) => c !== action.payload);
     },
 
     resetAdminState: (state) => state = initialState
@@ -109,5 +102,6 @@ export const {
   setIsEditTestDescription,
   setCategory,
   setTestDescription,
+  deleteCategory,
   resetAdminState
 } = adminSlice.actions;

@@ -1,13 +1,13 @@
-import React, { Fragment } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import { userExists, userNotExists } from '../redux/slices/userSlice';
 import { Icon, Popover, Typography } from '@mui/material';
-import { GrDocumentTest, GrUserAdmin } from "react-icons/gr";
+import React, { useState } from 'react';
 import { GoSignOut } from "react-icons/go";
+import { GrDocumentTest, GrUserAdmin } from "react-icons/gr";
+import { MdDashboard } from "react-icons/md";
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
+import { userExists, userNotExists } from '../redux/slices/userSlice';
 import Loader from './Loader';
 
 const ProfileCard = ({ logoutHandler }) => {
@@ -85,6 +85,13 @@ const ProfileCard = ({ logoutHandler }) => {
             <Icon className='text-sm'><GoSignOut /></Icon>
             <Typography variant='body-1' className='leading-3'>Sign out</Typography>
           </div>
+
+          {
+            user.isAdmin && <div className='profile-list' onClick={() => navigate('/admin')}>
+              <Icon className='text-sm'><MdDashboard /></Icon>
+              <Typography variant='body-1' className='leading-3'>Admin Dashboard</Typography>
+            </div>
+          }
 
           {!user.isAdmin && <div className='profile-list' onClick={() => navigate('/admin/login')}>
             <Icon className='text-sm'><GrUserAdmin /></Icon>

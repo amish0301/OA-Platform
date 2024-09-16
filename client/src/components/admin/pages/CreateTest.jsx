@@ -4,15 +4,18 @@ import { BiSolidEdit as EditIcon } from "react-icons/bi";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
 import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { useDispatch, useSelector } from 'react-redux';
-import { resetAdminState, setIsEditTestName, setTestName } from '../../../redux/slices/admin';
+import { toast } from 'react-toastify';
+import axiosInstance from '../../../hooks/useAxios';
+import { setIsEditTestName, setTestName } from '../../../redux/slices/admin';
 import CustomAccordian from '../../../shared/Accordian';
 import QuestionList from '../QuestionList';
 
 const CreateTest = () => {
 
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
-  const { isEditTestName, questions, testName, testDuration, categories } = useSelector(state => state.admin);
+  const { isEditTestName, questions, testName, testDuration, categories, testDescription } = useSelector(state => state.admin);
 
   const closeEditTestName = () => {
     dispatch(setIsEditTestName(false));
@@ -24,15 +27,36 @@ const CreateTest = () => {
     closeEditTestName();
   }
 
-  const createTestHandler = (e) => {
+  const createTestHandler = async (e) => {
     e.preventDefault();
 
+    if (!questions.length || !categories.length) return toast.error('Please add questions or categories');
+
+    const formData = new FormData();
+    formData.append('name', testName);
+    formData.append('duration', testDuration);
+    formData.append('categories', JSON.stringify(categories));
+    formData.append('questions', JSON.stringify(questions));
+    formData.append('description', testDescription);
+
+
     // API call to create test
-    // const formData = new FormData();
-    // formData.append('testName', testName);
-    // formData.append('testDuration', testDuration);
-    // formData.append('categories', JSON.stringify(categories));
-    // formData.append('questions', JSON.stringify(questions));
+    const config = {
+      'Content-Type': 'multipart/form-data',
+    };
+
+    const toastId = toast.loading('Creating test...');
+    setIsLoading(true);
+
+    try {
+      const res = await axiosInstance.post('/test/create', data, config);
+      toast.success(res?.data?.message, { id: toastId });
+    } catch (error) {
+      toast.error(error?.response?.data?.message, { id: toastId });
+    } finally {
+      toast.dismiss(toastId);
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -86,7 +110,7 @@ const CreateTest = () => {
           </Stack>
           <Box sx={{ width: '100%', height: '100%', overflowY: 'auto', padding: '1rem', border: '1px solid black', borderRadius: '1rem' }}>
             {
-              questions.length ? <QuestionList questions={questions} isPreview={true} /> : <Typography variant='h6' textTransform={'capitalize'} sx={{ fontWeight: '600', color: 'GrayText', textAlign: 'center', marginY: '50%' }}>No Questions added</Typography>
+              questions?.length ? <QuestionList questions={questions} isPreview={true} /> : <Typography variant='h6' textTransform={'capitalize'} sx={{ fontWeight: '600', color: 'GrayText', textAlign: 'center', marginY: '50%' }}>No Questions added</Typography>
             }
           </Box>
         </Box>

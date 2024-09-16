@@ -1,1 +1,6 @@
-1. in TestBoard Logout functionality has some issues.
+1. in TestBoard Logout functionality has some issues - ✔️
+2. reset EveryState AdminState once logout 
+
+AUTH
+1. fix auth bug - ✔️
+2. fix Logout

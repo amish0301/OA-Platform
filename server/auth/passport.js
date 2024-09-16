@@ -12,7 +12,12 @@ const passportUtil = (app) => {
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      cookie: { maxAge: 1000 * 60 * 5, httpOnly: true }, // set 5 min session
+      cookie: { 
+        maxAge: 5 * 60 * 1000, // 5 min
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "PRODUCTION",
+        sameSite: 'lax' 
+      },
     })
   );
 

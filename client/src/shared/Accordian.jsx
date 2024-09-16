@@ -12,9 +12,10 @@ import { setIsDeleteQuestion, setIsEditTestDescription, setIsQuestionAdd, setTes
 
 const CustomAccordian = ({ title, content, index }) => {
 
-    const [expanded, setExpanded] = useState(false);
     const { isQuestionAdd, isDeleteQuestion, isEditTestDescription, trace, testDuration, testDescription, questions, categories } = useSelector(state => state.admin);
+    const [expanded, setExpanded] = useState(false);
     const [desc, setDesc] = useState(testDescription || '');
+    const dispatch = useDispatch();
 
     const handleExpansion = () => {
         setExpanded(prev => !prev);
@@ -27,8 +28,6 @@ const CustomAccordian = ({ title, content, index }) => {
         dispatch(setTestDescription(desc));
         dispatch(setIsEditTestDescription(false));
     }
-
-    const dispatch = useDispatch();
 
 
     return (
@@ -73,7 +72,7 @@ const CustomAccordian = ({ title, content, index }) => {
                         index == 1 && (
                             <Fragment>
                                 <QuestionList questions={content} />
-                                <div className='w-full flex flex-col sticky bottom-0 z-1 '>
+                                <div className='w-full flex flex-col sticky bottom-0 z-1'>
                                     <Button variant='contained' startIcon={<AddIcon />} sx={{ mt: '1rem', padding: '0.5rem 1rem', bgcolor: '#286675' }} onClick={() => dispatch(setIsQuestionAdd(true))}>
                                         {
                                             isQuestionAdd ? 'Cancel' : 'Add Question'
@@ -114,9 +113,5 @@ const CustomAccordian = ({ title, content, index }) => {
         </div>
     )
 }
-
-// For Delete question - create modal in which will take question id as input and delete that question
-
-
 
 export default CustomAccordian

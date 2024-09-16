@@ -7,6 +7,7 @@ const {
 } = require("../utils/helper");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const ApiError = require("../utils/ApiError");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const registerUser = TryCatch(async (req, res) => {
@@ -98,38 +99,48 @@ const loginUser = TryCatch(async (req, res) => {
 });
 
 const refreshAccessToken = TryCatch(async (req, res) => {
-  const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+  const incomingRefreshToken =
+    req.cookies?.refreshToken || req.body?.refreshToken;
 
-  if (!refreshToken) {
+  console.log("refreshToken", incomingRefreshToken);
+
+  if (!incomingRefreshToken) {
     await User.findByIdAndDelete(req.uId);
-    return res
-      .status(401)
-      .json({ success: false, message: "Refresh token expired" });
+    return res.status(401).json({ success: false, message: "No refresh token" });
   }
 
-  let decoded;
   try {
-    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    let decoded;
+    decoded = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decoded.id);
+    if (!user || user.refreshToken !== incomingRefreshToken) {
+      throw new ApiError("Invalid Refresh or Expired Refresh Token", 401);
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = await generateTokens(
+      user
+    );
+
+    if (!accessToken || !newRefreshToken) {
+      console.log("new tokens: ", accessToken, newRefreshToken);
+    }
+
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, cookieOption)
+      .cookie("refreshToken", newRefreshToken, cookieOption)
+      .json({
+        success: true,
+        message: "Access token refreshed",
+        accessToken,
+      });
   } catch (error) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Invalid or Expired Refresh Token" });
+    throw new ApiError("Invalid Refresh or Expired Refresh Token", 401);
   }
-
-  const user = await User.findById(decoded.id);
-  if (!user || user.refreshToken !== refreshToken) {
-    return res
-      .status(401)
-      .json({ success: false, message: "Invalid Refresh Token" });
-  }
-
-  const accessToken = await user.generateAccessToken();
-
-  return res.status(200).cookie("accessToken", accessToken, cookieOption).json({
-    success: true,
-    message: "Access token refreshed",
-    accessToken,
-  });
 });
 
 module.exports = { registerUser, loginUser, refreshAccessToken };
