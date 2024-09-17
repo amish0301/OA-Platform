@@ -61,18 +61,21 @@ const getAssignedTest = TryCatch(async (req, res) => {
   });
 });
 
-const getTest = TryCatch(async (req, res,next) => {
+const getTest = TryCatch(async (req, res, next) => {
   const { testId } = req.params;
 
-  if(!testId) return next(new ApiError('Test Not Found', 404));
+  if (!testId) return next(new ApiError("Test Id is Invalid or Missing", 404));
 
   const test = await Test.findById(testId).select("-assignedTo");
 
-  return res.status(200).json({success: true, message: 'Test fetched successfully', test});
+  if (!test) return next(new ApiError("Test not found", 404));
 
+  return res
+    .status(200)
+    .json({ success: true, message: "Test fetched successfully", test });
 });
 
-const fetchAllTest = TryCatch(async (req, res) => {
+const fetchAllTest = TryCatch(async (req, res, next) => {
   const tests = await Test.find();
   return res.status(200).json({
     success: true,
@@ -83,4 +86,48 @@ const fetchAllTest = TryCatch(async (req, res) => {
   });
 });
 
-module.exports = { createTest, getAssignedTest, assignTest, getTest, fetchAllTest };
+const updateTest = TryCatch(async (req, res, next) => {
+  const { testId } = req.params;
+  const { questionToDelete, name } = req.body;
+
+  if (!testId) return next(new ApiError("Test Id is Invalid or Missing", 404));
+
+  const test = await Test.findByIdAndUpdate(
+    testId,
+    {
+      $set: { name },
+      $pull: { questions: { _id: { $in: questionToDelete } } },
+    },
+    { new: true }
+  );
+
+  if (!test) return next(new ApiError("Test not found", 404));
+
+  if (test.questions.length === 0) await Test.findByIdAndDelete(testId);
+
+  return res
+    .status(200)
+    .json({ success: true, message: "Test updated successfully", test });
+});
+
+const deleteTest = TryCatch(async (req, res, next) => {
+  const { testId } = req.params;
+
+  if (!testId) return next(new ApiError("Test Id is Invalid or Missing", 404));
+  const test = await Test.findByIdAndDelete(testId);
+  if (!test) return next(new ApiError("Test not found", 404));
+  
+  return res
+    .status(200)
+    .json({ success: true, message: "Test deleted successfully" });
+});
+
+module.exports = {
+  createTest,
+  getAssignedTest,
+  assignTest,
+  getTest,
+  fetchAllTest,
+  updateTest,
+  deleteTest,
+};

@@ -107,7 +107,8 @@ const CustomAccordian = ({ title, content, index }) => {
                             >
                                 {isEditTestDescription ? 'Save' : 'Edit'}
                             </Button>
-                        </div>}
+                        </div>
+                    }
                 </AccordionDetails>
             </Accordion>
         </div>

@@ -102,8 +102,6 @@ const refreshAccessToken = TryCatch(async (req, res) => {
   const incomingRefreshToken =
     req.cookies?.refreshToken || req.body?.refreshToken;
 
-  console.log("refreshToken", incomingRefreshToken);
-
   if (!incomingRefreshToken) {
     await User.findByIdAndDelete(req.uId);
     return res.status(401).json({ success: false, message: "No refresh token" });
@@ -126,7 +124,10 @@ const refreshAccessToken = TryCatch(async (req, res) => {
     );
 
     if (!accessToken || !newRefreshToken) {
-      console.log("new tokens: ", accessToken, newRefreshToken);
+      return res.status(400).json({
+        success: false,
+        message: "Token generation failed", 
+      })
     }
 
     return res

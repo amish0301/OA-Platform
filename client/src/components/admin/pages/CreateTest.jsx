@@ -6,9 +6,10 @@ import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../hooks/useAxios';
-import { setIsEditTestName, setTestName } from '../../../redux/slices/admin';
+import { resetAdminState, setIsEditTestName, setTestName } from '../../../redux/slices/admin';
 import CustomAccordian from '../../../shared/Accordian';
 import QuestionList from '../QuestionList';
+import Loader from '../../Loader';
 
 const CreateTest = () => {
 
@@ -49,15 +50,18 @@ const CreateTest = () => {
     setIsLoading(true);
 
     try {
-      const res = await axiosInstance.post('/test/create', data, config);
-      toast.success(res?.data?.message, { id: toastId });
+      const res = await axiosInstance.post('/test/create', formData, config);
+      toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
+      dispatch(resetAdminState());
     } catch (error) {
-      toast.error(error?.response?.data?.message, { id: toastId });
+      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1500 });
     } finally {
       toast.dismiss(toastId);
       setIsLoading(false);
     }
   }
+
+  if (isLoading) return <Loader show={isLoading} />
 
   return (
     <Stack sx={{ p: '1rem', height: '100%' }} spacing={3}>

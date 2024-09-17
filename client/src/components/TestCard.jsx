@@ -4,12 +4,15 @@ import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
+import { useNavigate } from 'react-router-dom';
 
-const TestCard = ({ title, description, category, subCategory, duration, totalQuestions, id = null }) => {
+const TestCard = ({ title, description, category, subCategory, duration, totalQuestions, id = null, admin }) => {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const navigate = useNavigate();
+
     const styles = {
         position: 'absolute',
         top: '50%',
@@ -17,24 +20,14 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
         transform: 'translate(-50%, -50%)',
         bgcolor: 'background.paper',
         boxShadow: 24,
+        padding: { xs: '1rem', sm: '2rem' },
         p: 4,
-        borderRadius: '12px',
-        maxWidth: '500px',
+        borderRadius: '10px',
+        maxWidth: { xs: '90%', sm: '600px' },
         width: '100%',
-        bgcolor: '#f9f9f9', // Light background color
-        border: '1px solid #ddd', // Subtle border
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // Soft shadow
-    };
-
-    const modalTitleStyle = {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        fontWeight: 'bold',
-        letterSpacing: '1px',
-        borderBottom: '1px solid #eee',
-        paddingBottom: '8px',
-        marginBottom: '16px',
+        bgcolor: '#f9f9f9',
+        border: '1px solid #ddd',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
     };
 
     const modalContentStyle = {
@@ -43,8 +36,12 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
         gap: '12px',
     };
 
-    const handleClick = async () => {
+    const handleClick = () => {
         // redirect to test page
+    }
+
+    const handleEditTest = () => {
+        navigate(`/admin/tests/edit/${id}`)
     }
 
     return (
@@ -59,27 +56,33 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
                     <Typography style={{
                         fontWeight: 'bolder',
                         cursor: 'pointer',
+                        textTransform: 'capitalize',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
                     }}>
                         {title}
                     </Typography>
 
-                    <Stack direction="row" alignItems="center" gap={"1.2rem"} style={{ userSelect: 'none' }}>
+                    <Stack direction="row" alignItems="center" gap={"1rem"}>
                         <Tooltip title="Total Questions">
-                            <div className='flex items-center gap-1'>
+                            <div className='flex items-center space-x-1 cursor-pointer'>
                                 <IoDocumentTextOutline className='text-xl' />
-                                <Typography variant='subtitle1' className='pt-1'>{totalQuestions}</Typography>
+                                <Typography variant='subtitle1' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{totalQuestions}</Typography>
                             </div>
                         </Tooltip>
                         <Tooltip title="Test Duration">
-                            <div className='flex items-center gap-1'>
+                            <div className='flex items-center space-x-2 cursor-pointer'>
                                 <IoTimeOutline className='text-xl' />
-                                <Typography variant='subtitle1' className='pt-1'>{duration} min</Typography>
+                                <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{duration} min</Typography>
                             </div>
                         </Tooltip>
                     </Stack>
                 </Stack>
-                <Typography style={{
-                    marginTop: '0.5rem',
+                <Typography variant='subtitle2' style={{ marginTop: '1rem', color: '#666', fontWeight: 'bolder' }}>
+                    Description
+                </Typography>
+                <Typography variant='subtitle1' style={{
                     color: '#555',
                 }}>
                     {description}
@@ -87,15 +90,17 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
 
             </CardContent>
             <CardActions>
-                <Button size="small" variant="contained" color="primary" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={handleClick}>
-                    Start Test
-                    <Icon>
-                        <FaArrowUpRightFromSquare className='mt-1 text-sm' />
-                    </Icon>
-                </Button>
-                <Button size="small" variant="outlined" color="secondary" style={{ marginLeft: 'auto', fontWeight: 'bolder' }} onClick={handleOpen}>
-                    View Details
-                </Button>
+                <Stack direction="row" alignItems="center" gap="1rem" width={'100%'}>
+                    <Button size="small" variant="contained" color="primary" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={admin ? handleEditTest : handleClick}>
+                        {admin ? 'Edit Test' : 'Start Test'}
+                        <Icon >
+                            <FaArrowUpRightFromSquare className='mt-1 text-sm' />
+                        </Icon>
+                    </Button>
+                    <Button size="small" variant="outlined" color="secondary" style={{ marginLeft: 'auto', fontWeight: 'bolder' }} onClick={handleOpen}>
+                        View Details
+                    </Button>
+                </Stack>
 
                 <Modal
                     open={open}
@@ -105,10 +110,26 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
                 >
                     <Box sx={styles}>
                         <Stack rowGap={2} justifyContent={'left'} style={modalContentStyle}>
-                            <Typography id="modal-modal-title" variant="h6" component="h2" fontWeight={'bolder'} sx={modalTitleStyle}>
-                                {title}
-                                <RxCross2 className='text-2xl cursor-pointer' onClick={handleClose} />
-                            </Typography>
+                            <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="1rem">
+                                <Typography
+                                    id="modal-modal-title"
+                                    variant="h6"
+                                    component="h2"
+                                    fontWeight="bolder"
+                                    sx={{
+                                        fontSize: { xs: '1rem', sm: '1.3rem' },
+                                        wordWrap: 'break-word',
+                                        textTransform: 'capitalize',
+                                        letterSpacing: '1px',
+                                        overflow: 'hidden',
+                                        marginRight: 'auto',
+                                    }}
+                                >
+                                    {title}
+                                </Typography>
+                                <RxCross2 className="text-4xl cursor-pointer text-gray-600" onClick={handleClose} />
+                            </Stack>
+
                             <Typography variant='subtitle1'>
                                 <strong>Description: </strong>
                                 {description}
@@ -116,12 +137,12 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
 
                             <Typography variant='subtitle1'>
                                 <strong>Category: </strong>
-                                {category}
+                                {category ? category.join(', ') : '-'}
                             </Typography>
 
                             <Typography variant='subtitle1'>
                                 <strong>Sub Category: </strong>
-                                {...subCategory.join(', ')}
+                                {subCategory ? { ...subCategory.join(', ') } : '-'}
                             </Typography>
 
                             <Typography variant='subtitle1'>
@@ -138,7 +159,7 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
                     </Box>
                 </Modal>
             </CardActions>
-        </Card>
+        </Card >
     );
 };
 

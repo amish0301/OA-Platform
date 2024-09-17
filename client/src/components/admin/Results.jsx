@@ -12,12 +12,12 @@ const ResultBox = ({ qno, option }) => {
     )
 }
 
-const Results = ({ dispatch, questions }) => {
+const Results = ({ dispatch, questions, isEdit = false }) => {
 
     return (
         <div className='flex flex-wrap gap-2 items-center justify-start mt-3 w-full'>
             {
-                questions?.map((question, index) => <ResultBox key={index} qno={question.id} option={question.answer} />)
+                questions?.map((question, index) => <ResultBox key={index} qno={!isEdit ? question.id : index + 1} option={question.answer} />)
             }
         </div>
     )

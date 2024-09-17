@@ -12,6 +12,7 @@ const initialState = {
   testDuration: 0,
   categories: [],
   testDescription: "",
+  deleteQuestionList: [],
 };
 
 const adminSlice = createSlice({
@@ -81,7 +82,28 @@ const adminSlice = createSlice({
       state.categories = state.categories.filter((c) => c !== action.payload);
     },
 
-    resetAdminState: (state) => state = initialState
+    updateDeleteQuestionList: (state, action) => {
+      if (!Array.isArray(state.deleteQuestionList)) {
+        state.deleteQuestionList = []; // Ensure it's always an array
+      }
+      if (!state.deleteQuestionList?.includes(action.payload)) {
+        state.deleteQuestionList = [
+          ...state.deleteQuestionList,
+          action.payload,
+        ];
+      }
+    },
+
+    removeFromDeleteQuestionList: (state, action) => {
+      if (!Array.isArray(state.deleteQuestionList)) {
+        state.deleteQuestionList = []; // Ensure it's always an array
+      }
+      state.deleteQuestionList = state.deleteQuestionList.filter(
+        (id) => id !== action.payload
+      );
+    },
+
+    resetAdminState: (state) => (state = initialState),
   },
 });
 
@@ -103,5 +125,7 @@ export const {
   setCategory,
   setTestDescription,
   deleteCategory,
-  resetAdminState
+  resetAdminState,
+  updateDeleteQuestionList,
+  removeFromDeleteQuestionList,
 } = adminSlice.actions;

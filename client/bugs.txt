@@ -4,3 +4,12 @@
 AUTH
 1. fix auth bug - ✔️
 2. fix Logout
+
+TODO - 17th Sept
+1. create api for fetching test data - done
+2. create testcard - done
+3. deleting test - done
+4. deleting question from test - done
+
+5. Assign test to user
+6. Create API's
