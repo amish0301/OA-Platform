@@ -1,15 +1,19 @@
 1. in TestBoard Logout functionality has some issues - ✔️
-2. reset EveryState AdminState once logout 
+2. reset EveryState AdminState once logout - ✔️
 
 AUTH
 1. fix auth bug - ✔️
-2. fix Logout
+2. fix Logout - ✔️
 
 TODO - 17th Sept
-1. create api for fetching test data - done
-2. create testcard - done
-3. deleting test - done
-4. deleting question from test - done
+1. create api for fetching test data - ✔️
+2. create testcard - ✔️
+3. deleting test - ✔️
+4. deleting question from test - ✔️
 
-5. Assign test to user
-6. Create API's
+5. Assign test to user - ✔️
+6. Create Test TestCompleted API - ✔️
+
+TODO - 18th Sept
+1. Create result page
+2. Create API for storing result of that test

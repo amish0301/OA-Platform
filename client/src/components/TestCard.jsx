@@ -6,7 +6,7 @@ import { IoTimeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { useNavigate } from 'react-router-dom';
 
-const TestCard = ({ title, description, category, subCategory, duration, totalQuestions, id = null, admin }) => {
+const TestCard = ({ title, description, category = [], subCategory = [], duration, totalQuestions, id = null, score, admin }) => {
 
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
@@ -37,7 +37,7 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
     };
 
     const handleClick = () => {
-        // redirect to test page
+        navigate(`/test/${id}`);
     }
 
     const handleEditTest = () => {
@@ -77,6 +77,12 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
                                 <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{duration} min</Typography>
                             </div>
                         </Tooltip>
+                        {score && <Tooltip title="Test Duration">
+                            <div className='flex items-center space-x-2 cursor-pointer'>
+                                <IoTimeOutline className='text-xl' />
+                                <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{duration} min</Typography>
+                            </div>
+                        </Tooltip>}
                     </Stack>
                 </Stack>
                 <Typography variant='subtitle2' style={{ marginTop: '1rem', color: '#666', fontWeight: 'bolder' }}>
@@ -137,12 +143,12 @@ const TestCard = ({ title, description, category, subCategory, duration, totalQu
 
                             <Typography variant='subtitle1'>
                                 <strong>Category: </strong>
-                                {category ? category.join(', ') : '-'}
+                                {Array.isArray(category) ? category.join(', ') : '-'}
                             </Typography>
 
                             <Typography variant='subtitle1'>
-                                <strong>Sub Category: </strong>
-                                {subCategory ? { ...subCategory.join(', ') } : '-'}
+                                <strong>Sub-Category: </strong>
+                                {Array.isArray(subCategory) ? subCategory?.join(', ') : '-'}
                             </Typography>
 
                             <Typography variant='subtitle1'>

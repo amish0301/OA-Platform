@@ -35,8 +35,6 @@ router.get("/google", async (req, res) => {
         params: req.query,
       }
     );
-
-    console.log("response from /google route", response);
     res.send(response);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -49,8 +47,6 @@ router.get("/login/success", async (req, res) => {
     if (req.isAuthenticated()) {
       const accessToken = await req.user.generateAccessToken();
       const refreshToken = req.user.refreshToken;
-
-      // what if we expire tokens so long and cookies tooo short
 
       return res
         .status(200)
@@ -95,7 +91,8 @@ router.get("/logout", isAuthenticated, async (req, res) => {
         .json({ success: true, message: "Logout successfully" });
     });
 
-    // NEED to Work on it
+    // remove user from database
+    await User.findByIdAndDelete(req.uId);
   } catch (error) {
     return res.status(500).json({ success: false, message: "Server Error" });
   }

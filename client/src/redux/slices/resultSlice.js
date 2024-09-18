@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   result: {},
-  userId: null,
+  isLoading: false,
 };
 
 const resultSlice = createSlice({
@@ -13,11 +13,14 @@ const resultSlice = createSlice({
       const { questionNo, selected } = action.payload;
       state.result[questionNo] = selected;
     },
-    resetResult: (state, action) => {
+    resetResult: (state) => {
       state.result = initialState;
+    },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload;
     },
   },
 });
 
 export default resultSlice;
-export const { updateResult, resetResult } = resultSlice.actions;
+export const { updateResult, resetResult, setIsLoading } = resultSlice.actions;

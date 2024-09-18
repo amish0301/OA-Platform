@@ -3,13 +3,14 @@ import { useFetchQuestion } from '../hooks/useFetchQuestion';
 import Loader from './Loader';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateResult } from '../redux/slices/resultSlice';
+import { setQuestions } from '../redux/slices/questionSlice';
 
-const Questions = () => {
+const Questions = ({ testId }) => {
 
-    const { isLoading, data, isError } = useFetchQuestion();
+    const { isLoading, data, isError } = useFetchQuestion({ testId });
     const dispatch = useDispatch();
 
-    // fetching questions info
+    // setting up questions
     const node = useSelector(state => state.question);
     const questionNo = node.trace;
     const questions = node.queue[questionNo];
@@ -19,14 +20,20 @@ const Questions = () => {
     const [selected, setSelected] = useState(selectedOption || false);
     const handleOptionSelect = (index) => {
         setSelected(index);
-        dispatch(updateResult({ questionNo, selected : index }));
+        dispatch(updateResult({ questionNo, selected: index }));
     }
 
     useEffect(() => {
         setSelected(selectedOption);
     }, [selectedOption])
 
-    if (isLoading) return <Loader show={isLoading} />
+    useEffect(() => {
+        if (data) {
+            dispatch(setQuestions(data));
+        }
+    }, [data])
+
+    if (isLoading) return <Loader show={isLoading} size={50} />
     if (isError) return <h3>{isError || "Unknown Error"}</h3>
 
     return (

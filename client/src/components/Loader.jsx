@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Loader = ({ show, size = 40, color = "#3498db" }) => {
+const Loader = ({ show, size = 30, color = "#3498db" }) => {
   if (!show) return null;
 
   const cssOverride = {

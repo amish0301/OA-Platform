@@ -1,38 +1,40 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import AppLayout from './layout/AppLayout.jsx';
-
 import axios from 'axios';
-import About from './components/About.jsx';
-import Dashboard from './components/admin/Dashboard.jsx';
-import AdminLogin from './components/admin/Login.jsx';
-import CreateTest from './components/admin/pages/CreateTest.jsx';
-import ForgetPassword from './components/ForgetPassword.jsx';
-import Home from './components/Home.jsx';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 import Loader from './components/Loader.jsx';
-import NotFound from './components/NotFound.jsx';
-import Test from './components/Test.jsx';
-import TestCompleted from './components/TestCompleted.jsx';
 import axiosInstance from './hooks/useAxios.js';
-import AdminLayout from './layout/AdminLayout.jsx';
-import TestDashboard from './layout/TestDashboard.jsx';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import ProtectRoute from './lib/ProtectRoute.jsx';
-import AssignedTest from './pages/AssignedTest.jsx';
-import Instruction from './pages/Instruction.jsx';
-import Login from './pages/Login.jsx';
-import Profile from './pages/Profile.jsx';
 import { setToken, userExists } from './redux/slices/userSlice.js';
 
-// Admin Pages
-import TestManagement from './components/admin/pages/TestManagement.jsx';
-import UserManagement from './components/admin/pages/UserManagement.jsx';
-import EditTest from './shared/EditTest.jsx';
+// Lazy Load below all components
+import AppLayout from './layout/AppLayout.jsx';
+
+const About = lazy(() => import('./components/About.jsx'));
+const ForgetPassword = lazy(() => import('./components/ForgetPassword.jsx'));
+const Home = lazy(() => import('./components/Home.jsx'));
+const NotFound = lazy(() => import('./components/NotFound.jsx'));
+const Test = lazy(() => import('./components/Test.jsx'));
+const TestCompleted = lazy(() => import('./components/TestCompleted.jsx'));
+const TestDashboard = lazy(() => import('./layout/TestDashboard.jsx'));
+const AssignedTest = lazy(() => import('./pages/AssignedTest.jsx'));
+const Instruction = lazy(() => import('./pages/Instruction.jsx'));
+const Login = lazy(() => import('./pages/Login.jsx'));
+const Profile = lazy(() => import('./pages/Profile.jsx'));
+
+// Admin Components
+const Dashboard = lazy(() => import('./components/admin/Dashboard.jsx'));
+const AdminLayout = lazy(() => import('./layout/AdminLayout.jsx'));
+const AdminLogin = lazy(() => import('./components/admin/Login.jsx'));
+const CreateTest = lazy(() => import('./components/admin/pages/CreateTest.jsx'));
+const TestManagement = lazy(() => import('./components/admin/pages/TestManagement.jsx'));
+const UserManagement = lazy(() => import('./components/admin/pages/UserManagement.jsx'));
+const EditTest = lazy(() => import('./shared/EditTest.jsx'));
+const TestResult = lazy(() => import('./pages/TestResult.jsx'));
 
 const LoginSuccess = () => {
-  const navigate = useNavigate()
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +49,7 @@ const LoginSuccess = () => {
         if (res.data.success && res.data.user) {
           dispatch(userExists(res.data.user))
           dispatch(setToken(res.data.refreshToken))
-          navigate('/', { replace: true })
+          window.open('/', '_self');
         }
       } catch (error) {
         throw error
@@ -64,35 +66,43 @@ const LoginSuccess = () => {
 const App = () => {
   const [loading, setLoading] = useState(false);
   const { user, isAuthenticated } = useSelector(state => state.user || {});
-  const dispatch = useDispatch();
   const isAdmin = user?.isAdmin;
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await axiosInstance.get('/user/me');
-        dispatch(userExists(data.user));
-      } catch (error) {
-        throw error
-      } finally {
-        setLoading(false);
-      }
+  const fetchUser = async () => {
+
+    // reducing unnecessary api calls
+    if (localStorage.getItem('reduxState')) {
+      return;
     }
 
-    fetchUser();
-  }, [dispatch])
+    try {
+      setLoading(true);
+      const { data } = await axiosInstance.get('/user/me');
+      dispatch(userExists(data.user));
+    } catch (error) {
+      throw error
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
+  useEffect(() => {
+    fetchUser();
+  }, [])
+
+  if (loading) return <Loader show={loading} size={40} color='#3a1c71' />
 
   return (
-    <Suspense fallback={<div>Loading..</div>}>
+    <Suspense fallback={<Loader show={true} size={40} color='#3a1c71' />}>
       <Routes>
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />
           <Route path='about' element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>
-        <Route path='/test' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
+        <Route path='/test/:id' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
+        <Route path='/test/:id/result' element={<ProtectRoute user={isAuthenticated}><TestResult /></ProtectRoute>} />
 
         {/* auth routes */}
         <Route path='/auth'>

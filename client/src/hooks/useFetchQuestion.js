@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { questions } from "../constants/quiz";
 import { useDispatch } from "react-redux";
-import { setQuestions } from "../redux/slices/questionSlice";
+import axiosInstance from "../hooks/useAxios";
+import { setAnswers, setQuestions } from "../redux/slices/questionSlice";
 
-export const useFetchQuestion = () => {
+export const useFetchQuestion = ({ testId }) => {
   const [getData, setData] = useState({
     isLoading: false,
     data: [],
@@ -15,30 +15,28 @@ export const useFetchQuestion = () => {
   useEffect(() => {
     setData((prev) => ({ ...prev, isLoading: true }));
 
-    // api call
-    // url template - {serverURI}/test/id/questions/{questionNo}
-
     (async () => {
       try {
-        const question = await questions;
+        const res = await axiosInstance.get(`/test/${testId}?populate=true`);
 
-        if (question.length > 0) {
-          setData((prev) => ({ ...prev, data: question, isLoading: false }));
-
-          // dispatch actions
-          dispatch(setQuestions(question));
-        } else {
-          setData((prev) => ({
-            ...prev,
-            isLoading: false,
-            isError: "No questions found",
-          }));
-        }
+        setData((prev) => ({
+          ...prev,
+          data: res.data.questions,
+          isLoading: false,
+        }));
+        dispatch(setQuestions(res?.data?.questions));
+        dispatch(setAnswers(res?.data?.questions?.map((q) => q.answer)));
       } catch (error) {
         setData((prev) => ({ ...prev, isError: error, isLoading: false }));
       }
     })();
-  }, [dispatch]);
+
+    return () => {
+      setData({ isLoading: false, data: [], isError: null });
+      dispatch(setQuestions([]));
+      dispatch(setAnswers([]));
+    };
+  }, [testId]);
 
   return getData;
 };

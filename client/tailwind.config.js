@@ -9,7 +9,7 @@ export default {
         montserrat: ["Montserrat"],
       },
       animation: {
-        spin: "spin 2s linear infinite",
+        spin: "spin 0.5s linear infinite",
       },
       keyframes: {
         spin: {

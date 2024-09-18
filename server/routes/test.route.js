@@ -22,6 +22,7 @@ router.post("/assign", assignTest);
 
 router.get("/assigned", getAssignedTest);
 router.get("/:testId", getTest);
+
 router
   .get("/", fetchAllTest)
   .put("/:testId", parseData, validateUpdateTestData, updateTest)

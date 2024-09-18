@@ -104,7 +104,9 @@ const refreshAccessToken = TryCatch(async (req, res) => {
 
   if (!incomingRefreshToken) {
     await User.findByIdAndDelete(req.uId);
-    return res.status(401).json({ success: false, message: "No refresh token" });
+    return res
+      .status(401)
+      .json({ success: false, message: "No refresh token" });
   }
 
   try {
@@ -116,7 +118,10 @@ const refreshAccessToken = TryCatch(async (req, res) => {
 
     const user = await User.findById(decoded.id);
     if (!user || user.refreshToken !== incomingRefreshToken) {
-      throw new ApiError("Invalid Refresh or Expired Refresh Token", 401);
+      return res.status(401).json({
+        success: false,
+        message: "Invalid refresh token or Expired refresh token",
+      });
     }
 
     const { accessToken, refreshToken: newRefreshToken } = await generateTokens(
@@ -126,8 +131,8 @@ const refreshAccessToken = TryCatch(async (req, res) => {
     if (!accessToken || !newRefreshToken) {
       return res.status(400).json({
         success: false,
-        message: "Token generation failed", 
-      })
+        message: "Token generation failed",
+      });
     }
 
     return res

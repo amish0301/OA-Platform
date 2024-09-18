@@ -6,6 +6,7 @@ import { Link as LinkComponent, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios.js';
 import { RxExit as Exit } from "react-icons/rx";
+import { useDispatch } from 'react-redux';
 
 const navLinks = [
     {
@@ -47,8 +48,8 @@ const TabItem = ({ Icon, name }) => {
 }
 
 const Navigation = () => {
-
     const location = useLocation();
+    const dispatch = useDispatch();
 
     const logoutHandler = async () => {
         try {
@@ -66,10 +67,10 @@ const Navigation = () => {
 
     return (
         <Stack
-            width={{ xs: '100%', sm: '80%', md: '65%' }}
+            width={{ xs: '100%', sm: '70%', md: '80%' }}
             sx={{
                 padding: { xs: '1rem', sm: '2rem' },
-                height: '100vh',
+                height: '100%',
                 bgcolor: '#286675',
                 position: 'relative',
                 flexDirection: 'column',
@@ -146,19 +147,16 @@ const Navigation = () => {
 }
 
 
-
 const TestDashboard = () => {
     return (
-        <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9' }} >
-            <Grid item xs={12} sm={4} md={5} lg={4} sx={{
-                height: '100vh',
-            }}>
+        <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9', overflow: 'hidden' }} >
+            <Grid item md={4} lg={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
                 <Navigation />
             </Grid>
-            <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflowY: 'auto', p: { xs: 2, md: 1 }, height: '100%', bgcolor: '#eff7f9' }}>
+            <Grid item xs={12} md={8} lg={8} sx={{ height: '100%' }}>
                 <Outlet />
             </Grid>
-        </Grid>
+        </Grid >
     )
 }
 

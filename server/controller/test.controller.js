@@ -45,7 +45,6 @@ const assignTest = TryCatch(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Test assigned successfully",
-    test,
   });
 });
 
@@ -63,12 +62,17 @@ const getAssignedTest = TryCatch(async (req, res) => {
 
 const getTest = TryCatch(async (req, res, next) => {
   const { testId } = req.params;
+  const { populate } = req.query;
 
   if (!testId) return next(new ApiError("Test Id is Invalid or Missing", 404));
 
   const test = await Test.findById(testId).select("-assignedTo");
 
   if (!test) return next(new ApiError("Test not found", 404));
+
+  if (populate) {
+    return res.status(200).json({ success: true, questions: test.questions });
+  }
 
   return res
     .status(200)
@@ -116,7 +120,7 @@ const deleteTest = TryCatch(async (req, res, next) => {
   if (!testId) return next(new ApiError("Test Id is Invalid or Missing", 404));
   const test = await Test.findByIdAndDelete(testId);
   if (!test) return next(new ApiError("Test not found", 404));
-  
+
   return res
     .status(200)
     .json({ success: true, message: "Test deleted successfully" });

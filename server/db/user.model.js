@@ -30,10 +30,21 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    givenTests: [
+    completedTests: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Test",
+        testId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Test",
+          required: true,
+        },
+        score: {
+          type: Number,
+          required: true,
+        },
+        completedAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
     refreshToken: {
@@ -45,7 +56,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = bcrypt.hash(this.password, 10);
   next();
 });
 
@@ -73,7 +84,8 @@ userSchema.methods.generateRefreshToken = async function () {
   );
 
   this.refreshToken = refreshToken;
-  this.refreshTokenExpiry = Date.now() + (process.env.REFRESH_TOKEN_EXPIRY || 7 * 24 * 60 * 60 * 1000); // 7 days
+  this.refreshTokenExpiry =
+    Date.now() + (process.env.REFRESH_TOKEN_EXPIRY || 7 * 24 * 60 * 60 * 1000); // 7 days
   await this.save({ validateBeforeSave: false });
 
   return refreshToken;

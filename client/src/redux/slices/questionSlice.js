@@ -11,10 +11,7 @@ const questionSlice = createSlice({
   initialState,
   reducers: {
     setQuestions: (state, action) => {
-      return {
-        ...state,
-        queue: action.payload,
-      };
+      state.queue = action.payload;
     },
     setAnswers: (state, action) => {
       state.answers = action.payload;

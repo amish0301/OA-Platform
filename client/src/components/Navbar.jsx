@@ -1,4 +1,4 @@
-import { Icon, Popover, Typography } from '@mui/material';
+import { Avatar, Icon, Popover, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { GoSignOut } from "react-icons/go";
 import { GrDocumentTest, GrUserAdmin } from "react-icons/gr";
@@ -51,7 +51,7 @@ const ProfileCard = ({ logoutHandler }) => {
 
   return (
     <div className='cursor-pointer w-fit'>
-      <img src={user.profileImage} alt="profile_img" className='w-10 h-10 rounded-full object-contain' onClick={handleClick} />
+      <Avatar src={user.profileImage} onClick={handleClick} alt='profile image' aria-labelledby='avatar' />
       <Popover
         id={id}
         open={open}
@@ -81,11 +81,6 @@ const ProfileCard = ({ logoutHandler }) => {
             </Typography>
           </div>
 
-          <div className='profile-list' onClick={logoutHandler}>
-            <Icon className='text-sm'><GoSignOut /></Icon>
-            <Typography variant='body-1' className='leading-3'>Sign out</Typography>
-          </div>
-
           {
             user.isAdmin && <div className='profile-list' onClick={() => navigate('/admin')}>
               <Icon className='text-sm'><MdDashboard /></Icon>
@@ -105,6 +100,11 @@ const ProfileCard = ({ logoutHandler }) => {
               <Typography variant='body-1' className='leading-3'>Logout as Admin</Typography>
             </div>
           }
+
+          <div className='profile-list' onClick={logoutHandler}>
+            <Icon className='text-sm'><GoSignOut /></Icon>
+            <Typography variant='body-1' className='leading-3'>Sign out</Typography>
+          </div>
         </div>
       </Popover>
     </div>

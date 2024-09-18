@@ -34,7 +34,7 @@ const testSchema = new mongoose.Schema(
       type: String,
     },
     duration: {
-      type: String, // Form of "HH:MM:SS"
+      type: String, // IN MIN 
       required: true,
     },
     assignedTo: [
