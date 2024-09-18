@@ -20,8 +20,8 @@ const Test = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
-    handleSubmitTest(result, id);
     setIsTestSubmitted(true);
+    handleSubmitTest(result, id);
   }
 
   useEffect(() => {

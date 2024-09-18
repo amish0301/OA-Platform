@@ -1,8 +1,8 @@
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "../hooks/useAxios";
 import { resetResult, setIsLoading } from "../redux/slices/resultSlice";
-import { useNavigate } from "react-router-dom";
 
 export const transformImage = (url = "", width = 100) => {
   return url;

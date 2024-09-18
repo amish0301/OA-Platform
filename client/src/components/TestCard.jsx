@@ -37,7 +37,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
     };
 
     const handleClick = () => {
-        navigate(`/test/${id}`);
+        navigate(`/test/${id}/instruction`);
     }
 
     const handleEditTest = () => {

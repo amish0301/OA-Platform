@@ -7,7 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
-import { userExists, userNotExists } from '../redux/slices/userSlice';
+import { clearLocalStorage } from '../redux/localStorage';
+import { resetUserState, userExists } from '../redux/slices/userSlice';
 import Loader from './Loader';
 
 const ProfileCard = ({ logoutHandler }) => {
@@ -116,7 +117,7 @@ const Navbar = () => {
   const [updateNav, setUpdateNav] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector(state => state.user || {});   // Conditional rendering to prevent null exception error
+  const { isAuthenticated } = useSelector(state => state.user || {});
 
   window.addEventListener('scroll', () => {
     if (window.scrollY > 20) {
@@ -131,7 +132,8 @@ const Navbar = () => {
       const res = await axiosInstance.get('/auth/logout');
       if (res.data.success) {
         toast.success(res.data.message)
-        dispatch(userNotExists());
+        dispatch(resetUserState());
+        clearLocalStorage();
         navigate('/');
       }
     } catch (error) {
@@ -148,7 +150,6 @@ const Navbar = () => {
       <div className='hidden md:flex items-center justify-between gap-8'>
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/">Home</Link>
         <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/about">About</Link>
-        <Link className='link-style hover:text-blue-800 text-base font-semibold' to="/test">Test</Link>
         <Link className='link-style hover:text-blue-800 text-base font-semibold tracking-tight' to="/instruction">Test Instruction</Link>
         {!isAuthenticated && <button className='px-5 py-2 bg-[#605172] rounded-lg font-semibold text-base text-white shadow-md shadow-black/50 hover:bg-[#695982] hover:transition-colors duration-300' onClick={() => navigate('/auth/login')}>Login</button>}
         {isAuthenticated && <ProfileCard logoutHandler={logoutHandler} />}

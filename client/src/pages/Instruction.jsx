@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { FaArrowUpRightFromSquare as Icon } from "react-icons/fa6";
+import { useNavigate, useParams } from 'react-router-dom';
 
 const instructionList = [
   {
@@ -62,6 +63,10 @@ const instructionList = [
 const Instruction = () => {
   const [instructionRead, setInstructionRead] = useState(false);
   const location = window.location.pathname === '/instruction';
+  const navigate = useNavigate();
+
+  const { id } = useParams();
+
 
   return (
     <section className='min-h-screen max-w-full bg-[#f6f6f6] p-12'>
@@ -89,7 +94,7 @@ const Instruction = () => {
           </label>
         </div>
 
-        <button className={`bg-[#1c4980] hover:bg-[#2a558a] font-semibold text-[16px] hover:border-none text-white mt-3 py-3 px-7 mx-auto flex items-center rounded-lg ${!instructionRead ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+        <button className={`bg-[#1c4980] hover:bg-[#2a558a] font-semibold text-[16px] hover:border-none text-white mt-3 py-3 px-7 mx-auto flex items-center rounded-lg ${!instructionRead ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`} onClick={() => navigate(`/test/${id}/start`)}>
           Start Exam
           <Icon className='ml-2 text-sm hover:translate-x-1 transition-all duration-300' />
         </button>

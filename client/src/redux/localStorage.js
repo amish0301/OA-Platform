@@ -19,3 +19,12 @@ export const loadState = () => {
     return undefined;
   }
 };
+
+export const clearLocalStorage = () => {
+  try {
+    localStorage.removeItem("reduxState");
+    localStorage.removeItem("accessToken");
+  } catch (e) {
+    throw e;
+  }
+};

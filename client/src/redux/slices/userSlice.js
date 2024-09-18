@@ -24,8 +24,11 @@ const userSlice = createSlice({
     removeToken: (state) => {
       state.refreshToken = null;
     },
+    resetUserState: (state) => {
+      state = initialState;
+    }
   },
 });
 
-export const { userExists, userNotExists, setToken, removeToken } = userSlice.actions;
+export const { userExists, userNotExists, setToken, removeToken, resetUserState } = userSlice.actions;
 export default userSlice;

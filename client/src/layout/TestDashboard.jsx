@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios.js';
 import { RxExit as Exit } from "react-icons/rx";
 import { useDispatch } from 'react-redux';
+import { clearLocalStorage } from '../redux/localStorage.js';
+import { resetUserState } from '../redux/slices/userSlice.js';
 
 const navLinks = [
     {
@@ -56,9 +58,8 @@ const Navigation = () => {
             const res = await axiosInstance.get('/auth/logout');
             if (res.data.success) {
                 toast.success(res.data.message)
-                dispatch(userNotExists())
-                localStorage.removeItem("reduxState")
-                localStorage.removeItem("accessToken")
+                dispatch(resetUserState())
+                clearLocalStorage()
             }
         } catch (error) {
             console.log('error whie logging out', error)
@@ -145,7 +146,6 @@ const Navigation = () => {
 
     )
 }
-
 
 const TestDashboard = () => {
     return (

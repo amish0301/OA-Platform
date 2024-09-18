@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Loader from './components/Loader.jsx';
 import axiosInstance from './hooks/useAxios.js';
@@ -37,6 +37,7 @@ const TestResult = lazy(() => import('./pages/TestResult.jsx'));
 const LoginSuccess = () => {
   const dispatch = useDispatch()
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -49,16 +50,16 @@ const LoginSuccess = () => {
         if (res.data.success && res.data.user) {
           dispatch(userExists(res.data.user))
           dispatch(setToken(res.data.refreshToken))
-          window.open('/', '_self');
+          navigate('/', { replace: true })
         }
       } catch (error) {
-        throw error
+        console.error(error)
       } finally {
         setLoading(false)
       }
     }
     fetchUser()
-  }, [dispatch, navigate])
+  }, [dispatch])
 
   if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
 }
@@ -72,16 +73,14 @@ const App = () => {
   const fetchUser = async () => {
 
     // reducing unnecessary api calls
-    if (localStorage.getItem('reduxState')) {
-      return;
-    }
+    if (localStorage.getItem('reduxState')) return;
 
     try {
       setLoading(true);
       const { data } = await axiosInstance.get('/user/me');
       dispatch(userExists(data.user));
     } catch (error) {
-      throw error
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -101,7 +100,9 @@ const App = () => {
           <Route path='about' element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>
-        <Route path='/test/:id' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
+        
+        <Route path='/test/:id/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
+        <Route path='/test/:id/start' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
         <Route path='/test/:id/result' element={<ProtectRoute user={isAuthenticated}><TestResult /></ProtectRoute>} />
 
         {/* auth routes */}
