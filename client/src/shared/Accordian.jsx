@@ -29,7 +29,6 @@ const CustomAccordian = ({ title, content, index }) => {
         dispatch(setIsEditTestDescription(false));
     }
 
-
     return (
         <div>
             <Accordion

@@ -46,7 +46,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
 
     return (
         <Card style={{
-            maxWidth: 400,
+            maxWidth: 300,
             backgroundColor: '#fff',
             borderRadius: '15px',
             padding: '.5rem',
@@ -77,10 +77,10 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                                 <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{duration} min</Typography>
                             </div>
                         </Tooltip>
-                        {score && <Tooltip title="Test Duration">
+                        {score && <Tooltip title="Score">
                             <div className='flex items-center space-x-2 cursor-pointer'>
                                 <IoTimeOutline className='text-xl' />
-                                <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{duration} min</Typography>
+                                <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{score}</Typography>
                             </div>
                         </Tooltip>}
                     </Stack>

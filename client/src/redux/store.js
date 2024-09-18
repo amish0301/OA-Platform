@@ -12,7 +12,7 @@ const store = configureStore({
   reducer: {
     user: userSlice.reducer,
     question: questionSlice.reducer,
-    result: resultSlice.reducer,
+    [resultSlice.name]: resultSlice.reducer,
     [miscSlice.name]: miscSlice.reducer,
     [adminSlice.name]: adminSlice.reducer,
   },

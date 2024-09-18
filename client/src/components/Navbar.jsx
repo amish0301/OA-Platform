@@ -52,7 +52,7 @@ const ProfileCard = ({ logoutHandler }) => {
 
   return (
     <div className='cursor-pointer w-fit'>
-      <Avatar src={user.profileImage} onClick={handleClick} alt='profile image' aria-labelledby='avatar' />
+      <Avatar src={user?.profileImage} onClick={handleClick} alt='profile image' aria-labelledby='avatar' />
       <Popover
         id={id}
         open={open}
@@ -83,20 +83,20 @@ const ProfileCard = ({ logoutHandler }) => {
           </div>
 
           {
-            user.isAdmin && <div className='profile-list' onClick={() => navigate('/admin')}>
+            user?.isAdmin && <div className='profile-list' onClick={() => navigate('/admin')}>
               <Icon className='text-sm'><MdDashboard /></Icon>
               <Typography variant='body-1' className='leading-3'>Admin Dashboard</Typography>
             </div>
           }
 
-          {!user.isAdmin && <div className='profile-list' onClick={() => navigate('/admin/login')}>
+          {!user?.isAdmin && <div className='profile-list' onClick={() => navigate('/admin/login')}>
             <Icon className='text-sm'><GrUserAdmin /></Icon>
             <Typography variant='body-1' className='leading-3'>Login as Admin</Typography>
           </div>
           }
 
           {
-            user.isAdmin && <div className='profile-list' onClick={adminLogout}>
+            user?.isAdmin && <div className='profile-list' onClick={adminLogout}>
               <Icon className='text-sm'><GrUserAdmin /></Icon>
               <Typography variant='body-1' className='leading-3'>Logout as Admin</Typography>
             </div>
@@ -135,6 +135,7 @@ const Navbar = () => {
         dispatch(resetUserState());
         clearLocalStorage();
         navigate('/');
+        window.location.reload();
       }
     } catch (error) {
       toast.error(error.response?.data?.message)

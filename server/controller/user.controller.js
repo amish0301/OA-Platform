@@ -52,24 +52,53 @@ const submitTest = TryCatch(async (req, res, next) => {
   const user = await User.findById(req.uId).select("-password -refreshToken");
   if (!user) return next(new ApiError("User not found", 404));
 
-  // fetch test and then calculate score
-  const test = await Test.findById(testId)
+  const test = await Test.findById(testId);
   if (!test) return next(new ApiError("Test not found", 404));
 
-  // remove assignedTo from test
-  const filteredTest = test.assignedTo.filter((t) => t.toString() !== testId.toString());
-  test.assignedTo = filteredTest;
-  await test.save();
+  const originalResult = test.questions.map((q) => parseInt(q.answer));
 
-  const originalResult = test.questions.map((q) => q.answer);
-  const submitedResult = Object.keys(result).map((key) => result[key]);
+  let score = 0;
+  if (Array.isArray(result) && result.length > 0) {
+    score = result.reduce((acc, curr, index) => {
+      if (originalResult[index] === curr) return acc + 1;
+      return acc;
+    }, 0);
+  }
 
-  const score = originalResult.filter((o, i) => o === submitedResult[i]).length;
-  console.log("score", score);
+  // remove urself from assignedTo
+  await Test.findByIdAndUpdate(
+    testId,
+    {
+      $pull: { assignedTo: req.uId },
+    },
+    { new: true }
+  );
 
-  user.completedTests.push({ testId, score, completedAt: new Date() });
-  // might user validate user before saving
-  await user.save();
+  await User.findByIdAndUpdate(
+    { _id: req.uId, "completedTests.testId": testId },
+    {
+      $set: {
+        "completedTests.$.score": score,
+        "completedTests.$.completedAt": new Date(),
+      },
+    },
+    { new: true, upsert: true }
+  );
+
+  // if testId not exist then create
+  await User.findByIdAndUpdate(
+    { _id: req.uId, "completedTests.testId": { $ne: testId } },
+    {
+      $push: {
+        completedTests: {
+          testId,
+          score,
+          completedAt: new Date(),
+        },
+      },
+    },
+    { new: true }
+  );
 
   return res
     .status(200)

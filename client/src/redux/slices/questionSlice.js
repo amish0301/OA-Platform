@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   queue: [], // list of questions
   answers: [], // list of correct answers
-  trace: 0, // q. no
+  trace: 1, // q. no
 };
 
 const questionSlice = createSlice({
@@ -17,32 +17,26 @@ const questionSlice = createSlice({
       state.answers = action.payload;
     },
     moveToNext: (state) => {
-      if (state.trace < state.queue.length - 1) {
+      if (state.trace < state.queue.length) {
         return {
           ...state,
           trace: state.trace + 1,
         };
       }
-      return {
-        ...state,
-        trace: 0,
-      };
+      state.trace = initialState.trace
     },
     moveToPrevious: (state) => {
-      if (state.trace > 0) {
+      if (state.trace > 1) {
         return {
           ...state,
           trace: state.trace - 1,
         };
       }
-      return {
-        ...state,
-        trace: state.queue.length - 1,
-      };
+      state.trace = state.queue.length
     },
 
     reset: (state) => {
-      state.trace = 0;
+      state.trace = initialState.trace;
     }
   },
 });

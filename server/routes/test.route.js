@@ -10,10 +10,7 @@ const {
 } = require("../controller/test.controller");
 const useAuth = require("../middleware/isAuth");
 const { parseData } = require("../middleware/multer");
-const {
-  validateTestData,
-  validateUpdateTestData,
-} = require("../middleware/validators");
+const { validateTestData } = require("../middleware/validators");
 
 router.use(useAuth);
 
@@ -25,7 +22,7 @@ router.get("/:testId", getTest);
 
 router
   .get("/", fetchAllTest)
-  .put("/:testId", parseData, validateUpdateTestData, updateTest)
+  .put("/:testId", parseData, updateTest)
   .delete("/:testId", deleteTest);
 
 module.exports = router;

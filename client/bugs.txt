@@ -1,5 +1,10 @@
 1. in TestBoard Logout functionality has some issues - ✔️
 2. reset EveryState AdminState once logout - ✔️
+3. fix loader while login as admin (2 loader shown up)
+4. Test result is not working properly
+5. fix full screen mode issue (check all cases of being faulty)
+6. fix - user can't give same test again
+7. remove completed test from Test - ✔️ 
 
 AUTH
 1. fix auth bug - ✔️
@@ -15,5 +20,7 @@ TODO - 17th Sept
 6. Create Test TestCompleted API - ✔️
 
 TODO - 18th Sept
-1. Create result page
-2. Create API for storing result of that test
+1. Create result page 
+2. Create API for storing result of that test - ✔️
+3. Add confirm box while submitting test.
+

@@ -7,7 +7,7 @@ import Loader from './components/Loader.jsx';
 import axiosInstance from './hooks/useAxios.js';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import ProtectRoute from './lib/ProtectRoute.jsx';
-import { setToken, userExists } from './redux/slices/userSlice.js';
+import { setToken, userExists, userNotExists } from './redux/slices/userSlice.js';
 
 // Lazy Load below all components
 import AppLayout from './layout/AppLayout.jsx';
@@ -80,7 +80,7 @@ const App = () => {
       const { data } = await axiosInstance.get('/user/me');
       dispatch(userExists(data.user));
     } catch (error) {
-      console.error(error);
+      dispatch(userNotExists());
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ const App = () => {
     fetchUser();
   }, [])
 
-  if (loading) return <Loader show={loading} size={40} color='#3a1c71' />
+  if (loading) return <Loader show={loading} size={50} color='#3a1c71' />
 
   return (
     <Suspense fallback={<Loader show={true} size={40} color='#3a1c71' />}>

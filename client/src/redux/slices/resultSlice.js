@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  result: {},
+  result: [],
   isLoading: false,
 };
 
@@ -11,7 +11,7 @@ const resultSlice = createSlice({
   reducers: {
     updateResult: (state, action) => {
       const { questionNo, selected } = action.payload;
-      state.result[questionNo] = selected;
+      state.result[questionNo - 1] = selected;
     },
     resetResult: (state) => {
       state.result = initialState;

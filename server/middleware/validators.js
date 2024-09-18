@@ -53,8 +53,8 @@ const validateTestData = (req, res, next) => {
 const validateUpdateTestData = (req, res, next) => {
   try {
     req.body.name = req.body.name.trim();
-    // req.body.categories = JSON.parse(req.body.categories);
 
+    // req.body.categories = JSON.parse(req.body.categories);
     req.body.questionToDelete = JSON.parse(req.body.questionToDelete);
     next();
   } catch (error) {
@@ -64,5 +64,5 @@ const validateUpdateTestData = (req, res, next) => {
 
 module.exports = {
   validateTestData,
-  validateUpdateTestData
+  validateUpdateTestData,
 };

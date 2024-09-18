@@ -28,7 +28,7 @@ export const QuestionModal = (props) => {
         }
 
         toast.success('Question added successfully');
-        dispatch(setQuestions({ question:desc, answer, options, id: questionId + 1 }));
+        dispatch(setQuestions({ question: desc, answer: parseInt(answer), options, id: questionId + 1 }));
         handleClose();
     }
 

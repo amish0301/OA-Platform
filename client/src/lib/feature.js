@@ -1,9 +1,3 @@
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import axiosInstance from "../hooks/useAxios";
-import { resetResult, setIsLoading } from "../redux/slices/resultSlice";
-
 export const transformImage = (url = "", width = 100) => {
   return url;
 };
@@ -40,36 +34,4 @@ export const validateInput = (input, questions) => {
   }
 
   return null;
-};
-
-export const handleSubmitTest = async (result, id) => {
-  const dispatch = useDispatch();
-  const toastId = toast.loading("Submitting test...");
-  const navigate = useNavigate();
-
-  dispatch(setIsLoading(true));
-  try {
-    const { data } = await axiosInstance.post(`/user/submit/${id}`, result);
-    console.log('from handleSubmitTest', data);
-
-    if (data.success) {
-      toast.update(toastId, {
-        render: data.message,
-        type: "success",
-        isLoading: false,
-        autoClose: 1200,
-      });
-      dispatch(resetResult());
-      navigate('/result')
-    }
-  } catch (error) {
-    toast.update(toastId, {
-      render: error.response.data.message,
-      type: "error",
-      isLoading: false,
-      autoClose: 1200,
-    });
-  } finally {
-    dispatch(setIsLoading(false));
-  }
 };

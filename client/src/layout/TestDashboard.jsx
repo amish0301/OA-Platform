@@ -149,7 +149,7 @@ const Navigation = () => {
 
 const TestDashboard = () => {
     return (
-        <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9', overflow: 'hidden' }} >
+        <Grid container minHeight={'100vh'} sx={{ overflow: 'hidden' }} >
             <Grid item md={4} lg={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
                 <Navigation />
             </Grid>

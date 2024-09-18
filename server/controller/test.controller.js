@@ -34,10 +34,10 @@ const assignTest = TryCatch(async (req, res) => {
     {
       $addToSet: { assignedTo: { $each: userIds } },
     },
-    {
-      new: true,
-    }
+    { new: true }
   );
+
+  await test.save();
 
   if (!test)
     return res.status(404).json({ success: false, message: "Test not found" });

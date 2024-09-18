@@ -11,11 +11,11 @@ const Questions = ({ testId }) => {
     const dispatch = useDispatch();
 
     // setting up questions
-    const node = useSelector(state => state.question);
-    const questionNo = node.trace;
-    const questions = node.queue[questionNo];
+    const { trace: questionNo, queue: questions } = useSelector(state => state.question);
 
-    const selectedOption = useSelector(state => state.result.result[questionNo]);
+    // questionNo , option is 1 based
+    // result is 0 based (bcoz of array)
+    const selectedOption = useSelector(state => state.result.result[questionNo - 1]);
 
     const [selected, setSelected] = useState(selectedOption || false);
     const handleOptionSelect = (index) => {
@@ -33,19 +33,19 @@ const Questions = ({ testId }) => {
         }
     }, [data])
 
-    if (isLoading) return <Loader show={isLoading} size={50} />
+    if (isLoading) return <Loader show={isLoading} size={40} />
     if (isError) return <h3>{isError || "Unknown Error"}</h3>
 
     return (
         <div className='container w-full select-none px-10 py-5'>
             <div className='container w-ful rounded-lg bg-[#e5e5e5] p-10 text-[#333333]'>
-                <h3 className='text-xl my-3'>{`${questionNo + 1}. ${questions?.question}`}</h3>
+                <h3 className='text-xl my-3'>{`${questionNo}. ${questions[questionNo-1]?.question}`}</h3>
                 <ul className='list-inside'>
                     {
-                        questions?.options?.map((option, index) => {
+                        questions[questionNo-1]?.options?.map((option, index) => {
                             return (
                                 <div className='flex items-center justify-start gap-2 w-fit ml-2' key={index}>
-                                    <input type="radio" name={`question${questionNo}`} checked={selected == index} value={option} aria-label='option-input' id={`option${index}`} key={option} className='w-4 h-4' onChange={() => handleOptionSelect(index)} />
+                                    <input type="radio" name={`question${questionNo}`} checked={selected == index + 1} value={option} aria-label='option-input' id={`option${index}`} key={option} className='w-4 h-4' onChange={() => handleOptionSelect(index + 1)} />
                                     <label htmlFor={`option${index}`} className='font-normal my-2 pl-2 cursor-pointer'>{option}</label>
                                 </div>
                             )
