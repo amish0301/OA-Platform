@@ -74,31 +74,38 @@ const submitTest = TryCatch(async (req, res, next) => {
     { new: true }
   );
 
-  await User.findByIdAndUpdate(
-    { _id: req.uId, "completedTests.testId": testId },
-    {
-      $set: {
-        "completedTests.$.score": score,
-        "completedTests.$.completedAt": new Date(),
-      },
-    },
-    { new: true, upsert: true }
-  );
+  // Check if the user has already completed this test
+  const userWithCompletedTest = await User.findOne({
+    _id: req.uId,
+    "completedTests.testId": testId,
+  });
 
-  // if testId not exist then create
-  await User.findByIdAndUpdate(
-    { _id: req.uId, "completedTests.testId": { $ne: testId } },
-    {
-      $push: {
-        completedTests: {
-          testId,
-          score,
-          completedAt: new Date(),
+  if (userWithCompletedTest) {
+    await User.findOneAndUpdate(
+      { _id: req.uId, "completedTests.testId": testId },
+      {
+        $set: {
+          "completedTests.$.score": score,
+          "completedTests.$.completedAt": new Date(),
         },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
+  } else {
+    await User.findByIdAndUpdate(
+      req.uId,
+      {
+        $push: {
+          completedTests: {
+            testId,
+            score,
+            completedAt: new Date(),
+          },
+        },
+      },
+      { new: true }
+    );
+  }
 
   return res
     .status(200)

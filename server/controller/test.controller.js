@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Test = require("../db/test.model");
+const User = require("../db/user.model");
 const { TryCatch } = require("../utils/helper");
 const ApiError = require("../utils/ApiError");
 
@@ -37,7 +38,16 @@ const assignTest = TryCatch(async (req, res) => {
     { new: true }
   );
 
+  const assigned = await User.findByIdAndUpdate(
+    req.uId,
+    {
+      $inc: { totalAssigned: 1 },
+    },
+    { new: true }
+  );
+
   await test.save();
+  await assigned.save();
 
   if (!test)
     return res.status(404).json({ success: false, message: "Test not found" });

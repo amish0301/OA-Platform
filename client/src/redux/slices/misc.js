@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isMobile: false,
   isLoading: false,
+  isTestSubmitted: false,
+  isSubmitting: false,
 };
 
 const miscSlice = createSlice({
@@ -15,9 +17,19 @@ const miscSlice = createSlice({
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
+    setIsTestSubmitted: (state, action) => {
+      state.isTestSubmitted = action.payload;
+    },
+    setIsSubmitting: (state, action) => {
+      state.isSubmitting = action.payload;
+    },
   },
 });
 
 export default miscSlice;
-export const { setIsMobile, setIsLoading } =
-  miscSlice.actions;
+export const {
+  setIsMobile,
+  setIsLoading,
+  setIsTestSubmitted,
+  setIsSubmitting,
+} = miscSlice.actions;

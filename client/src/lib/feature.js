@@ -35,3 +35,18 @@ export const validateInput = (input, questions) => {
 
   return null;
 };
+
+export const getLast7Days = () => {
+  const today = new Date();
+  const last7Days = [];
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+
+    const dayname = date.toLocaleDateString("en-us", { weekday: "short" });
+    last7Days[6-i] = dayname;
+  }
+
+  return last7Days;
+};

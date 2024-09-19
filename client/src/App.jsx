@@ -100,7 +100,7 @@ const App = () => {
           <Route path='about' element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>
-        
+
         <Route path='/test/:id/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
         <Route path='/test/:id/start' element={<ProtectRoute user={isAuthenticated}><Test /></ProtectRoute>} />
         <Route path='/test/:id/result' element={<ProtectRoute user={isAuthenticated}><TestResult /></ProtectRoute>} />
@@ -122,7 +122,7 @@ const App = () => {
 
         {/* Admin routes */}
         <Route path='/admin' element={<ProtectRoute user={isAuthenticated}><ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute></ProtectRoute>}>
-          <Route path='dashboard' element={<Dashboard />} />
+          <Route inedx path='dashboard' element={<Dashboard />} />
           <Route path='tests/create' element={<CreateTest />} />
           <Route path='users' element={<UserManagement />} />
           <Route path='tests' element={<TestManagement />} />

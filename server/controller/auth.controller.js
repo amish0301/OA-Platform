@@ -8,6 +8,7 @@ const {
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
+const bcrypt = require("bcryptjs");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const registerUser = TryCatch(async (req, res) => {
@@ -28,11 +29,14 @@ const registerUser = TryCatch(async (req, res) => {
       .json({ success: false, message: "User with email already exists" });
   }
 
+  // hash password
+  const hashPassword = await bcrypt.hash(password, 10); 
+
   // create user
   const user = await User.create({
     name,
     email,
-    password,
+    password: hashPassword,
   });
 
   if (!user) {
@@ -65,7 +69,7 @@ const loginUser = TryCatch(async (req, res) => {
     });
   }
 
-  const isMatch = await user.isPasswordCorrect(password);
+  const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(401).json({
       success: false,

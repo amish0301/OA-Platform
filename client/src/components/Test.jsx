@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FaArrowLeft as LeftIcon, FaArrowRight as RightIcon } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -7,22 +7,68 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
 import { moveToNext, moveToPrevious, reset } from '../redux/slices/questionSlice';
 import { resetResult, setIsLoading } from '../redux/slices/resultSlice';
+import { AlertDialog } from '../shared/Alertdialog';
 import Loader from './Loader';
 import Questions from './Questions';
+import { setIsSubmitting } from '../redux/slices/misc';
 
 const Test = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { result, isLoading } = useSelector(state => state.result);
-  const [isTestSubmitted, setIsTestSubmitted] = useState(false);
+  const { isTestSubmitted, isSubmitting } = useSelector(state => state.misc);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(() => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    setIsAlertOpen(true);
+    dispatch(setIsSubmitting(true));
+  }, [dispatch]);
+
+  const handleFullscreenChange = useCallback(async () => {
+    if (!document.fullscreenElement && !isTestSubmitted && !isSubmitting && !isAlertOpen) {
+      const userConfirmed = window.confirm('You must stay in full screen mode during the Exam. Click OK to re-enter full screen mode.');
+      if (userConfirmed) {
+        try {
+          await document.documentElement.requestFullscreen();
+        } catch (err) {
+          console.error(`Error attempting to enter fullscreen mode: ${err.message}`);
+        }
+      } else {
+        toast.info('Please press F11 to enter full screen mode. Otherwise your test will not be submitted', { autoClose: 4000 });
+      }
+    }
+  }, [isTestSubmitted, isAlertOpen]);
+
+  useEffect(() => {
+    const keyboardEvent = (e) => {
+      if (e.key === 'ArrowLeft') dispatch(moveToPrevious());
+      if (e.key === 'ArrowRight') dispatch(moveToNext());
+      if (e.key === 'Enter' && !isAlertOpen) handleSubmit();
+    };
+
+    document.addEventListener('keydown', keyboardEvent);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+    if (!document.fullscreenElement && !isTestSubmitted && !isAlertOpen) {
+      document.documentElement.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enter fullscreen mode: ${err.message}`);
+      });
+    }
+
+    return () => {
+      document.removeEventListener('keydown', keyboardEvent);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, [dispatch, handleSubmit, handleFullscreenChange, isTestSubmitted, isAlertOpen]);
+
+  useEffect(() => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
-    setIsTestSubmitted(true);
-    // somehow test not submitting
+  }, [id]);
 
+  const submitTest = async () => {
     setIsLoading(true);
     const toastId = toast.loading('Submitting test...');
     try {
@@ -31,8 +77,8 @@ const Test = () => {
       });
       if (data.success) {
         toast.update(toastId, { render: data.message, type: 'success', isLoading: false, autoClose: 600 });
-        dispatch(reset());
         dispatch(resetResult());
+        dispatch(reset());
       }
     } catch (error) {
       toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 2000 });
@@ -40,62 +86,7 @@ const Test = () => {
       setIsLoading(false);
       toast.dismiss(toastId);
     }
-  }
-
-  useEffect(() => {
-    function cleanUp() {
-      document.removeEventListener('keydown', keyboardEvent);
-      document.removeEventListener('fullscreenchange', handleFullscreenChange)
-    }
-
-    function keyboardEvent(e) {
-      if (e.key === 'ArrowLeft') {
-        dispatch(moveToPrevious());
-      }
-      if (e.key === 'ArrowRight') {
-        dispatch(moveToNext());
-      }
-      if (e.key === 'Enter') {
-        handleSubmit();
-      }
-    }
-
-    async function openFullScreen() {
-      try {
-        if (document.documentElement.requestFullscreen) {
-          await document.documentElement.requestFullscreen();
-        }
-      } catch (err) {
-        console.error(`Error attempting to enter fullscreen mode: ${err.message}`);
-      }
-    }
-
-    async function handleFullscreenChange() {
-      if (!document.fullscreenElement && !isTestSubmitted) {
-        const userConfirmed = window.confirm('You must stay in full screen mode during the Exam. Click OK to re-enter full screen mode.');
-        if (userConfirmed) {
-          await openFullScreen();
-        } else {
-          toast.info('Please press F11 to enter full screen mode. otherwise your test will not be submitted', { autoClose: 4000 });
-        }
-      }
-    }
-
-    // Add event listeners for keyboard events and fullscreen change
-    document.addEventListener('keydown', keyboardEvent);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-    if (!document.fullscreenElement) openFullScreen();
-
-    // Clean up event listeners when the component unmounts
-    return () => cleanUp();
-  }, [isTestSubmitted]);
-
-  useEffect(() => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
-  }, [id]);
+  };
 
   if (isLoading) return <Loader show={isLoading} size={40} />
 
@@ -114,6 +105,7 @@ const Test = () => {
       <div className='mt-10 w-fit ml-auto mr-20'>
         <button className='py-3 text-lg mt-10 px-6 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300' onClick={handleSubmit}>Submit</button>
       </div>
+      <AlertDialog open={isAlertOpen} setIsAlertOpen={setIsAlertOpen} submitTest={submitTest} />
     </div>
   );
 };

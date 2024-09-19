@@ -28,7 +28,7 @@ const AdminLogin = () => {
                 setLoading(false);
                 toast.success(res.data.message);
                 dispatch(userExists({ ...res.data.user }));
-                navigate('/admin', { replace: true });
+                navigate('/admin/dashboard', { replace: true });
             }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong while Login');
@@ -47,7 +47,7 @@ const AdminLogin = () => {
                 <h2 className='font-semibold text-xl text-center'>Admin Login</h2>
                 <div className='relative w-full mt-8'>
                     <span className='m-auto border-r border-r-orange-200 absolute p-2 top-[7px] rounded-l-lg left-0 items-center z-10'><PasswordIcon className='text-gray-500 text-lg' /></span>
-                    <input type={`${eyeOpen ? 'text' : 'password'}`} className='px-10 py-3 rounded-lg border w-full' placeholder='enter admin key' name='skey' required aria-label='skey' onChange={(e) => setKey(e.target.value)} value={key} />
+                    <input type={`${eyeOpen ? 'text' : 'password'}`} className='px-10 py-3 rounded-lg border w-full' autoFocus placeholder='enter admin key' name='skey' required aria-label='skey' onChange={(e) => setKey(e.target.value)} value={key} />
                     <span className='text-lg absolute top-[25px] right-3 -translate-y-1/2 cursor-pointer' onClick={() => setEyeOpen(prev => !prev)}>
                         {eyeOpen ? <OpenIcon /> : <ClosedIcon />}
                     </span>

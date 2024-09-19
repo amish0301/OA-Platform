@@ -83,7 +83,7 @@ const ProfileCard = ({ logoutHandler }) => {
           </div>
 
           {
-            user?.isAdmin && <div className='profile-list' onClick={() => navigate('/admin')}>
+            user?.isAdmin && <div className='profile-list' onClick={() => navigate('/admin/dashboard')}>
               <Icon className='text-sm'><MdDashboard /></Icon>
               <Typography variant='body-1' className='leading-3'>Admin Dashboard</Typography>
             </div>
