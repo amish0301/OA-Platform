@@ -1,6 +1,6 @@
 import { IconButton, Popover, Typography } from '@mui/material';
 import React, { useState } from 'react';
-import { BsInfoLg as InfoIcon } from "react-icons/bs";
+import { MdInfoOutline as InfoIcon } from "react-icons/md";
 
 const CustomInfoIcon = ({ content, title }) => {
 
@@ -17,7 +17,7 @@ const CustomInfoIcon = ({ content, title }) => {
 
     return (
         <div className='flex items-center mb-4 mt-2'>
-            <Typography variant="h6" component="h6" sx={{ color: 'GrayText' }}>{title}</Typography>
+            <Typography variant="h6" component="h6" >{title}</Typography>
             <IconButton onMouseEnter={handlePopoverOpen}
                 onMouseLeave={handlePopoverClose}
                 size="small">
@@ -25,7 +25,7 @@ const CustomInfoIcon = ({ content, title }) => {
             </IconButton>
             <Popover
                 id="mouse-over-popover"
-                sx={{ pointerEvents: 'none', maxWidth: '600px' }}
+                sx={{ pointerEvents: 'none', width: '100%' }}
                 open={open}
                 anchorEl={anchorEl}
                 anchorOrigin={{

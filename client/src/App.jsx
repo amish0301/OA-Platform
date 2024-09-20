@@ -11,6 +11,7 @@ import { setToken, userExists, userNotExists } from './redux/slices/userSlice.js
 
 // Lazy Load below all components
 import AppLayout from './layout/AppLayout.jsx';
+import { clearLocalStorage } from './redux/localStorage.js';
 
 const About = lazy(() => import('./components/About.jsx'));
 const ForgetPassword = lazy(() => import('./components/ForgetPassword.jsx'));
@@ -18,7 +19,8 @@ const Home = lazy(() => import('./components/Home.jsx'));
 const NotFound = lazy(() => import('./components/NotFound.jsx'));
 const Test = lazy(() => import('./components/Test.jsx'));
 const TestCompleted = lazy(() => import('./components/TestCompleted.jsx'));
-const TestDashboard = lazy(() => import('./layout/TestDashboard.jsx'));
+const TestDashboardLayout = lazy(() => import('./layout/TestDashboardLayout.jsx'));
+const TestDashboard = lazy(() => import('./components/TestDashboard.jsx'));
 const AssignedTest = lazy(() => import('./pages/AssignedTest.jsx'));
 const Instruction = lazy(() => import('./pages/Instruction.jsx'));
 const Login = lazy(() => import('./pages/Login.jsx'));
@@ -71,16 +73,13 @@ const App = () => {
   const dispatch = useDispatch();
 
   const fetchUser = async () => {
-
-    // reducing unnecessary api calls
-    if (localStorage.getItem('reduxState')) return;
-
     try {
       setLoading(true);
       const { data } = await axiosInstance.get('/user/me');
       dispatch(userExists(data.user));
     } catch (error) {
       dispatch(userNotExists());
+      clearLocalStorage();
     } finally {
       setLoading(false);
     }
@@ -88,7 +87,7 @@ const App = () => {
 
   useEffect(() => {
     fetchUser();
-  }, [])
+  }, [dispatch])
 
   if (loading) return <Loader show={loading} size={50} color='#3a1c71' />
 
@@ -115,7 +114,8 @@ const App = () => {
         <Route path='/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
         <Route path='/profile/:id' element={<Profile />} />
 
-        <Route path='/test/dashboard' exact element={<TestDashboard />}>
+        <Route path='/test' element={<TestDashboardLayout />}>
+          <Route index path="dashboard" element={<TestDashboard />} />
           <Route path='assigned' element={<AssignedTest />} />
           <Route path='completed' element={<TestCompleted />} />
         </Route>

@@ -65,7 +65,7 @@ const Home = () => {
           <p className='text-sm font-bold mt-2'>Excel every exam with our high yield <span className='text-blue-600'>MCQ's.</span></p>
 
           {/* test button */}
-          <button className='flex items-center gap-2 text-lg mt-14 py-3 px-10 bg-blue-600 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-800 hover:transition-colors duration-300' onClick={() => window.open('/test/dashboard/assigned', '_self')}>Give Test
+          <button className='flex items-center gap-2 text-lg mt-14 py-3 px-10 bg-blue-600 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-800 hover:transition-colors duration-300' onClick={() => window.open('/test/assigned', '_self')}>Give Test
             <RightIcon className='text-lg mt-1 hover:translate-x-2 duration-300' />
           </button>
         </div>

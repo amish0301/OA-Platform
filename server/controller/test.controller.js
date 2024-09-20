@@ -38,12 +38,9 @@ const assignTest = TryCatch(async (req, res) => {
     { new: true }
   );
 
-  const assigned = await User.findByIdAndUpdate(
-    req.uId,
-    {
-      $inc: { totalAssigned: 1 },
-    },
-    { new: true }
+  const assigned = await User.updateMany(
+    { _id: { $in: userIds } },
+    { $inc: { totalAssignedTests: 1 } }
   );
 
   await test.save();

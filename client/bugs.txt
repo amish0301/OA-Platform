@@ -30,12 +30,22 @@ Admin Dashboard:
     Chart Type: Line Chart
     Title: "New User Signups"
     
-2. Test Completion Rate – Show how many users complete the tests versus those who start but don't finish.
+2. Test Completion Rate – Show how many users complete the tests versus those who start but don't finish. - ✔️
     Chart Type: Doughnut Chart
     Title: "Test Completion Rate"
-3. Category wise different test. (particular test / total test percentage)
 
-data format for backend
+3. Category wise different test. (particular test / total test percentage) - ✔️
 
-piechart- [category, average]
-testchart - {finished unfinished}
+User Test dashboard:
+1. Test Passed vs Test Failed - (title - test Accuracy)
+2. Recent Test analytics - {wrong & right and not attempted question}
+3. Average test score per category
+4. Highest scoring test
+
+TODO:20th Sept
+1. pie chart data aggregate - ✔️
+2. Most Popular Test category - widget - ✔️
+3. Add charts in Test Dashboard
+
+Future Patch:
+1. Timer for user

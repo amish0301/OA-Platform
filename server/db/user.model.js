@@ -47,11 +47,10 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    totalAssigned: {
+    totalAssignedTests: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Test",
-      required: true,
-    },
+    }],
     refreshToken: {
       type: String,
     },

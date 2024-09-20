@@ -2,13 +2,14 @@ import { Grid, Stack, Typography, styled } from '@mui/material';
 import React from 'react';
 import { FaTasks } from "react-icons/fa";
 import { MdAssignment, MdSpaceDashboard } from "react-icons/md";
+import { RxExit as Exit } from "react-icons/rx";
 import { Link as LinkComponent, Outlet, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axiosInstance from '../hooks/useAxios.js';
-import { RxExit as Exit } from "react-icons/rx";
 import { useDispatch } from 'react-redux';
+import axiosInstance from '../hooks/useAxios.js';
 import { clearLocalStorage } from '../redux/localStorage.js';
 import { resetUserState } from '../redux/slices/userSlice.js';
+
 
 const navLinks = [
     {
@@ -19,12 +20,12 @@ const navLinks = [
     {
         name: "Completed Tests",
         Icon: <FaTasks />,
-        path: '/test/dashboard/completed'
+        path: '/test/completed'
     },
     {
         name: "Assigned Tests",
         Icon: <MdAssignment />,
-        path: '/test/dashboard/assigned'
+        path: '/test/assigned'
     },
 ];
 
@@ -147,17 +148,17 @@ const Navigation = () => {
     )
 }
 
-const TestDashboard = () => {
+const TestDashboardLayout = () => {
     return (
         <Grid container minHeight={'100vh'} sx={{ overflow: 'hidden' }} >
-            <Grid item md={4} lg={3} sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Grid item xs={12} md={4} lg={3} sx={{ display: { xs: 'none', md: 'block' } }}>
                 <Navigation />
             </Grid>
-            <Grid item xs={12} md={8} lg={8} sx={{ height: '100%' }}>
+            <Grid item xs={12} md={8} lg={9} sx={{ height: '100%', bgcolor: '#fafbfd' }}>
                 <Outlet />
             </Grid>
         </Grid >
     )
 }
 
-export default TestDashboard
+export default TestDashboardLayout

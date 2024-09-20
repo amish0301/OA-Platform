@@ -30,12 +30,12 @@ const TestManagement = () => {
   if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
 
   return (
-    <Box sx={{ p: '1rem' }} spacing={3}>
-      <Typography variant="h4" sx={{ fontWeight: '600', color: 'GrayText', marginBottom: '.5rem' }}>
+    <Box sx={{ p: '1rem 2rem' }} spacing={3}>
+      <Typography variant="h5" component={'h1'} sx={{ fontWeight: '600', color: 'GrayText', marginBottom: '.5rem' }}>
         Test Management
       </Typography>
 
-      <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', marginBottom: '.5rem', gap: 3, flexWrap: 'wrap' }}>
+      <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', margin: '1rem 0', gap: 3, flexWrap: 'wrap' }}>
         {tests.map((test, index) => (
           <TestCard key={index} title={test.name} description={test.description} category={test.categories} duration={test.duration} totalQuestions={test.questions?.length} id={test._id} admin={true} />
         ))}

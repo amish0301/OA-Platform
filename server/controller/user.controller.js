@@ -123,4 +123,55 @@ const userInfo = TryCatch(async (req, res) => {
   return res.status(401).json({ success: false, message: "User not found" });
 });
 
-module.exports = { userInfo, changePassword, completedTests, submitTest };
+const testDashboardData = TryCatch(async (req, res) => {
+  const [assignedTests, finishedTests, accuracy] = await Promise.all([
+    User.findById(req.uId, "assignedTests")
+      .select("assignTests")
+      .countDocuments(),
+    User.findById(req.uId, "completedTests")
+      .select("completedTests")
+      .countDocuments(),
+    User.aggregate([
+      {
+        $addFields: {
+          accuracy: {
+            $cond: {
+              if: { $eq: ["$assignedTests", []] },
+              then: 0,
+              else: {
+                $round: [
+                  {
+                    $multiply: [
+                      { $divide: ["$completedTests", "$assignedTests"] },
+                      100,
+                    ],
+                  },
+                  2,
+                ],
+              },
+            },
+          },
+        },
+      },
+    ]),
+  ]);
+
+  if (!accuracy[0].accuracy) {
+    accuracy[0].accuracy = 0;
+  }
+  const stats = {
+    assignedTests,
+    finishedTests,
+    accuracy: accuracy[0].accuracy,
+  };
+
+  return res.status(200).json({ success: true, stats });
+});
+
+module.exports = {
+  userInfo,
+  changePassword,
+  completedTests,
+  submitTest,
+  testDashboardData,
+};

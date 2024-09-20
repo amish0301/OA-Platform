@@ -116,7 +116,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                 >
                     <Box sx={styles}>
                         <Stack rowGap={2} justifyContent={'left'} style={modalContentStyle}>
-                            <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="1rem">
+                            <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="1rem" borderBottom={"1px solid #ddd"} paddingBottom="1rem">
                                 <Typography
                                     id="modal-modal-title"
                                     variant="h6"
@@ -133,7 +133,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                                 >
                                     {title}
                                 </Typography>
-                                <RxCross2 className="text-4xl cursor-pointer text-gray-600" onClick={handleClose} />
+                                <RxCross2 className="text-3xl cursor-pointer text-gray-600" onClick={handleClose} />
                             </Stack>
 
                             <Typography variant='subtitle1'>

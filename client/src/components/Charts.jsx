@@ -130,8 +130,8 @@ export const DoughnutChart = ({ finish, unfinish }) => {
 
 export const PieChart = ({ pieData = [] }) => {
 
-    const labels = pieData.map(item => item.category);
-    const values = pieData.map(item => item.average);
+    const labels = pieData.map(item => item.categoryName);
+    const values = pieData.map(item => item.percentage);
 
     const chartData = {
         labels: labels,
