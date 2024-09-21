@@ -25,8 +25,14 @@ ChartJS.register(
     Legend
 );
 
-export const LineChart = ({ data, label }) => {
-    const labels = getLast7Days();
+export const LineChart = ({ data, label, isTest = false }) => {
+
+    let labels;
+    if (!isTest) {
+        labels = getLast7Days();
+    } else {
+        labels = data?.testDates
+    }
 
     const userChartData = {
         labels,
@@ -45,21 +51,58 @@ export const LineChart = ({ data, label }) => {
         ],
     }
 
+    const testPerformanceData = {
+        labels,
+        datasets: [
+            {
+                label,
+                data: data?.scores,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                pointBorderColor: '#fff',
+                pointRadius: 5,
+            }
+        ],
+    }
+
     const LineChartOption = {
         responsive: true,
         plugins: {
             legend: {
-                display: true,
+                display: isTest ? false : true,
                 position: 'bottom',
             }
         },
         scales: {
             x: {
+                title: !isTest ? undefined : {
+                    display: true,
+                    text: 'Date',
+                    color: '#000',
+                    font: {
+                        size: 14,
+                        family: "'Poppins', sans-serif",
+                        weight: 'bold',
+                    },
+                },
                 grid: {
-                    display: false,
+                    display: false
                 },
             },
             y: {
+                title: !isTest ? undefined : {
+                    display: true,
+                    text: 'Score',
+                    color: '#000',
+                    font: {
+                        size: 14,
+                        family: "'Poppins', sans-serif",
+                        weight: 'bold',
+                    },
+                },
                 beginAtZero: true,
                 grid: {
                     drawBorder: false,
@@ -68,7 +111,9 @@ export const LineChart = ({ data, label }) => {
         },
     };
 
-    return <Line data={userChartData} options={LineChartOption} />
+    return <>
+        {isTest ? <Line data={testPerformanceData} options={LineChartOption} /> : <Line data={userChartData} options={LineChartOption} />}
+    </>
 }
 
 export const DoughnutChart = ({ finish, unfinish }) => {
@@ -161,6 +206,9 @@ export const PieChart = ({ pieData = [] }) => {
 
     const options = {
         responsive: true,
+        layout: {
+            padding: 10,
+        },
         plugins: {
             legend: {
                 position: 'bottom',
@@ -170,6 +218,7 @@ export const PieChart = ({ pieData = [] }) => {
                         size: 14,
                         family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
                     },
+                    padding: 20
                 },
             },
             tooltip: {

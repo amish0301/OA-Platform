@@ -30,6 +30,9 @@ const testSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    passingMarks: {
+      type: String,
+    },
     description: {
       type: String,
     },

@@ -69,7 +69,7 @@ const Navigation = () => {
 
     return (
         <Stack
-            width={{ xs: '100%', sm: '70%', md: '80%' }}
+            width={'100%'}
             sx={{
                 padding: { xs: '1rem', sm: '2rem' },
                 height: '100%',
@@ -151,10 +151,15 @@ const Navigation = () => {
 const TestDashboardLayout = () => {
     return (
         <Grid container minHeight={'100vh'} sx={{ overflow: 'hidden' }} >
-            <Grid item xs={12} md={4} lg={3} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Grid item xs={12} md={4} lg={4} sx={{ position: { md: 'fixed' }, height: { md: '100vh' } }}>
                 <Navigation />
             </Grid>
-            <Grid item xs={12} md={8} lg={9} sx={{ height: '100%', bgcolor: '#fafbfd' }}>
+            <Grid item xs={12} md={8} lg={11} sx={{
+                marginLeft: { md: '33.33%', lg: '15%' }, 
+                height: '100vh',
+                bgcolor: '#fafbfd',
+                overflowY: 'auto',                     
+            }}>
                 <Outlet />
             </Grid>
         </Grid >

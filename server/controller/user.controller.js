@@ -156,16 +156,75 @@ const testDashboardData = TryCatch(async (req, res) => {
     ]),
   ]);
 
+  // for chartData
+  const userPerformance = await User.aggregate([
+    { $match: { _id: req.uId } },
+    { $unwind: "$completedTests" },
+    {
+      $lookup: {
+        from: "tests",
+        localField: "completedTests.testId",
+        foreignField: "_id",
+        as: "test",
+      },
+    },
+    { $unwind: "$test" },
+    {
+      $group: {
+        _id: "$_id",
+        totalScore: { $sum: "$completedTests.score" },
+        scores: { $push: "$completedTests.score" },
+        maxPossibleScore: { $sum: { $size: "$test.questions" } },
+        testDates: {
+          $addToSet: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$completedTests.completedAt",
+            },
+          },
+        },
+      },
+    },
+    // final reduction
+    {
+      $project: {
+        totalScore: 1,
+        scores: 1,
+        maxPossibleScore: 1,
+        testDates: 1,
+        performancePercentage: {
+          $multiply: [{ $divide: ["$totalScore", "$maxPossibleScore"] }, 100],
+        },
+      },
+    },
+  ]);
+
+  //
+
   if (!accuracy[0].accuracy) {
     accuracy[0].accuracy = 0;
   }
+
   const stats = {
     assignedTests,
     finishedTests,
     accuracy: accuracy[0].accuracy,
+    userPerformanceData: userPerformance[0] || {},
   };
 
   return res.status(200).json({ success: true, stats });
+});
+
+const testDashboardTableData = TryCatch(async (req, res) => {
+  const tableData = await User.aggregate([
+    {
+      $match: {
+        _id: req.uId,
+      },
+    },
+  ]);
+
+  return res.status(200).json({ success: true, tableData });
 });
 
 module.exports = {
@@ -174,4 +233,5 @@ module.exports = {
   completedTests,
   submitTest,
   testDashboardData,
+  testDashboardTableData,
 };
