@@ -32,21 +32,16 @@ const TestDashboardTable = () => {
             const { data } = await axiosInstance.get('/user/dashboard/table');
 
             if (data.success) {
-                const uniqueRows = data.tableData.reduce((acc, row) => {
-                    if (!acc.some(item => item._id === row._id)) {
-                        acc.push({ ...row, id: row._id });
-                    }
-                    return acc;
-                }, []);
-
-                setRows(uniqueRows.map(row => ({
-                    ...row,
+                const uniqueRows = data.tableData.map(row => ({
+                    id: row._id,
                     isPassed: row.isPassed,
                     name: row.name,
                     score: row.score,
                     completedAt: row.completedAt,
                     categories: row.categories
-                })));
+                }));
+
+                setRows(uniqueRows);
             }
         } catch (error) {
             throw error;
@@ -54,6 +49,7 @@ const TestDashboardTable = () => {
             setIsLoading(false);
         }
     }
+
 
     useEffect(() => {
         getData();

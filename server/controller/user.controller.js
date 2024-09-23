@@ -27,14 +27,23 @@ const changePassword = TryCatch(async (req, res) => {
 });
 
 const completedTests = TryCatch(async (req, res) => {
-  const user = await User.findById(req.uId).select("-password -refreshToken").lean();
+  const user = await User.findById(req.uId)
+    .select("-password -refreshToken")
+    .lean();
   if (!user) return next(new ApiError("User not found", 404));
 
+  if (!user.completedTests)
+    return res.status(200).json({ success: true, testData: [] });
+
   const testIds = user.completedTests.map((test) => test.testId);
-  const testsData = await Test.find({ _id: { $in: testIds } }).select("-assignedTo").lean();
+  const testsData = await Test.find({ _id: { $in: testIds } })
+    .select("-assignedTo")
+    .lean();
 
   const testData = user.completedTests.map((test) => {
-    const t = testsData.find((t) => t._id.toString() === test.testId.toString());
+    const t = testsData.find(
+      (t) => t._id.toString() === test.testId.toString()
+    );
     return {
       test: t,
       score: test.score,
@@ -78,8 +87,8 @@ const submitTest = TryCatch(async (req, res, next) => {
     (test) => test.testId.toString() === testId
   );
 
+  // update score
   if (testExists) {
-    // Update the existing test's score
     await User.updateOne(
       {
         _id: req.uId,
@@ -90,25 +99,10 @@ const submitTest = TryCatch(async (req, res, next) => {
           "completedTests.$.score": score,
           "completedTests.$.completedAt": new Date(),
         },
-      }
-    );
-  } else {
-    // Push a new entry into the completedTests array & update totalAssignedTests count
-    await User.findByIdAndUpdate(
-      req.uId,
-      {
-        $push: {
-          completedTests: {
-            testId,
-            score,
-            completedAt: new Date(),
-          },
-        },
-        $addToSet: {
-          totalAssignedTests: testId,
-        },
       },
-      { new: true }
+      {
+        new: true,
+      }
     );
   }
 
@@ -251,6 +245,11 @@ const testDashboardTableData = TryCatch(async (req, res) => {
       $unwind: "$completedTests",
     },
     {
+      $sort: {
+        "createdAt": -1,
+      },
+    },
+    {
       $lookup: {
         from: "tests",
         localField: "completedTests.testId",
@@ -262,27 +261,32 @@ const testDashboardTableData = TryCatch(async (req, res) => {
       $unwind: "$filteredTest",
     },
     {
-      $sort: {
-        "completedTests.completedAt": -1,
+      $group: {
+        _id: "$completedTests.testId",
+        score: { $first: "$completedTests.score" },
+        completedAt: { $first: "$completedTests.completedAt" },
+        isPassed: {
+          $first: {
+            $gte: ["$completedTests.score", "$filteredTest.passingMarks"],
+          },
+        },
+        name: { $first: "$filteredTest.name" },
+        categories: { $first: "$filteredTest.categories" },
       },
     },
     {
-      $limit: 100, // limiting to 100 recent test
-    },
-    {
       $project: {
+        _id: 1,
         completedAt: {
           $dateToString: {
-            format: "%d-%m-%Y",
-            date: "$completedTests.completedAt",
+            format: "%d-%m-%Y", // Formatting date
+            date: "$completedAt",
           },
         },
-        score: "$completedTests.score",
-        isPassed: {
-          $gte: ["$completedTests.score", "$filteredTest.passingMarks"],
-        },
-        name: "$filteredTest.name",
-        categories: "$filteredTest.categories",
+        score: 1,
+        isPassed: 1,
+        name: 1,
+        categories: 1,
       },
     },
   ]);
@@ -351,7 +355,8 @@ const updateTestStart = TryCatch(async (req, res, next) => {
         $set: {
           "completedTests.$.startAt": startAt,
         },
-      }
+      },
+      { new: true }
     );
   } else {
     await User.findByIdAndUpdate(
