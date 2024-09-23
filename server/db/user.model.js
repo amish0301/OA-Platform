@@ -41,6 +41,9 @@ const userSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        startAt: {
+          type: Date,
+        },
         completedAt: {
           type: Date,
           default: Date.now,

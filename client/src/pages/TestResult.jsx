@@ -19,7 +19,6 @@ const TestResult = () => {
       const { data } = await axiosInstance.get(`/user/result/${id}`);
       if (data.success) {
         setResult(data.result);
-        console.log(data.result);
       }
     } catch (error) {
       throw error;
@@ -40,8 +39,8 @@ const TestResult = () => {
 
   return (
     <Box sx={{
-      padding: 4,
-      maxWidth: 800,
+      padding: { xs: 2, sm: 4 },
+      maxWidth: { xs: '100%', sm: 800 },
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -49,7 +48,9 @@ const TestResult = () => {
       bgcolor: 'background.paper',
       borderRadius: 2,
       boxShadow: 6,
-      mx: 'auto',
+      mx: { xs: 0, sm: 'auto' },
+      mt: { sm: 6, xs: 4 },
+      overflow: 'hidden',
     }}>
       {result?.isPassed && <Confetti width={window.innerWidth} height={window.innerHeight} />}
 
@@ -61,15 +62,15 @@ const TestResult = () => {
       <Paper sx={{
         padding: 3,
         mb: 4,
-        boxShadow: 6,
+        boxShadow: 4,
         borderRadius: 2,
-        bgcolor: 'primary.light',
+        bgcolor: 'background.paper',
         width: '100%'
       }}>
-        <Typography variant="h5" fontWeight="bold" textTransform="capitalize" sx={{ color: 'primary.main' }}>Test Name: {result?.testName}</Typography>
+        <Typography variant="h5" fontWeight="bold" textTransform="capitalize" sx={{ color: 'primary.main' }}>{result?.testName}</Typography>
         <Divider sx={{ my: 2 }} />
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>Completed At: {result?.completedAt}</Typography>
-        <Typography variant="body1" sx={{ color: 'text.secondary' }}>Time Taken: {result?.timeTaken}</Typography>
+        <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: "bolder" }}>Completed At: {result?.completedAt}</Typography>
+        <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: "bolder" }}>Time Taken: {result?.timeTaken}</Typography>
       </Paper>
 
       {/* Score Display */}
@@ -96,11 +97,11 @@ const TestResult = () => {
       </Box>
 
       {/* Pass/Fail Section */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 4, gap: 1 }}>
         {result?.isPassed ? (
-          <CheckCircleIcon sx={{ fontSize: 60, color: 'success.main' }} />
+          <CheckCircleIcon style={{ fontSize: 20, color: 'success.main' }} />
         ) : (
-          <CancelIcon sx={{ fontSize: 60, color: 'error.main' }} />
+          <CancelIcon sx={{ fontSize: 20, color: 'error.main' }} />
         )}
         <Typography variant="h6" fontWeight="bold">
           {result?.isPassed ? "You Passed!" : "You Failed!"}

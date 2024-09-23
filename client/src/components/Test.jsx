@@ -67,12 +67,24 @@ const Test = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
-
     return () => {
       dispatch(resetResult());
       dispatch(reset());
     }
   }, [id]);
+
+  // Update start time
+  useEffect(() => {
+    const updateTestStart = async () => {
+      try {
+        await axiosInstance.post(`/user/start-test/${id}`, { startAt: new Date() });
+      } catch (error) {
+        throw error
+      }
+    }
+
+    updateTestStart()
+  }, [])
 
   const submitTest = async () => {
     setIsLoading(true);

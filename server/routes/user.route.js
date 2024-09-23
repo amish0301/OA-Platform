@@ -9,12 +9,13 @@ const {
   testDashboardData,
   testDashboardTableData,
   getTestResult,
+  updateTestStart,
 } = require("../controller/user.controller");
 
 router.use(useAuth);
 
 router.get("/completed", completedTests);
-
+router.post('/start-test/:testId', updateTestStart)
 router.post("/submit/:testId", submitTest);
 router.get('/result/:id', getTestResult)
 router.get('/dashboard/stats', testDashboardData)

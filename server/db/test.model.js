@@ -32,7 +32,9 @@ const testSchema = new mongoose.Schema(
     ],
     passingMarks: {
       type: Number,
-      default: ({ questions }) => Math.floor(questions.length / 2),
+      default: function () {
+        return this.questions.length / 2;
+      },
     },
     description: {
       type: String,

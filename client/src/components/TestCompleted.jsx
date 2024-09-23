@@ -14,7 +14,6 @@ const TestCompleted = () => {
 
   const fetchCompletedTests = async () => {
     setLoading(true);
-
     try {
       const { data } = await axiosInstance.get('/user/completed');
       setCompletedTests(data.testData);

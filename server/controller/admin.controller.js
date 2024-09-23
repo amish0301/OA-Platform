@@ -162,7 +162,7 @@ const dashboardStats = TryCatch(async (req, res) => {
     testChartData.unfinishedTests = ans[0].notFinishedTestsRatio;
   }
 
-  // categoryChartData
+  // categoryData
   const categoryChartData = await Test.aggregate([
     {
       $unwind: "$categories",
@@ -234,7 +234,7 @@ const dashboardStats = TryCatch(async (req, res) => {
     },
   ]);
 
-  if (mostPopularTestCategory.length) {
+  if (categoryChartData.length > 0 && mostPopularTestCategory.length > 0) {
     categoryChartData[0].category = mostPopularTestCategory[0].category;
     categoryChartData[0].count = mostPopularTestCategory[0].testCount;
   }
@@ -245,7 +245,7 @@ const dashboardStats = TryCatch(async (req, res) => {
     userChartData: dayToUserCount,
     testChartData,
     categoryChartData,
-    mostPopularTestCategoryName: categoryChartData[0].category,
+    mostPopularTestCategoryName: categoryChartData.length ? categoryChartData[0].category : null,
   };
 
   return res.status(200).json({ success: true, stats });

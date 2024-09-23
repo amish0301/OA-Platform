@@ -12,16 +12,15 @@ const AssignedTest = () => {
 
     const fetchTests = async () => {
         setLoading(true);
-        const testId = toast.loading('Checking if any test is assigned...');
-
         try {
             const res = await axiosInstance.get('/test/assigned');
             if (res.data.success) {
-                toast.update(testId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1300 });
                 setTests(res.data.tests)
+                toast.success(res.data.message)
             }
         } catch (error) {
-            toast.update(testId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1300 });
+            // throw error;
+            toast.error(error.response.data.message)
         } finally {
             setLoading(false);
         }
@@ -30,12 +29,16 @@ const AssignedTest = () => {
     // MIGHT revoked below
     // useEffect(() => {
     //     fetchTests();
+    //     return () => {
+    //         setTests([])
+    //         toast.dismiss();
+    //     }
     // }, [])
 
     if (loading) return <Loader show={loading} />
 
     return (
-        <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto'}}>
+        <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto', p: 3}}>
             <div className='flex justify-between items-center my-5'>
                 <h1 className="text-2xl font-bold mb-4">Assigned Tests</h1>
                 <button type="button" className='py-3 text-sm px-4 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300' onClick={fetchTests}>Check if Any test is assigned</button>
@@ -55,7 +58,7 @@ const AssignedTest = () => {
                     </Grid>
                 ))
                     : (
-                        <p className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl opacity-50'>" No tests found. "</p>
+                        <p className='absolute top-1/2 text-xl opacity-50'>" No tests found. "</p>
                     )
                 }
             </Grid>

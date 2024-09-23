@@ -18,7 +18,7 @@ const columns = [
         />)
     },
     {
-        field: 'isPassed', headerName: 'Qualified', headerClassName: 'table-header', width: 150, renderCell: (params) => params.row.isPassed ? <CheckIcon style={{ color: 'green', fontSize: '1.5rem'  }} /> : <CrossIcon style={{ color: 'red', fontSize: '1.5rem' }} />
+        field: 'isPassed', headerName: 'Qualified', headerClassName: 'table-header', width: 150, renderCell: (params) => params.row.isPassed ? <CheckIcon style={{ color: 'green', fontSize: '1.5rem' }} /> : <CrossIcon style={{ color: 'red', fontSize: '1.5rem' }} />
     },
 ]
 
@@ -32,7 +32,21 @@ const TestDashboardTable = () => {
             const { data } = await axiosInstance.get('/user/dashboard/table');
 
             if (data.success) {
-                setRows(data.tableData.map((row) => ({ ...row, id: row._id })));
+                const uniqueRows = data.tableData.reduce((acc, row) => {
+                    if (!acc.some(item => item._id === row._id)) {
+                        acc.push({ ...row, id: row._id });
+                    }
+                    return acc;
+                }, []);
+
+                setRows(uniqueRows.map(row => ({
+                    ...row,
+                    isPassed: row.isPassed,
+                    name: row.name,
+                    score: row.score,
+                    completedAt: row.completedAt,
+                    categories: row.categories
+                })));
             }
         } catch (error) {
             throw error;

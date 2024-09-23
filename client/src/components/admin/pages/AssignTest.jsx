@@ -32,6 +32,12 @@ const AssignTest = () => {
         }
     }
 
+    const resetState = () => {
+        setSelectedUserIds([]);
+        setTestId('');
+        setIsLoading(false);
+    }
+
     const handleAssignTest = async () => {
         setIsLoading(true);
         const toastId = toast.loading('Assigning test...');
@@ -46,7 +52,7 @@ const AssignTest = () => {
         } catch (error) {
             toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1500 });
         } finally {
-            setIsLoading(false);
+            resetState();
         }
     };
 
@@ -70,16 +76,6 @@ const AssignTest = () => {
         }, 500);
         return () => clearTimeout(timer);
     }, [search])
-
-    useEffect(() => {
-        // getUsers();
-        return () => {
-            setSelectedUserIds([]);
-            setSearch('');
-            setUsers([]);
-            setIsLoading(false);
-        }
-    }, [])
 
     if (isLoading) return <Loader show={isLoading} />
 
