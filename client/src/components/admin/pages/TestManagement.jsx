@@ -36,7 +36,7 @@ const TestManagement = () => {
       </Typography>
 
       <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', margin: '1rem 0', gap: 3, flexWrap: 'wrap' }}>
-        {tests.map((test, index) => (
+        {tests?.map((test, index) => (
           <TestCard key={index} title={test.name} description={test.description} category={test.categories} duration={test.duration} totalQuestions={test.questions?.length} id={test._id} admin={true} />
         ))}
         {!tests && <Typography variant='h6' sx={{ width: '100%', fontWeight: '600', color: 'GrayText' }}>No tests found</Typography>}

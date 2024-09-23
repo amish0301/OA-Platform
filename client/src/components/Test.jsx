@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FaArrowLeft as LeftIcon, FaArrowRight as RightIcon } from "react-icons/fa";
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
 import { moveToNext, moveToPrevious, reset } from '../redux/slices/questionSlice';
@@ -18,6 +18,7 @@ const Test = () => {
   const { result, isLoading } = useSelector(state => state.result);
   const { isTestSubmitted, isSubmitting } = useSelector(state => state.misc);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = useCallback(() => {
     if (document.fullscreenElement) document.exitFullscreen();
@@ -66,29 +67,31 @@ const Test = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
+
+    return () => {
+      dispatch(resetResult());
+      dispatch(reset());
+    }
   }, [id]);
 
   const submitTest = async () => {
     setIsLoading(true);
     const toastId = toast.loading('Submitting test...');
+    const payload = { resultArray: [...result] }
     try {
-      const { data } = await axiosInstance.post(`/user/submit/${id}`, { result }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const { data } = await axiosInstance.post(`/user/submit/${id}`, payload);
       if (data.success) {
-        toast.update(toastId, { render: data.message, type: 'success', isLoading: false, autoClose: 600 });
-        dispatch(resetResult());
-        dispatch(reset());
+        toast.update(toastId, { render: data.message, type: 'success', isLoading: false, autoClose: 1000 });
+        navigate(`/test/${id}/result`, { replace: true });
       }
     } catch (error) {
-      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 2000 });
+      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1500 });
     } finally {
       setIsLoading(false);
-      toast.dismiss(toastId);
     }
   };
 
-  if (isLoading) return <Loader show={isLoading} size={40} />
+  if (isLoading) return <Loader show={isLoading} />
 
   return (
     <div className='min-h-screen bg-[#f5f5f5] w-full'>

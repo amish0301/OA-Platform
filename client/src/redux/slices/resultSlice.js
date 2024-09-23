@@ -14,7 +14,7 @@ const resultSlice = createSlice({
       state.result[questionNo - 1] = selected;
     },
     resetResult: (state) => {
-      state.result = initialState;
+      state.result = initialState.result;
     },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;

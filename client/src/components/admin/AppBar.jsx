@@ -4,7 +4,7 @@ import { IoSettingsOutline as SettingIcon, IoSearchOutline as SearchIcon, IoNoti
 import { MdOutlineMail as Mailbox } from "react-icons/md";
 import { useSelector } from 'react-redux';
 
-const SearchField = ({ search, setSearch }) => {
+export const SearchField = ({ search, setSearch }) => {
 
     useEffect(() => {
         document.addEventListener('keydown', (e) => {

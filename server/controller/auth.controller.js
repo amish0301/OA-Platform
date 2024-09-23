@@ -92,7 +92,7 @@ const loginUser = TryCatch(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, cookieOption)
+    .cookie(process.env.AUTH_TOKEN, accessToken, cookieOption)
     .cookie("refreshToken", refreshToken, cookieOption)
     .json({
       success: true,
@@ -141,7 +141,7 @@ const refreshAccessToken = TryCatch(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, cookieOption)
+      .cookie(process.env.AUTH_TOKEN, accessToken, cookieOption)
       .cookie("refreshToken", newRefreshToken, cookieOption)
       .json({
         success: true,

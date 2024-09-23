@@ -56,7 +56,6 @@ const CreateTest = () => {
     } catch (error) {
       toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1500 });
     } finally {
-      toast.dismiss(toastId);
       setIsLoading(false);
     }
   }

@@ -18,7 +18,7 @@ const columns = [
         />)
     },
     {
-        field: 'isPassed', headerName: 'Qualified', headerClassName: 'table-header', width: 200, renderCell: (params) => params.row.isPassed ? <CheckIcon style={{ color: 'green' }} /> : <CrossIcon style={{ color: 'red' }} />
+        field: 'isPassed', headerName: 'Qualified', headerClassName: 'table-header', width: 150, renderCell: (params) => params.row.isPassed ? <CheckIcon style={{ color: 'green', fontSize: '1.5rem'  }} /> : <CrossIcon style={{ color: 'red', fontSize: '1.5rem' }} />
     },
 ]
 
@@ -26,14 +26,13 @@ const TestDashboardTable = () => {
     const [rows, setRows] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-
     const getData = async () => {
         setIsLoading(true);
         try {
             const { data } = await axiosInstance.get('/user/dashboard/table');
 
             if (data.success) {
-                setRows(data.tableData);
+                setRows(data.tableData.map((row) => ({ ...row, id: row._id })));
             }
         } catch (error) {
             throw error;
@@ -44,6 +43,9 @@ const TestDashboardTable = () => {
 
     useEffect(() => {
         getData();
+        return () => {
+            setRows([]);
+        }
     }, []);
 
     if (isLoading) return <Loader show={isLoading} />

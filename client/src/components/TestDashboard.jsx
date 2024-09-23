@@ -31,10 +31,8 @@ const TestDashboard = () => {
 
   useEffect(() => {
     document.title = 'Test Dashboard'
-
     getData()
     return () => {
-      document.title = '';
       setStats({});
     }
   }, [])

@@ -26,7 +26,7 @@ const changePassword = TryCatch(async (req, res) => {
 });
 
 const completedTests = TryCatch(async (req, res) => {
-  const user = await User.findById(req.uId).select("-password -refreshToken");
+  const user = await User.findById(req.uId).select("+completedTests");
   if (!user) return next(new ApiError("User not found", 404));
 
   const tests = user.completedTests;
@@ -47,7 +47,7 @@ const completedTests = TryCatch(async (req, res) => {
 
 const submitTest = TryCatch(async (req, res, next) => {
   const { testId } = req.params;
-  const { result } = req.body;
+  const { resultArray } = req.body;
 
   const user = await User.findById(req.uId).select("-password -refreshToken");
   if (!user) return next(new ApiError("User not found", 404));
@@ -55,43 +55,39 @@ const submitTest = TryCatch(async (req, res, next) => {
   const test = await Test.findById(testId);
   if (!test) return next(new ApiError("Test not found", 404));
 
-  const originalResult = test.questions.map((q) => parseInt(q.answer));
+  const originalResult = test.questions.map((q) => q.answer);
+
+  if (!Array.isArray(resultArray))
+    return next(new ApiError("Result is not an array", 400));
 
   let score = 0;
-  if (Array.isArray(result) && result.length > 0) {
-    score = result.reduce((acc, curr, index) => {
-      if (originalResult[index] === curr) return acc + 1;
-      return acc;
-    }, 0);
-  }
-
-  // remove urself from assignedTo
-  await Test.findByIdAndUpdate(
-    testId,
-    {
-      $pull: { assignedTo: req.uId },
-    },
-    { new: true }
-  );
-
-  // Check if the user has already completed this test
-  const userWithCompletedTest = await User.findOne({
-    _id: req.uId,
-    "completedTests.testId": testId,
+  resultArray.forEach((r, i) => {
+    if (r != null && r != undefined && r === Number(originalResult[i])) {
+      score += 1;
+    }
   });
 
-  if (userWithCompletedTest) {
-    await User.findOneAndUpdate(
-      { _id: req.uId, "completedTests.testId": testId },
+  // remove urself from assignedTo
+  const testExists = user.completedTests.some(
+    (test) => test.testId.toString() === testId
+  );
+
+  if (testExists) {
+    // Update the existing test's score
+    await User.updateOne(
+      {
+        _id: req.uId,
+        "completedTests.testId": testId,
+      },
       {
         $set: {
           "completedTests.$.score": score,
           "completedTests.$.completedAt": new Date(),
         },
-      },
-      { new: true }
+      }
     );
   } else {
+    // Push a new entry into the completedTests array
     await User.findByIdAndUpdate(
       req.uId,
       {
@@ -222,9 +218,80 @@ const testDashboardTableData = TryCatch(async (req, res) => {
         _id: req.uId,
       },
     },
+    {
+      $unwind: "$completedTests",
+    },
+    {
+      $lookup: {
+        from: "tests",
+        localField: "completedTests.testId",
+        foreignField: "_id",
+        as: "test",
+      },
+    },
+    {
+      $unwind: "$test",
+    },
+    {
+      $sort: {
+        "completedTests.completedAt": -1,
+      },
+    },
+    {
+      $limit: 50, // limiting to 50 recent test
+    },
+    {
+      $project: {
+        completedAt: {
+          $dateToString: {
+            format: "%d-%m-%Y",
+            date: "$completedTests.completedAt",
+          },
+        },
+        score: "$completedTests.score",
+        isPassed: { $gte: ["$completedTests.score", "$test.passingMarks"] },
+        name: "$test.name",
+        categories: "$test.categories",
+      },
+    },
   ]);
 
   return res.status(200).json({ success: true, tableData });
+});
+
+const getTestResult = TryCatch(async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return next(new ApiError("Test Id is Invalid or Missing", 400));
+
+  const test = await User.findById(req.uId).select("completedTests");
+
+  const testExists = test.completedTests.some(
+    (test) => test.testId.toString() === id
+  );
+
+  if (!testExists) {
+    return next(new ApiError("Test not found", 404));
+  }
+
+  const testResult = test.completedTests.filter(
+    (test) => test.testId.toString() === id
+  );
+
+  const testData = await Test.findById(testResult[0].testId);
+
+  const result = {
+    testName: testData.name,
+    score: testResult[0].score,
+    isPassed: parseInt(testResult[0].score) >= testData.passingMarks,
+    completedAt: testResult[0].completedAt,
+    totalQuestions: testData.questions.length,
+    timeTaken: new Date(testResult[0].completedAt - testData.createdAt).toISOString(),
+  }
+
+  return res.status(200).json({
+    success: true,
+    result
+  });
 });
 
 module.exports = {
@@ -234,4 +301,5 @@ module.exports = {
   submitTest,
   testDashboardData,
   testDashboardTableData,
+  getTestResult,
 };

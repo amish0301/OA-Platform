@@ -155,7 +155,7 @@ const TestDashboardLayout = () => {
                 <Navigation />
             </Grid>
             <Grid item xs={12} md={8} lg={11} sx={{
-                marginLeft: { md: '33.33%', lg: '15%' }, 
+                marginLeft: { md: '33.33%', lg: '20%' }, 
                 height: '100vh',
                 bgcolor: '#fafbfd',
                 overflowY: 'auto',                     

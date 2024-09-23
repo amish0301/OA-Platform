@@ -50,7 +50,7 @@ router.get("/login/success", async (req, res) => {
 
       return res
         .status(200)
-        .cookie("accessToken", accessToken, cookieOption)
+        .cookie(process.env.AUTH_TOKEN, accessToken, cookieOption)
         .cookie("refreshToken", refreshToken, cookieOption)
         .json({
           user: req.user,
@@ -86,7 +86,7 @@ router.get("/logout", isAuthenticated, async (req, res) => {
       }
       return res
         .status(200)
-        .clearCookie("accessToken")
+        .clearCookie(process.env.AUTH_TOKEN)
         .clearCookie("refreshToken")
         .json({ success: true, message: "Logout successfully" });
     });

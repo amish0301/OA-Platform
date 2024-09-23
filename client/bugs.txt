@@ -36,7 +36,7 @@ Admin Dashboard:
 
 3. Category wise different test. (particular test / total test percentage) - ✔️
 
-User Test dashboard:
+User Test dashboard: - ✔️
 1. User performance (equip score / total test score)
 2. Recent Test analytics - {wrong & right and not attempted question} (in accordian)
 3. Average test score per category
@@ -46,6 +46,10 @@ TODO:20th Sept
 1. pie chart data aggregate - ✔️
 2. Most Popular Test category - widget - ✔️
 3. Add charts in Test Dashboard - ✔️
+
+BUGS:
+1. Calculating result - ✔️
+2. Dashboard Table rendering data redudantly
 
 Future Patch:
 1. Timer for user

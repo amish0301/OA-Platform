@@ -4,8 +4,9 @@ import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
+import { MdContentCopy as CopyIcon } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 const TestCard = ({ title, description, category = [], subCategory = [], duration, totalQuestions, id = null, score, admin }) => {
 
     const [open, setOpen] = useState(false);
@@ -44,9 +45,14 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
         navigate(`/admin/tests/edit/${id}`)
     }
 
+    const handleCopyID = () => {
+        navigator.clipboard.writeText(id);
+        toast.success('Test ID copied to clipboard!', { autoClose: 1000, position: 'bottom-center', hideProgressBar: true });
+    }
+
     return (
         <Card style={{
-            maxWidth: 300,
+            minWidth: 300,
             backgroundColor: '#fff',
             borderRadius: '15px',
             padding: '.5rem',
@@ -65,24 +71,29 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                     </Typography>
 
                     <Stack direction="row" alignItems="center" gap={"1rem"}>
-                        <Tooltip title="Total Questions">
+                        {!admin && <Tooltip title="Total Questions">
                             <div className='flex items-center space-x-1 cursor-pointer'>
                                 <IoDocumentTextOutline className='text-xl' />
                                 <Typography variant='subtitle1' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{totalQuestions}</Typography>
                             </div>
-                        </Tooltip>
-                        <Tooltip title="Test Duration">
+                        </Tooltip>}
+                        {!admin && <Tooltip title="Test Duration">
                             <div className='flex items-center space-x-2 cursor-pointer'>
                                 <IoTimeOutline className='text-xl' />
                                 <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{duration} min</Typography>
                             </div>
-                        </Tooltip>
+                        </Tooltip>}
                         {score && <Tooltip title="Score">
                             <div className='flex items-center space-x-2 cursor-pointer'>
                                 <IoTimeOutline className='text-xl' />
                                 <Typography variant='subtitle2' sx={{ fontWeight: 'bolder', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{score}</Typography>
                             </div>
                         </Tooltip>}
+                        {admin &&
+                            <div className='flex items-center space-x-2 cursor-pointer'>
+                                <Button sx={{ padding: '0.2rem 0.5rem', fontWeight: 'bolder' }} variant='text' onClick={handleCopyID}>Copy Id <code style={{ fontWeight: 'bolder', padding: '0.4rem .2rem' }}><CopyIcon /></code></Button>
+                            </div>
+                        }
                     </Stack>
                 </Stack>
                 <Typography variant='subtitle2' style={{ marginTop: '1rem', color: '#666', fontWeight: 'bolder' }}>

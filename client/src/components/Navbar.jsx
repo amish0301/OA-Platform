@@ -10,6 +10,7 @@ import axiosInstance from '../hooks/useAxios';
 import { clearLocalStorage } from '../redux/localStorage';
 import { resetUserState, userExists } from '../redux/slices/userSlice';
 import Loader from './Loader';
+import { STORAGE_KEY } from '../lib/config';
 
 const ProfileCard = ({ logoutHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -47,12 +48,14 @@ const ProfileCard = ({ logoutHandler }) => {
     setAnchorEl(null);
   };
 
+  // profileImage rendering like this bcoz as redux store is storing image link which is temparory url 
+  const profileImage = JSON.parse(localStorage.getItem(STORAGE_KEY))?.user?.user?.profileImage;
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
 
   return (
     <div className='cursor-pointer w-fit'>
-      <Avatar src={user?.profileImage} onClick={handleClick} alt='profile image' aria-labelledby='avatar' />
+      <Avatar src={profileImage} onClick={handleClick} alt='profile image' aria-labelledby='avatar' />
       <Popover
         id={id}
         open={open}

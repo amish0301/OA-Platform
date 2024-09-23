@@ -22,13 +22,11 @@ const createTest = TryCatch(async (req, res) => {
     .json({ success: true, message: "Test created successfully", test });
 });
 
-const assignTest = TryCatch(async (req, res) => {
+const assignTest = TryCatch(async (req, res, next) => {
   const { testId, userIds } = req.body;
 
-  if (!userIds)
-    return res
-      .status(400)
-      .json({ success: false, message: "Please provide user ids" });
+  if (!testId || !userIds)
+    return next(new ApiError("Please provide Test id or user ids", 400));
 
   const test = await Test.findByIdAndUpdate(
     testId,
@@ -38,16 +36,14 @@ const assignTest = TryCatch(async (req, res) => {
     { new: true }
   );
 
+  if (!test) return next(new ApiError("Test not found", 404));
+
   const assigned = await User.updateMany(
     { _id: { $in: userIds } },
-    { $inc: { totalAssignedTests: 1 } }
+    { $addToSet: { totalAssignedTests: testId } }
   );
 
-  await test.save();
-  await assigned.save();
-
-  if (!test)
-    return res.status(404).json({ success: false, message: "Test not found" });
+  if (!assigned) return next(new ApiError("Some of users not found", 404));
 
   return res.status(200).json({
     success: true,
@@ -56,7 +52,7 @@ const assignTest = TryCatch(async (req, res) => {
 });
 
 const getAssignedTest = TryCatch(async (req, res) => {
-  const tests = await Test.find({ assignedTo: req.uId }).select("-assignedTo");
+  const tests = await Test.find({ assignedTo: req.uId });
 
   return res.status(200).json({
     success: true,
@@ -87,7 +83,7 @@ const getTest = TryCatch(async (req, res, next) => {
 });
 
 const fetchAllTest = TryCatch(async (req, res, next) => {
-  const tests = await Test.find();
+  const tests = await Test.find().sort({ createdAt: -1 });
   return res.status(200).json({
     success: true,
     message: tests.length

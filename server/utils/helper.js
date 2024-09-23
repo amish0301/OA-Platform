@@ -1,11 +1,12 @@
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
-const TryCatch = (fn) => (req, res) => {
+const TryCatch = (fn) => async (req, res, next) => {
   try {
-    fn(req, res);
+    await fn(req, res, next);
   } catch (error) {
     console.log("error in trycatch helper", error);
+    next(error);
   }
 };
 

@@ -35,7 +35,7 @@ const AssignedTest = () => {
     if (loading) return <Loader show={loading} />
 
     return (
-        <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto' }} className="p-4 relative" >
+        <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto'}}>
             <div className='flex justify-between items-center my-5'>
                 <h1 className="text-2xl font-bold mb-4">Assigned Tests</h1>
                 <button type="button" className='py-3 text-sm px-4 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300' onClick={fetchTests}>Check if Any test is assigned</button>

@@ -31,13 +31,14 @@ const testSchema = new mongoose.Schema(
       },
     ],
     passingMarks: {
-      type: String,
+      type: Number,
+      default: ({ questions }) => Math.floor(questions.length / 2),
     },
     description: {
       type: String,
     },
     duration: {
-      type: String, // IN MIN 
+      type: String, // IN MIN
       required: true,
     },
     assignedTo: [

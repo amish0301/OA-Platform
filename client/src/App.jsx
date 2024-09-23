@@ -32,6 +32,7 @@ const AdminLayout = lazy(() => import('./layout/AdminLayout.jsx'));
 const AdminLogin = lazy(() => import('./components/admin/Login.jsx'));
 const CreateTest = lazy(() => import('./components/admin/pages/CreateTest.jsx'));
 const TestManagement = lazy(() => import('./components/admin/pages/TestManagement.jsx'));
+const AssignTest = lazy(() => import('./components/admin/pages/AssignTest.jsx'));
 const UserManagement = lazy(() => import('./components/admin/pages/UserManagement.jsx'));
 const EditTest = lazy(() => import('./shared/EditTest.jsx'));
 const TestResult = lazy(() => import('./pages/TestResult.jsx'));
@@ -63,7 +64,7 @@ const LoginSuccess = () => {
     fetchUser()
   }, [dispatch])
 
-  if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
+  if (loading) return <Loader show={loading} color='#3a1c71' />
 }
 
 const App = () => {
@@ -76,7 +77,7 @@ const App = () => {
     try {
       setLoading(true);
       const { data } = await axiosInstance.get('/user/me');
-      dispatch(userExists(data.user));
+      dispatch(userExists({ ...data.user }));
     } catch (error) {
       dispatch(userNotExists());
       clearLocalStorage();
@@ -87,12 +88,12 @@ const App = () => {
 
   useEffect(() => {
     fetchUser();
-  }, [dispatch])
+  }, [])
 
-  if (loading) return <Loader show={loading} size={50} color='#3a1c71' />
+  if (loading) return <Loader show={loading} />
 
   return (
-    <Suspense fallback={<Loader show={true} size={40} color='#3a1c71' />}>
+    <Suspense fallback={<Loader show={true} />}>
       <Routes>
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />
@@ -126,6 +127,7 @@ const App = () => {
           <Route path='tests/create' element={<CreateTest />} />
           <Route path='users' element={<UserManagement />} />
           <Route path='tests' element={<TestManagement />} />
+          <Route path='tests/assign' element={<AssignTest />} />
           <Route path='tests/edit/:id' element={<EditTest />} />
         </Route>
 

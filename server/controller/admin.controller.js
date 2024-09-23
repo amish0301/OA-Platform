@@ -38,10 +38,14 @@ const adminLogout = TryCatch(async (req, res) => {
 });
 
 const fetchUsers = TryCatch(async (req, res) => {
-  const users = await User.find({});
-  return res
-    .status(200)
-    .json({ success: true, message: "Fetched All users", users });
+  const { search } = req.query;
+  const query = search
+    ? {
+        $or: [{ name: { $regex: search, $options: "i" } }],
+      }
+    : {};
+  const users = await User.find(query).select("+name");
+  return res.status(200).json({ success: true, users });
 });
 
 const dashboardStats = TryCatch(async (req, res) => {
@@ -241,7 +245,7 @@ const dashboardStats = TryCatch(async (req, res) => {
     userChartData: dayToUserCount,
     testChartData,
     categoryChartData,
-    mostPopularTestCategoryName: categoryChartData[0].category, 
+    mostPopularTestCategoryName: categoryChartData[0].category,
   };
 
   return res.status(200).json({ success: true, stats });

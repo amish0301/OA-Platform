@@ -13,7 +13,7 @@ const testValidationSchema = joi.object({
         id: joi.optional(),
         question: joi.string().required(),
         options: joi.array().items(joi.string().required()).min(2).required(),
-        answer: joi.string().required(),
+        answer: joi.number().required(),
       })
     )
     .required(),
