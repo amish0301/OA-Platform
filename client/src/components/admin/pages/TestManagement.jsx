@@ -40,7 +40,7 @@ const TestManagement = () => {
     fetchTests();
   }, [])
 
-  if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
+  if (loading) return <Loader show={loading} />
 
   return (
     <Box sx={{ p: '1rem 2rem' }} spacing={3}>

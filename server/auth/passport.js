@@ -16,7 +16,7 @@ const passportUtil = (app) => {
         maxAge: 5 * 60 * 1000, // 5 min
         httpOnly: true,
         secure: process.env.NODE_ENV === "PRODUCTION",
-        sameSite: 'lax' 
+        sameSite: 'none' 
       },
     })
   );

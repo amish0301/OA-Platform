@@ -7,38 +7,32 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
+import { STORAGE_KEY } from '../lib/config';
 import { clearLocalStorage } from '../redux/localStorage';
 import { resetUserState, userExists } from '../redux/slices/userSlice';
-import Loader from './Loader';
-import { STORAGE_KEY } from '../lib/config';
 
 const ProfileCard = ({ logoutHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useSelector(state => state.user);
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const adminLogout = async () => {
+    setAnchorEl(null);
+    const toastId = toast.loading('Logging out...');
     try {
-      setIsLoading(true);
       const res = await axiosInstance.get('/admin/logout', {
         withCredentials: true
       });
 
       if (res.data.success) {
-        setAnchorEl(null);
-        toast.success(res.data.message);
+        toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
         dispatch(userExists({ ...res.data.user }));
       }
     } catch (error) {
-      toast.error(error.response?.data?.message);
-    } finally {
-      setIsLoading(false);
+      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1200 });
     }
   }
-
-  if (isLoading) return <Loader show={isLoading}  />
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

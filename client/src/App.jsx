@@ -8,10 +8,11 @@ import axiosInstance from './hooks/useAxios.js';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import ProtectRoute from './lib/ProtectRoute.jsx';
 import { setToken, userExists, userNotExists } from './redux/slices/userSlice.js';
-
-// Lazy Load below all components
 import AppLayout from './layout/AppLayout.jsx';
 import { clearLocalStorage } from './redux/localStorage.js';
+import { CircularProgress } from '@mui/material';
+
+// Lazy Load below all components
 
 const About = lazy(() => import('./components/About.jsx'));
 const ForgetPassword = lazy(() => import('./components/ForgetPassword.jsx'));
@@ -50,7 +51,7 @@ const LoginSuccess = () => {
           withCredentials: true
         });
 
-        if (res.data.success && res.data.user) {
+        if (res.data.success && res?.data?.user) {
           dispatch(userExists(res.data.user))
           dispatch(setToken(res.data.refreshToken))
           navigate('/', { replace: true })
@@ -93,7 +94,7 @@ const App = () => {
   if (loading) return <Loader show={loading} />
 
   return (
-    <Suspense fallback={<Loader show={true} />}>
+    <Suspense fallback={<CircularProgress aria-busy="true" />}>
       <Routes>
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />

@@ -48,7 +48,7 @@ const TestDashboard = () => {
 
       <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center', justifyContent: 'space-between', margin: '1rem 0' }}>
         <TestWidget title={'Assigned Tests'} value={stats?.assignedTests} info={'Total tests assigned'} />
-        <TestWidget title={'Accuracy'} value={stats?.accuracy + ' %'} info={'Accuracy of finished tests'} />
+        <TestWidget title={'Accuracy'} value={stats?.accuracy || 0 + ' %'} info={'Accuracy of finished tests'} />
         <TestWidget title={'Finished Tests'} value={stats?.finishedTests} info={'Count of total finished tests'} />
       </Stack>
 

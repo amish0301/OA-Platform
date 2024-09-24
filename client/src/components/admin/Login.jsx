@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
 import { useDispatch } from 'react-redux';
-import { toast } from 'react-toastify';
-import { userExists } from '../../redux/slices/userSlice';
 import { useNavigate } from 'react-router-dom';
-import Loader from '../Loader';
+import { toast } from 'react-toastify';
 import axiosInstance from '../../hooks/useAxios';
+import { userExists } from '../../redux/slices/userSlice';
+import Loader from '../Loader';
 
 
 const AdminLogin = () => {
@@ -16,30 +16,27 @@ const AdminLogin = () => {
     const [key, setKey] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const handleClick = async (e) => {
-        e.preventDefault();
+    const handleClick = async () => {
         setLoading(true);
+        const toastId = toast.loading('Logging in...');
         try {
-            const res = await axiosInstance.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key }, {
-                withCredentials: true,
-            });
+            const res = await axiosInstance.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key });
 
-            if (res.data.success) {
-                setLoading(false);
-                toast.success(res.data.message);
-                dispatch(userExists({ ...res.data.user }));
-                navigate('/admin/dashboard', { replace: true });
-            }
+            setLoading(false);
+            toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
+            dispatch(userExists({ ...res.data.user }));
+            navigate('/admin/dashboard', { replace: true });
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong while Login');
+            toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1200 });
         } finally {
             setLoading(false);
+            toast.dismiss(toastId);
         }
 
         setKey('');
     }
 
-    if (loading) return <Loader show={loading}  />
+    if (loading) return <Loader show={loading} />
 
     return (
         <div className='bg-gray-50 min-h-screen items-center flex justify-center'>

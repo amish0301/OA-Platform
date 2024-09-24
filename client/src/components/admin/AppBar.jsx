@@ -15,7 +15,14 @@ export const SearchField = ({ search, setSearch }) => {
     }, [])
 
     return (
-        <Box sx={{ padding: '0.5rem', borderRadius: '.5rem', width: '40%', display: 'flex', alignItems: 'center', bgcolor: '#eff7f9' }}>
+        <Box sx={{
+            padding: '0.5rem',
+            borderRadius: '.5rem',
+            width: { xs: '90%', sm: '60%', lg: '40%' },
+            display: 'flex',
+            alignItems: 'center',
+            bgcolor: '#eff7f9',
+          }}>
             <SearchIcon className={`text-xl opacity-50 ${search && 'hidden'}`} />
             <span className='ml-2 w-full'>
                 <input type='text' placeholder='Search here...' className='border-none outline-none bg-transparent py-1 w-full' onChange={e => setSearch(e.target.value)} value={search} />
@@ -39,10 +46,18 @@ const AppBar = () => {
     }
 
     return (
-        <Paper elevation={1} sx={{ padding: '1rem', margin: '1rem', borderRadius: '1rem', minWidth: '70vw', bgcolor: '#ffffff', position: 'sticky', top: 0 }}>
-            <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+        <Paper elevation={1} sx={{
+            padding: { xs: '0.5rem', sm: '1rem' },
+            margin: { xs: '0.5rem', sm: '1rem' },
+            borderRadius: '1rem',
+            maxWidth: { xs: '100vw', sm: '80vw', lg: '70vw' },
+            bgcolor: '#ffffff',
+            position: 'sticky',
+            top: 0,
+        }}>
+            <Stack  direction={{ xs: 'column', sm: 'row' }} alignItems={'center'} justifyContent={'space-between'}>
                 <SearchField search={search} setSearch={setSearch} />
-                <Stack direction={'row'} alignItems={'center'} spacing={'1rem'}>
+                <Stack direction={'row'} alignItems={'center'} spacing={'1rem'} sx={{ flexWrap: 'wrap', mt: { xs: '1rem', sm: 0 } }}>
                     {/* all Icons */}
                     <Tooltip title="Settings">
                         <IconButton size='small'>

@@ -2,7 +2,7 @@ import { Box, Drawer, Grid, IconButton, Stack, Typography, styled } from '@mui/m
 import React from 'react';
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
 import { IoCreateOutline as Create } from "react-icons/io5";
-import { MdDashboard as DashboardIcon, MdManageAccounts as ManageAccountsIcon, MdMenu as MenuIcon, MdAssignmentTurnedIn as Assign, MdOutlineClose as CloseIcon } from "react-icons/md";
+import { MdAssignmentTurnedIn as Assign, MdOutlineClose as CloseIcon, MdDashboard as DashboardIcon, MdManageAccounts as ManageAccountsIcon, MdMenu as MenuIcon } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Link as LinkComponent, Outlet, useLocation } from 'react-router-dom';
