@@ -28,6 +28,7 @@ const TestResult = () => {
   }
 
   useEffect(() => {
+    if(document.fullscreenElement) document.exitFullscreen();
     getResultData()
     return () => {
       setResult({});
