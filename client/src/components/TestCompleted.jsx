@@ -28,7 +28,7 @@ const TestCompleted = () => {
     fetchCompletedTests()
   }, [])
 
-  if (loading) return <Loader show={loading} color='#3a1c71' />
+  if (loading) return <Loader show={loading}  />
   return (
     <Container
       sx={{

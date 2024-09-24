@@ -84,7 +84,7 @@ const EditTest = () => {
         }
     }, [id]);
 
-    if (isLoading) return <Loader show={isLoading} color={'#3a1c71'} />
+    if (isLoading) return <Loader show={isLoading}  />
     return (
         <div className='w-full px-10'>
             <Stack direction="row" justifyContent="space-between" alignItems={"center"}>

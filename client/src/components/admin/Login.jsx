@@ -39,7 +39,7 @@ const AdminLogin = () => {
         setKey('');
     }
 
-    if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
+    if (loading) return <Loader show={loading}  />
 
     return (
         <div className='bg-gray-50 min-h-screen items-center flex justify-center'>

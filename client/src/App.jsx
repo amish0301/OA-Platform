@@ -64,7 +64,7 @@ const LoginSuccess = () => {
     fetchUser()
   }, [dispatch])
 
-  if (loading) return <Loader show={loading} color='#3a1c71' />
+  if (loading) return <Loader show={loading}  />
 }
 
 const App = () => {

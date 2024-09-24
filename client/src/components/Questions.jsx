@@ -33,7 +33,7 @@ const Questions = ({ testId }) => {
         }
     }, [data])
 
-    if (isLoading) return <Loader show={isLoading} size={40} />
+    if (isLoading) return <Loader show={isLoading} />
     if (isError) return <h3>{isError || "Unknown Error"}</h3>
 
     return (

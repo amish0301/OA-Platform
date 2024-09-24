@@ -38,7 +38,7 @@ const ProfileCard = ({ logoutHandler }) => {
     }
   }
 
-  if (isLoading) return <Loader show={isLoading} size={70} color='#3a1c71' />
+  if (isLoading) return <Loader show={isLoading}  />
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
