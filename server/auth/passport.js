@@ -42,7 +42,7 @@ const passportUtil = (app) => {
               email: profile.emails[0].value,
               googleId: profile.id,
               profileImage: profile.photos[0].value,
-              password: Date.now().toString(), // This is just a placeholder
+              password: Date.now().toString(),
             });
             
             user.refreshToken = await user.generateRefreshToken();
@@ -58,13 +58,8 @@ const passportUtil = (app) => {
   );
 
   passport.serializeUser((user, done) => {
-    // done(null, user);
     done(null, user._id);
   });
-
-  // passport.deserializeUser((user, done) => {
-  //   done(null, user);
-  // });
 
   passport.deserializeUser(async (id, done) => {
     try {
