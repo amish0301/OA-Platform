@@ -72,7 +72,7 @@ userSchema.methods.generateAccessToken = function () {
     { id: this._id, email: this.email },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "30m", // 6 min
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "30m",
     }
   );
 };
@@ -82,15 +82,12 @@ userSchema.methods.generateRefreshToken = async function () {
     { id: this._id },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d",
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
 
   this.refreshToken = refreshToken;
-  this.refreshTokenExpiry =
-    Date.now() + (process.env.REFRESH_TOKEN_EXPIRY || 7 * 24 * 60 * 60 * 1000); // 7 days
   await this.save({ validateBeforeSave: false });
-
   return refreshToken;
 };
 

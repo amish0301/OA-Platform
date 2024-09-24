@@ -51,7 +51,10 @@ BUGS:
 1. Calculating result - ✔️
 2. Dashboard Table rendering data redudantly
 
-Future Patch:
-1. Timer for user
-2. auto submit if time exceed
-3. delete test logic
+Future Patch: 
+1. Timer for user - ✔️
+2. auto submit if time exceed - ✔️
+3. delete test logic - ✔️
+
+Deployment in production:
+1. update monogDB url to render
