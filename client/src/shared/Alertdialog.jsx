@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { setIsSubmitting, setIsTestSubmitted } from '../redux/slices/misc';
 
-export const AlertDialog = ({ open, setIsAlertOpen, submitTest }) => {
+export const AlertDialog = ({ open, setIsAlertOpen, submitTest, title="", content }) => {
 
     const dispatch = useDispatch();
     const handleClose = useCallback(() => {
@@ -31,11 +31,11 @@ export const AlertDialog = ({ open, setIsAlertOpen, submitTest }) => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title" sx={{ fontWeight: 'bold' }}>
-                    {"Alert"}
+                    {title ? title : "Alert"}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description" sx={{ fontWeight: 'bold', fontSize: '1.2rem' }}>
-                        Are you sure you want to submit the test?
+                        {content ? content : "Are you sure you want to submit the test?"}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography, Button, CardActions, Icon, Stack, Modal, Box, Tooltip } from '@mui/material';
 import { FaArrowUpRightFromSquare } from 'react-icons/fa6';
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { IoTimeOutline } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
-import { MdContentCopy as CopyIcon } from "react-icons/md";
+import { MdContentCopy as CopyIcon, MdOutlineDelete as DeleteIcon } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-const TestCard = ({ title, description, category = [], subCategory = [], duration, totalQuestions, id = null, score, admin }) => {
+import { AlertDialog } from '../shared/Alertdialog';
 
+const TestCard = ({ title, description, category = [], subCategory = [], duration, totalQuestions, id = null, score, admin, onDeleteTest }) => {
     const [open, setOpen] = useState(false);
+    const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const navigate = useNavigate();
@@ -47,8 +49,14 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
 
     const handleCopyID = () => {
         navigator.clipboard.writeText(id);
-        toast.success('Test ID copied to clipboard!', { autoClose: 1000, position: 'bottom-center', hideProgressBar: true });
+        toast.success('Test ID copied to clipboard!', { autoClose: 500, position: 'bottom-center', hideProgressBar: true });
     }
+
+    useEffect(() => {
+        return () => {
+            setOpen(false);
+        }
+    }, [navigate]);
 
     return (
         <Card style={{
@@ -57,6 +65,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
             borderRadius: '15px',
             padding: '.5rem',
         }}>
+            {isDeleteAlertOpen && <AlertDialog title="Delete Test" content={"Are you sure you want to `delete` this test?"} open={isDeleteAlertOpen} setIsAlertOpen={setIsDeleteAlertOpen} submitTest={() => onDeleteTest(id)} />}
             <CardContent>
                 <Stack direction="row" alignItems="center" gap="1rem" style={{ width: '100%', backgroundColor: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-center' }}>
                     <Typography style={{
@@ -91,9 +100,14 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                         </Tooltip>}
                         {admin &&
                             <div className='flex items-center space-x-2 cursor-pointer'>
-                                <Button sx={{ padding: '0.2rem 0.5rem', fontWeight: 'bolder' }} variant='text' onClick={handleCopyID}>Copy Id <code style={{ fontWeight: 'bolder', padding: '0.4rem .2rem' }}><CopyIcon /></code></Button>
+                                <Button sx={{ padding: '0.2rem 0', fontWeight: 'bolder' }} variant='text' onClick={handleCopyID}>Copy Id <code style={{ fontWeight: 'bolder', padding: '0.4rem .2rem' }}><CopyIcon /></code></Button>
                             </div>
                         }
+                        {admin && <Tooltip title="Delete Test">
+                            <div onClick={() => setIsDeleteAlertOpen(true)}>
+                                <DeleteIcon size={20} style={{ cursor: 'pointer', color: 'red' }} />
+                            </div>
+                        </Tooltip>}
                     </Stack>
                 </Stack>
                 <Typography variant='subtitle2' style={{ marginTop: '1rem', color: '#666', fontWeight: 'bolder' }}>
@@ -110,7 +124,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                 <Stack direction="row" alignItems="center" gap="1rem" width={'100%'}>
                     <Button size="small" variant="contained" color="primary" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} onClick={admin ? handleEditTest : handleClick}>
                         {admin ? 'Edit Test' : 'Start Test'}
-                        <Icon >
+                        <Icon>
                             <FaArrowUpRightFromSquare className='mt-1 text-sm' />
                         </Icon>
                     </Button>
