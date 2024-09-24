@@ -40,7 +40,7 @@ const testSchema = new mongoose.Schema(
       type: String,
     },
     duration: {
-      type: String, // IN MIN
+      type: Number, // IN MIN
       required: true,
     },
     assignedTo: [

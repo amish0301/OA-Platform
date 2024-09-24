@@ -51,14 +51,13 @@ const assignTest = TryCatch(async (req, res, next) => {
   });
 });
 
-const getAssignedTest = TryCatch(async (req, res) => {
+const getAssignedTest = TryCatch(async (req, res, next) => {
   const tests = await Test.find({ assignedTo: req.uId });
 
+  if(!tests) return next(new ApiError("No tests are assigned", 404));
   return res.status(200).json({
     success: true,
-    message: tests.length
-      ? "Test fetched successfully"
-      : "No test are assigned",
+    message: "Test fetched successfully",
     tests,
   });
 });
@@ -74,7 +73,7 @@ const getTest = TryCatch(async (req, res, next) => {
   if (!test) return next(new ApiError("Test not found", 404));
 
   if (populate) {
-    return res.status(200).json({ success: true, questions: test.questions });
+    return res.status(200).json({ success: true, questions: test.questions, time: test.duration });
   }
 
   return res

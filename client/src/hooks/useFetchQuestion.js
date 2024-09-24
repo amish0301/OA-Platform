@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import axiosInstance from "../hooks/useAxios";
-import { setAnswers, setQuestions } from "../redux/slices/questionSlice";
+import { setAnswers, setQuestions, setTotalExamTime } from "../redux/slices/questionSlice";
 
 export const useFetchQuestion = ({ testId }) => {
   const [getData, setData] = useState({
@@ -19,6 +19,7 @@ export const useFetchQuestion = ({ testId }) => {
       try {
         const res = await axiosInstance.get(`/test/${testId}?populate=true`);
 
+        dispatch(setTotalExamTime(res?.data?.time * 60));
         setData((prev) => ({
           ...prev,
           data: res.data.questions,
@@ -35,6 +36,7 @@ export const useFetchQuestion = ({ testId }) => {
       setData({ isLoading: false, data: [], isError: null });
       dispatch(setQuestions([]));
       dispatch(setAnswers([]));
+      dispatch(setTotalExamTime(0));
     };
   }, [testId]);
 

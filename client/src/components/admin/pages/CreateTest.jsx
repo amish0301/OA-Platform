@@ -1,5 +1,5 @@
-import { Box, Button, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import { Box, Button, CircularProgress, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
+import React, { Suspense, useState } from 'react';
 import { BiSolidEdit as EditIcon } from "react-icons/bi";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
 import { RxCross2 as CrossIcon } from "react-icons/rx";
@@ -8,8 +8,8 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../../../hooks/useAxios';
 import { resetAdminState, setIsEditTestName, setTestName } from '../../../redux/slices/admin';
 import CustomAccordian from '../../../shared/Accordian';
-import QuestionList from '../QuestionList';
 import Loader from '../../Loader';
+import QuestionList from '../QuestionList';
 
 const CreateTest = () => {
 
@@ -95,11 +95,19 @@ const CreateTest = () => {
           </Stack>
 
           <Stack direction={'column'} sx={{ width: '100%', padding: '0 2rem', marginTop: '2rem' }} spacing={3}>
-            <CustomAccordian title={'Questions'} content={questions} index={1} />
-            <CustomAccordian title={'Results'} index={2} />
-            <CustomAccordian title={'Test Duration'} index={3} />
-            <CustomAccordian title={'Add Category'} index={4} />
-            <CustomAccordian title={'Add Description'} index={5} />
+            {questions && <CustomAccordian title={'Questions'} content={questions} index={1} />}
+            <Suspense fallback={<CircularProgress />}>
+              <CustomAccordian title={'Results'} index={2} />
+            </Suspense>
+            <Suspense fallback={<CircularProgress />}>
+              <CustomAccordian title={'Test Duration'} index={3} />
+            </Suspense>
+            <Suspense fallback={<CircularProgress />}>
+              <CustomAccordian title={'Add Category'} index={4} />
+            </Suspense>
+            <Suspense fallback={<CircularProgress />}>
+              <CustomAccordian title={'Add Description'} index={5} />
+            </Suspense>
           </Stack>
         </Box>
 

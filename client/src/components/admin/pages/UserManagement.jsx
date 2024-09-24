@@ -25,12 +25,9 @@ const UserManagement = () => {
         setIsLoading(true);
         try {
             const res = await axiosInstance.get('/admin/users');
-
-            if (res.data.success) {
-                setRows(res.data.users.map((user) => ({ ...user, id: user?._id, name: user?.name, avatar: user?.profileImage, admin: user?.isAdmin, googleId: user?.googleId })));
-            }
+            setRows(res.data.users.map((user) => ({ ...user, id: user?._id, name: user?.name, avatar: user?.profileImage, admin: user?.isAdmin, googleId: user?.googleId })));
         } catch (error) {
-            console.error(error);
+           throw error
         } finally {
             setIsLoading(false);
         }
@@ -38,6 +35,8 @@ const UserManagement = () => {
 
     useEffect(() => {
         fetchUsers();
+
+        return () => setIsLoading(false)
     }, [])
 
     if (isLoading) return <Loader show={isLoading} size={70} color='#3a1c71' />

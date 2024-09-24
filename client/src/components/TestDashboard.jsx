@@ -1,14 +1,15 @@
-import { Box, Container, Grid, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { Box, Container, Paper, Stack, Typography } from '@mui/material'
+import React, { lazy, useEffect, useState } from 'react'
 import { SiGoogleanalytics as Analytics } from "react-icons/si"
 import { useDispatch, useSelector } from 'react-redux'
 import axioInstance from '../hooks/useAxios'
 import { setIsLoading } from '../redux/slices/misc'
-import TestWidget from '../shared/TestWidget'
 import { DoughnutChart, LineChart } from './Charts'
 import Loader from './Loader'
-import TestDashboardTable from './TestDashboardTable'
 
+
+const TestDashboardTable = lazy(() => import('./TestDashboardTable'));
+const TestWidget = lazy(() => import('../shared/TestWidget'));
 
 const TestDashboard = () => {
 

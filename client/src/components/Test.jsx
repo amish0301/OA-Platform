@@ -5,25 +5,34 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
+import { setIsSubmitting } from '../redux/slices/misc';
 import { moveToNext, moveToPrevious, reset } from '../redux/slices/questionSlice';
 import { resetResult, setIsLoading } from '../redux/slices/resultSlice';
 import { AlertDialog } from '../shared/Alertdialog';
 import Loader from './Loader';
 import Questions from './Questions';
-import { setIsSubmitting } from '../redux/slices/misc';
 
 const Test = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { result, isLoading } = useSelector(state => state.result);
+  const { totalExamTime } = useSelector(state => state.question);
   const { isTestSubmitted, isSubmitting } = useSelector(state => state.misc);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(totalExamTime)
   const navigate = useNavigate();
 
   const handleSubmit = useCallback(() => {
     if (document.fullscreenElement) document.exitFullscreen();
-    setIsAlertOpen(true);
-    dispatch(setIsSubmitting(true));
+    if (timeLeft <= 1) {
+      toast.info('Times Up! Your test will be submitted automatically');
+      dispatch(setIsSubmitting(true));
+      setIsAlertOpen(false);
+      return submitTest();
+    } else {
+      setIsAlertOpen(true);
+      dispatch(setIsSubmitting(true));
+    }
   }, [dispatch]);
 
   const handleFullscreenChange = useCallback(async () => {
@@ -39,7 +48,7 @@ const Test = () => {
         toast.info('Please press F11 to enter full screen mode. Otherwise your test will not be submitted', { autoClose: 4000 });
       }
     }
-  }, [isTestSubmitted, isAlertOpen]);
+  }, [isAlertOpen, isSubmitting, isTestSubmitted]);
 
   useEffect(() => {
     const keyboardEvent = (e) => {
@@ -48,14 +57,17 @@ const Test = () => {
       if (e.key === 'Enter' && !isAlertOpen) handleSubmit();
     };
 
+    const enterFullscreen = () => {
+      if (!document.fullscreenElement && !isTestSubmitted && !isAlertOpen) {
+        document.documentElement.requestFullscreen().catch(err =>
+          console.error(`Error entering fullscreen: ${err.message}`)
+        );
+      }
+    };
+    
     document.addEventListener('keydown', keyboardEvent);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-    if (!document.fullscreenElement && !isTestSubmitted && !isAlertOpen) {
-      document.documentElement.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enter fullscreen mode: ${err.message}`);
-      });
-    }
+    enterFullscreen();
 
     return () => {
       document.removeEventListener('keydown', keyboardEvent);
@@ -67,11 +79,30 @@ const Test = () => {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     }
+
     return () => {
       dispatch(resetResult());
       dispatch(reset());
     }
   }, [id]);
+
+  // Timer functionality
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const timerId = setInterval(() => {
+      setTimeLeft(prevTime => {
+        if (prevTime <= 1) {
+          clearInterval(timerId);
+          handleSubmit();
+          return 0;
+        }
+        return prevTime - 1
+      });
+    }, 1000);
+
+    return () => clearInterval(timerId);
+
+  }, [timeLeft])
 
   // Update start time
   useEffect(() => {
@@ -82,7 +113,6 @@ const Test = () => {
         throw error
       }
     }
-
     updateTestStart()
   }, [])
 
@@ -103,12 +133,26 @@ const Test = () => {
     }
   };
 
+  const formatTime = (time) => {
+    const hours = Math.floor(time / 3600).toString().padStart(2, '0');
+    const minutes = (Math.floor(time / 60) % 60).toString().padStart(2, '0');
+    const seconds = (time % 60).toString().padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   if (isLoading) return <Loader show={isLoading} />
 
   return (
     <div className='min-h-screen bg-[#f5f5f5] w-full'>
       <h1 className='text-3xl font-semibold text-center py-2'>Test</h1>
 
+      {/* render timer */}
+      <div className="ml-auto w-fit mr-20 bg-white border border-gray-300 rounded-lg shadow-lg">
+        <div className="flex items-center justify-between p-4">
+          <h2 className="text-lg font-semibold text-gray-700">Time Left:</h2>
+          <p className="text-xl font-bold text-red-500 ml-2">{formatTime(timeLeft)}</p>
+        </div>
+      </div>
       {/* render questions */}
       <Questions testId={id} />
 

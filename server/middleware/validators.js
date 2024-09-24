@@ -4,7 +4,7 @@ const joi = require("joi");
 const testValidationSchema = joi.object({
   name: joi.string().required(),
   description: joi.string().optional(),
-  duration: joi.string().required(),
+  duration: joi.number().required(),
   categories: joi.array().items(joi.string()).required(),
   questions: joi
     .array()

@@ -28,7 +28,7 @@ const TestCompleted = () => {
     fetchCompletedTests()
   }, [])
 
-  if (loading) return <Loader show={loading} size={70} color='#3a1c71' />
+  if (loading) return <Loader show={loading} color='#3a1c71' />
   return (
     <Container
       sx={{
@@ -55,18 +55,18 @@ const TestCompleted = () => {
                 >
                   <CardContent>
                     <Typography variant="h6" component="div" gutterBottom>
-                      {test.test.name}
+                      {test?.test?.name}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Calendar style={{ marginRight: '0.5rem' }} />
                       <Typography variant="body2" color="text.secondary">
-                        Submitted: {new Date(test.time).toLocaleDateString()}
+                        Submitted: {new Date(test?.time).toLocaleDateString()}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <Award style={{ color: 'purple', marginRight: '0.5rem' }} />
                       <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="purple">
-                        Score: {test.score} / {test.test.questions.length}
+                        Score: {test?.score} / {test?.test?.questions?.length}
                       </Typography>
                     </Box>
                   </CardContent>

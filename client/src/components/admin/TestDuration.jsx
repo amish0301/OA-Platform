@@ -4,7 +4,7 @@ import { setIsEditTestDuration, setTestDuration } from '../../redux/slices/admin
 import { useSelector } from 'react-redux';
 
 const TestDuration = ({ testDuration, dispatch }) => {
-    const [duration, setDuration] = useState(testDuration || '');
+    const [duration, setDuration] = useState(testDuration || 0);
 
     const { isEditTestDuration } = useSelector(state => state.admin);
 

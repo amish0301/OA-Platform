@@ -13,7 +13,7 @@ const Questions = ({ testId }) => {
     // setting up questions
     const { trace: questionNo, queue: questions } = useSelector(state => state.question);
 
-    // questionNo , option is 1 based
+    // questionNo, option is 1 based
     // result is 0 based (bcoz of array)
     const selectedOption = useSelector(state => state.result.result[questionNo - 1]);
 

@@ -1,13 +1,15 @@
 import { Accordion, AccordionDetails, AccordionSummary, Button, Fade, TextField, Typography } from '@mui/material';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, lazy, useState } from 'react';
 import { IoIosAddCircleOutline as AddIcon } from "react-icons/io";
 import { MdDeleteOutline as DeleteIcon, MdExpandMore as ExpandMoreIcon } from "react-icons/md";
 import { useDispatch, useSelector } from 'react-redux';
-import QuestionList from '../components/admin/QuestionList';
-import Results from '../components/admin/Results';
-import TestCategory from '../components/admin/TestCategory';
-import TestDuration from '../components/admin/TestDuration';
-import { DeleteQuestionModal, QuestionModal } from '../lib/Modal';
+
+const QuestionModal = lazy(() => import('../lib/Modal').then(module => ({ default: module.QuestionModal })));
+const DeleteQuestionModal = lazy(() => import('../lib/Modal').then(module => ({ default: module.DeleteQuestionModal })));
+const QuestionList = lazy(() => import('../components/admin/QuestionList'));
+const TestCategory = lazy(() => import('../components/admin/TestCategory'));
+const TestDuration = lazy(() => import('../components/admin/TestDuration'));
+const Results = lazy(() => import('../components/admin/Results'));
 import { setIsDeleteQuestion, setIsEditTestDescription, setIsQuestionAdd, setTestDescription } from '../redux/slices/admin';
 
 const CustomAccordian = ({ title, content, index }) => {

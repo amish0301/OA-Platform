@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import TestCard from '../components/TestCard.jsx';
 import { Container, Grid } from '@mui/material';
-import axiosInstance from '../hooks/useAxios.js';
+import React, { lazy, useEffect, useState } from 'react';
 import Loader from '../components/Loader.jsx';
-import { toast } from 'react-toastify';
+import axiosInstance from '../hooks/useAxios.js';
+const TestCard = lazy(() => import('../components/TestCard.jsx'));
 
 const AssignedTest = () => {
 
@@ -14,34 +13,28 @@ const AssignedTest = () => {
         setLoading(true);
         try {
             const res = await axiosInstance.get('/test/assigned');
-            if (res.data.success) {
-                setTests(res.data.tests)
-                toast.success(res.data.message)
-            }
+            setTests(res.data.tests)
         } catch (error) {
-            // throw error;
-            toast.error(error.response.data.message)
+            throw error
         } finally {
             setLoading(false);
         }
     }
 
-    // MIGHT revoked below
-    // useEffect(() => {
-    //     fetchTests();
-    //     return () => {
-    //         setTests([])
-    //         toast.dismiss();
-    //     }
-    // }, [])
+    useEffect(() => {
+        fetchTests();
+        return () => {
+            setTests([])
+            setLoading(false)
+        }
+    }, [])
 
     if (loading) return <Loader show={loading} />
 
     return (
-        <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto', p: 3}}>
+        <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto', p: 3 }}>
             <div className='flex justify-between items-center my-5'>
                 <h1 className="text-2xl font-bold mb-4">Assigned Tests</h1>
-                <button type="button" className='py-3 text-sm px-4 bg-blue-800 text-white font-semibold rounded-lg shadow-md shadow-black/50 hover:bg-blue-600 hover:transition-colors duration-300' onClick={fetchTests}>Check if Any test is assigned</button>
             </div>
             <Grid container spacing={3} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {tests?.length ? tests.map((test, index) => (

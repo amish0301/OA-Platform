@@ -4,6 +4,7 @@ const initialState = {
   queue: [], // list of questions
   answers: [], // list of correct answers
   trace: 1, // q. no
+  totalExamTime: 0,
 };
 
 const questionSlice = createSlice({
@@ -23,7 +24,7 @@ const questionSlice = createSlice({
           trace: state.trace + 1,
         };
       }
-      state.trace = initialState.trace
+      state.trace = initialState.trace;
     },
     moveToPrevious: (state) => {
       if (state.trace > 1) {
@@ -32,15 +33,19 @@ const questionSlice = createSlice({
           trace: state.trace - 1,
         };
       }
-      state.trace = state.queue.length
+      state.trace = state.queue.length;
+    },
+
+    setTotalExamTime: (state, action) => {
+      state.totalExamTime = action.payload;
     },
 
     reset: (state) => {
       state.trace = initialState.trace;
-    }
+    },
   },
 });
 
 export default questionSlice;
-export const { setQuestions, setAnswers, moveToNext, moveToPrevious, reset } =
+export const { setQuestions, setAnswers, moveToNext, moveToPrevious, reset, setTotalExamTime } =
   questionSlice.actions;
