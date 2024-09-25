@@ -12,7 +12,7 @@ const TryCatch = (fn) => async (req, res, next) => {
 
 const cookieOption = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "profuction",
+  secure: process.env.NODE_ENV === "production",
   sameSite: "None",
   maxAge: 1000 * 60 * 60 * 6,
 };
@@ -31,23 +31,8 @@ const generateTokens = async (user) => {
   }
 };
 
-const sendToken = async (res, statusCode, user, message) => {
-  try {
-    return res.status(statusCode).json({
-      success: true,
-      message,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-};
-
 module.exports = {
   TryCatch,
   cookieOption,
-  sendToken,
   generateTokens,
 };

@@ -3,7 +3,6 @@ const {
   TryCatch,
   generateTokens,
   cookieOption,
-  sendToken,
 } = require("../utils/helper");
 const path = require("path");
 const jwt = require("jsonwebtoken");
@@ -30,7 +29,7 @@ const registerUser = TryCatch(async (req, res) => {
   }
 
   // hash password
-  const hashPassword = await bcrypt.hash(password, 10); 
+  const hashPassword = await bcrypt.hash(password, 10);
 
   // create user
   const user = await User.create({
@@ -48,7 +47,10 @@ const registerUser = TryCatch(async (req, res) => {
 
   await user.save();
 
-  sendToken(res, 201, user, "User created successfully");
+  return res.status(201).json({
+    success: true,
+    message: "User created successfully",
+  });
 });
 
 const loginUser = TryCatch(async (req, res) => {
