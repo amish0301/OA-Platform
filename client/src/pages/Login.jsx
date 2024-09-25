@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
-import google from '../assets/google.png'
-import sideImg from '../assets/learning.jpg'
-import signup from '../assets/login.jpg'
+import axios from 'axios';
+import React, { useState } from 'react';
 import { FaUser as UserIcon } from "react-icons/fa";
+import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import { MdEmail as MailIcon } from "react-icons/md";
 import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { setToken, userExists } from '../redux/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import google from '../assets/google.png';
+import sideImg from '../assets/learning.jpg';
+import signup from '../assets/login.jpg';
 import Loader from '../components/Loader';
+import { userExists } from '../redux/slices/userSlice';
 
 const Login = () => {
   document.title = 'Login | Online Assessment';
@@ -60,7 +60,7 @@ const Login = () => {
           if (res.data.success) {
             toast.success(res.data.message);
             dispatch(userExists({ ...res.data.user }));
-            dispatch(setToken(res.data.accessToken));
+            localStorage.setItem("accessToken", res.data.accessToken);
             navigate('/', { relative: true });
           }
 

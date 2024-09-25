@@ -50,10 +50,12 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    totalAssignedTests: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Test",
-    }],
+    totalAssignedTests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Test",
+      },
+    ],
     refreshToken: {
       type: String,
     },
@@ -78,17 +80,16 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 userSchema.methods.generateRefreshToken = async function () {
-  const refreshToken = jwt.sign(
+  const newRefreshToken = jwt.sign(
     { id: this._id },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY || "7d",
     }
   );
-
-  this.refreshToken = refreshToken;
+  this.refreshToken = newRefreshToken;
   await this.save({ validateBeforeSave: false });
-  return refreshToken;
+  return newRefreshToken;
 };
 
 userSchema.methods.verifyRefreshToken = function (token) {

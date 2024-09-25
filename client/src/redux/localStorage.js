@@ -1,10 +1,7 @@
-import { AUTH_TOKEN, STORAGE_KEY } from "../lib/config";
-
 export const saveState = (state) => {
   try {
     const serializedState = JSON.stringify(state);
-    localStorage.setItem(STORAGE_KEY
-    , serializedState);
+    localStorage.setItem("reduxState", serializedState);
   } catch (e) {
     console.error("Could not save state", e);
   }
@@ -12,9 +9,7 @@ export const saveState = (state) => {
 
 export const loadState = () => {
   try {
-    const serializedState = localStorage.getItem(
-      STORAGE_KEY
-    );
+    const serializedState = localStorage.getItem("reduxState");
     if (serializedState === null) {
       return undefined;
     }
@@ -27,8 +22,8 @@ export const loadState = () => {
 
 export const clearLocalStorage = () => {
   try {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(AUTH_TOKEN);
+    localStorage.removeItem("reduxState");
+    localStorage.removeItem("accessToken");
   } catch (e) {
     throw e;
   }

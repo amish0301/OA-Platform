@@ -1,7 +1,8 @@
 import axios from "axios";
+import { SERVER_URI } from "../lib/config";
+import { clearLocalStorage } from "../redux/localStorage";
+import { resetUserState } from "../redux/slices/userSlice";
 import store from "../redux/store"; // Import your redux store
-import { setToken, userNotExists } from "../redux/slices/userSlice";
-import { AUTH_TOKEN, SERVER_URI, STORAGE_KEY } from "../lib/config";
 
 class TokenRefreshManager {
   isRefreshing = false;
@@ -26,7 +27,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem(STORAGE_KEY);
+    const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -67,8 +68,7 @@ axiosInstance.interceptors.response.use(
         const newAccessToken = response.data?.accessToken;
 
         if (newAccessToken) {
-          store.dispatch(setToken(newAccessToken));
-          localStorage.setItem(AUTH_TOKEN, newAccessToken);
+          localStorage.setItem("accessToken", newAccessToken);
           axiosInstance.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${newAccessToken}`;
@@ -95,10 +95,8 @@ axiosInstance.interceptors.response.use(
 
 function handleAuthError(error) {
   tokenManager.isRefreshing = false;
-  store.dispatch(setToken(null));
-  store.dispatch(userNotExists());
-  localStorage.removeItem(AUTH_TOKEN);
-  localStorage.removeItem(STORAGE_KEY);
+  store.dispatch(resetUserState());
+  clearLocalStorage();
   return Promise.reject("Authentication failed. Please log in again.");
 }
 

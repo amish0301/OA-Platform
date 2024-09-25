@@ -12,11 +12,11 @@ const passportUtil = (app) => {
       secret: process.env.SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
-      cookie: { 
+      cookie: {
         maxAge: 5 * 60 * 1000, // 5 min
         httpOnly: true,
         secure: process.env.NODE_ENV === "PRODUCTION",
-        sameSite: 'none' 
+        sameSite: process.env.NODE_ENV === "PRODUCTION" ? "none" : "lax",
       },
     })
   );
@@ -32,26 +32,22 @@ const passportUtil = (app) => {
         callbackURL: process.env.GOOGLE_CALLBACK_URL,
         scope: ["profile", "email"],
       },
-      async (accessToken, refreshToken, profile, cb) => {
+      async (accessToken, refreshToken, profile, done) => {
         try {
           let user = await User.findOne({ googleId: profile.id });
-
           if (!user) {
-            user = new User({
+            user = await User.create({
               name: profile.displayName,
+              profileImage: profile.photos[0].value,
               email: profile.emails[0].value,
               googleId: profile.id,
-              profileImage: profile.photos[0].value,
               password: Date.now().toString(),
             });
-            
-            user.refreshToken = await user.generateRefreshToken();
-            await user.save({ validateBeforeSave: false });
           }
-
-          return cb(null, user);
+          
+          return done(null, user);
         } catch (error) {
-          return cb(error,null);
+          return done(error, null);
         }
       }
     )
@@ -61,12 +57,13 @@ const passportUtil = (app) => {
     done(null, user._id);
   });
 
+  // Deserialize user from the session
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
       return done(null, user);
     } catch (error) {
-      done(error, null);
+      return done(error, null);
     }
   });
 };

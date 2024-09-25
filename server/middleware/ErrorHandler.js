@@ -23,7 +23,7 @@ const ErrorHandler = (err, req, res, next) => {
       message: err.message,
     };
   
-    if(envMode === "DEVELOPMENT") {
+    if(envMode === "development") {
       response.error = err;
     }
   

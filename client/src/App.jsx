@@ -1,16 +1,14 @@
+import { CircularProgress } from '@mui/material';
 import axios from 'axios';
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Loader from './components/Loader.jsx';
-import axiosInstance from './hooks/useAxios.js';
+import AppLayout from './layout/AppLayout.jsx';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import ProtectRoute from './lib/ProtectRoute.jsx';
-import { setToken, userExists, userNotExists } from './redux/slices/userSlice.js';
-import AppLayout from './layout/AppLayout.jsx';
-import { clearLocalStorage } from './redux/localStorage.js';
-import { CircularProgress } from '@mui/material';
+import { setToken, userExists } from './redux/slices/userSlice.js';
 
 // Lazy Load below all components
 
@@ -43,58 +41,33 @@ const LoginSuccess = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true)
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, {
-          withCredentials: true
-        });
-
-        if (res.data.success && res?.data?.user) {
-          dispatch(userExists(res.data.user))
-          dispatch(setToken(res.data.refreshToken))
-          navigate('/', { replace: true })
-        }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchUser()
-  }, [dispatch])
-
-  if (loading) return <Loader show={loading}  />
-}
-
-const App = () => {
-  const [loading, setLoading] = useState(false);
-  const { user, isAuthenticated } = useSelector(state => state.user || {});
-  const isAdmin = user?.isAdmin;
-  const dispatch = useDispatch();
-
   const fetchUser = async () => {
     try {
-      setLoading(true);
-      const { data } = await axiosInstance.get('/user/me');
-      dispatch(userExists({ ...data.user }));
+      setLoading(true)
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, { withCredentials: true });
+      dispatch(userExists(res.data.user))
+      dispatch(setToken(res.data.refreshToken))
+      navigate('/', { replace: true })
     } catch (error) {
-      dispatch(userNotExists());
-      clearLocalStorage();
+      throw error;
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchUser();
-  }, [])
+    fetchUser()
+  }, [dispatch])
 
   if (loading) return <Loader show={loading} />
+}
+
+const App = () => {
+  const { user, isAuthenticated } = useSelector(state => state.user || {});
+  const isAdmin = user?.isAdmin;
 
   return (
-    <Suspense fallback={<CircularProgress aria-busy="true" />}>
+    <Suspense fallback={<CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />}>
       <Routes>
         <Route path='/' element={<AppLayout />}>
           <Route index element={<Home />} />

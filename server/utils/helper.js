@@ -12,9 +12,9 @@ const TryCatch = (fn) => async (req, res, next) => {
 
 const cookieOption = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "PRODUCTION",
-  sameSite: "none",
-  maxAge: 1000 * 60 * 60 * 24,
+  secure: process.env.NODE_ENV === "profuction",
+  sameSite: "None",
+  maxAge: 1000 * 60 * 60 * 6,
 };
 
 const generateTokens = async (user) => {

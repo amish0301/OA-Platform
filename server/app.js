@@ -14,13 +14,13 @@ const { ErrorHandler } = require("./middleware/ErrorHandler.js");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const app = express();
-passport(app);
 connectDB(process.env.MONGO_URI);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
+passport(app);
 
 // middleware for passport
 

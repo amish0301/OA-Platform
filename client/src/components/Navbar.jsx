@@ -7,7 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
-import { STORAGE_KEY } from '../lib/config';
 import { clearLocalStorage } from '../redux/localStorage';
 import { resetUserState, userExists } from '../redux/slices/userSlice';
 
@@ -42,11 +41,15 @@ const ProfileCard = ({ logoutHandler }) => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    setAnchorEl(null);
+    logoutHandler();
+  }
+
   // profileImage rendering like this bcoz as redux store is storing image link which is temparory url 
-  const profileImage = JSON.parse(localStorage.getItem(STORAGE_KEY))?.user?.user?.profileImage;
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
-
+  const profileImage = JSON.parse(localStorage.getItem('reduxState'))?.user?.user?.profileImage;
   return (
     <div className='cursor-pointer w-fit'>
       <Avatar src={profileImage} onClick={handleClick} alt='profile image' aria-labelledby='avatar' />
@@ -99,7 +102,7 @@ const ProfileCard = ({ logoutHandler }) => {
             </div>
           }
 
-          <div className='profile-list' onClick={logoutHandler}>
+          <div className='profile-list' onClick={handleLogout}>
             <Icon className='text-sm'><GoSignOut /></Icon>
             <Typography variant='body-1' className='leading-3'>Sign out</Typography>
           </div>
@@ -132,7 +135,6 @@ const Navbar = () => {
         dispatch(resetUserState());
         clearLocalStorage();
         navigate('/');
-        window.location.reload();
       }
     } catch (error) {
       toast.error(error.response?.data?.message)
