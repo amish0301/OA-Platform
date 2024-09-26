@@ -1,5 +1,4 @@
-const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require('dotenv').config();
 
 const TryCatch = (fn) => async (req, res, next) => {
   try {
@@ -11,10 +10,10 @@ const TryCatch = (fn) => async (req, res, next) => {
 };
 
 const cookieOption = {
-  httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "None",
-  maxAge: 1000 * 60 * 60 * 6,
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  httpOnly: true,
+  maxAge: 24 * 60 * 60 * 1000,
 };
 
 const generateTokens = async (user) => {

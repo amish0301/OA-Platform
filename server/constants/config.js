@@ -1,6 +1,8 @@
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+
 const corsOptions = {
-  origin: [process.env.CLIENT_URI, "http://localhost:5173"],
-  methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+  origin: process.env.CLIENT_URI,
   credentials: true,
 };
 

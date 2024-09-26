@@ -5,24 +5,46 @@ const authRoutes = require("./routes/auth.route.js");
 const userRoutes = require("./routes/user.route.js");
 const testRoutes = require("./routes/test.route.js");
 const adminRoutes = require("./routes/admin.route.js");
-const path = require("path");
-const passport = require("./auth/passport.js");
+const passport = require("passport");
+const initializePassport = require("./auth/passport.js");
 const cookieParser = require("cookie-parser");
-const { corsOptions } = require("./constants/config.js");
 const { ErrorHandler } = require("./middleware/ErrorHandler.js");
-
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+const session = require("express-session");
+require("dotenv").config();
 
 const app = express();
-connectDB(process.env.MONGO_URI);
-
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors(corsOptions));
-app.use(express.urlencoded({ extended: true }));
-passport(app);
+app.use(cors({
+  origin: process.env.CLIENT_URI,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
+connectDB(process.env.MONGO_URI);
 
-// middleware for passport
+// remove cookie for development it will work
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 15 * 60 * 1000,
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+    },
+  })
+);
+
+app.set("trust proxy", 1);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// passport initialize
+initializePassport(passport);
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);

@@ -13,14 +13,8 @@ const Loader = ({ show, size = 40, color = "#3a1c71" }) => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-transparent">
-      <div className="relative flex flex-col items-center">
-        {/* The spinning loader */}
-        <div style={cssOverride} className='animate-spin'></div>
-        <p className="text-black font-bold mt-2 animate-pulse text-lg">
-          Loading...
-        </p>
-
-      </div>
+      {/* The spinning loader */}
+      <div style={cssOverride} className='animate-spin'></div>
     </div>
   );
 }

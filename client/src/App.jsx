@@ -4,11 +4,11 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import Loader from './components/Loader.jsx';
 import AppLayout from './layout/AppLayout.jsx';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import ProtectRoute from './lib/ProtectRoute.jsx';
 import { setToken, userExists } from './redux/slices/userSlice.js';
+import Loader from './components/Loader.jsx';
 
 // Lazy Load below all components
 
@@ -38,20 +38,29 @@ const TestResult = lazy(() => import('./pages/TestResult.jsx'));
 
 const LoginSuccess = () => {
   const dispatch = useDispatch()
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const fetchUser = async () => {
+    setIsLoading(true);
     try {
-      setLoading(true)
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, { withCredentials: true });
-      dispatch(userExists(res.data.user))
-      dispatch(setToken(res.data.refreshToken))
-      navigate('/', { replace: true })
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        }
+      });
+      
+      if (res.data.success && res.data.user) {
+        dispatch(userExists(res.data.user))
+        dispatch(setToken(res.data.refreshToken))
+        navigate('/', { replace: true })
+      }
     } catch (error) {
-      throw error;
+      console.log('error in login success', error)
     } finally {
-      setLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -59,7 +68,7 @@ const LoginSuccess = () => {
     fetchUser()
   }, [dispatch])
 
-  if (loading) return <Loader show={loading} />
+  if(isLoading) return <Loader show={isLoading} />
 }
 
 const App = () => {

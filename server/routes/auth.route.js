@@ -1,6 +1,5 @@
 const express = require("express");
 const passport = require("passport");
-const path = require("path");
 const {
   registerUser,
   loginUser,
@@ -9,18 +8,25 @@ const {
 const User = require("../db/user.model");
 const { cookieOption } = require("../utils/helper");
 const isAuthenticated = require("../middleware/isAuth");
-const ApiError = require("../utils/ApiError");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
+require("dotenv").config();
 
 const router = express.Router();
 
-// authenticate user through google
+// send request to google
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// callback from google authentication
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: `${process.env.CLIENT_URI}/auth/login/success`,
     failureRedirect: `${process.env.CLIENT_URI}/auth/login/failed`,
-  })
+  }),
+  (req, res) => {
+    res.redirect(`${process.env.CLIENT_URI}/auth/login/success`);
+  }
 );
 
 router.get("/login/success", async (req, res) => {
@@ -28,30 +34,29 @@ router.get("/login/success", async (req, res) => {
     if (req.isAuthenticated()) {
       const accessToken = await req.user.generateAccessToken();
       const refreshToken = await req.user.generateRefreshToken();
-      const user = await User.findById(req.user._id).select("-password -refreshToken");
+      const user = await User.findById(req.user._id).select("-password");
+      console.log(user);
 
       // set cookies
       res.cookie(process.env.AUTH_TOKEN, accessToken, cookieOption);
       res.cookie("refreshToken", refreshToken, cookieOption);
-      
-      return res
-        .status(200)
-        .json({
-          user,
-          success: true,
-          message: "Login successfully",
-          refreshToken,
-        });
+
+      return res.status(200).json({
+        user,
+        success: true,
+        message: "Login successfully",
+        refreshToken
+      });
     } else {
       return res.status(401).json({
         success: false,
-        message: "You're Not Authenticated | Google OAuth failed",
+        message: "Google oAuth failed",
       });
     }
   } catch (error) {
     return res
-      .status(403)
-      .json({ success: false, message: "Internal server error" });
+      .status(401)
+      .json({ success: false, message: "Google Login Failed" });
   }
 });
 
@@ -64,14 +69,19 @@ router.get("/login/failed", async (req, res) => {
 
 router.get("/logout", isAuthenticated, async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.uId);
+    const user = await User.findByIdAndDelete(req.uId);
+
+    if(!user) {
+      return res.status(401).json({ success: false, message: "User not found" });
+    }
+    
+    console.log(user);
     res.clearCookie(process.env.AUTH_TOKEN, cookieOption);
     res.clearCookie("refreshToken", cookieOption);
 
     return res
       .status(200)
       .json({ success: true, message: "Logout successfully" });
-    // remove user from database
   } catch (error) {
     return res.status(500).json({ success: false, message: "Server Error" });
   }

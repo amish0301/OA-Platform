@@ -36,8 +36,6 @@ const AdminLogin = () => {
         setKey('');
     }
 
-    if (loading) return <Loader show={loading} />
-
     return (
         <div className='bg-gray-50 min-h-screen items-center flex justify-center'>
             <div className='bg-gray-100 rounded-xl shadow-xl max-w-sm w-full p-8 items-center'>
@@ -49,8 +47,8 @@ const AdminLogin = () => {
                         {eyeOpen ? <OpenIcon /> : <ClosedIcon />}
                     </span>
                 </div>
-                <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 w-full text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' onClick={handleClick}>
-                    Login
+                <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 w-full text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' onClick={handleClick} disabled={loading}>
+                    {loading ? <Loader show={true} /> : ' Login'}
                 </button>
             </div>
         </div>

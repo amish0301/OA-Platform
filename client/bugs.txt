@@ -63,3 +63,5 @@ Deployment in production:
 
 Tips:
 Don't show loading if we are showing in toast message
+
+In Production - use mongoStore to store session data by installing connect-Mono and add store to passport file Session

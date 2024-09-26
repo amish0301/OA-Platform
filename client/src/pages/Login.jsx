@@ -11,7 +11,7 @@ import google from '../assets/google.png';
 import sideImg from '../assets/learning.jpg';
 import signup from '../assets/login.jpg';
 import Loader from '../components/Loader';
-import { userExists } from '../redux/slices/userSlice';
+import { setToken, userExists } from '../redux/slices/userSlice';
 
 const Login = () => {
   document.title = 'Login | Online Assessment';
@@ -99,13 +99,9 @@ const Login = () => {
     }
   }
 
-  const handleGoogleLogin = () => {
-    try {
-      window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google/callback`, "_self");
-    } catch (error) {
-      toast.error(error?.data?.message || error);
-    }
-  }
+  const handleGoogleLogin = async () => {
+    window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google`, "_self");
+  };
 
   if (loading) return <Loader show={loading} />
 
@@ -155,7 +151,7 @@ const Login = () => {
             <hr className='border-gray-400' />
           </div>
 
-          <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center' onClick={handleGoogleLogin} disabled={loading}>
+          <button className='bg-gray-200 hover:bg-gray-300 duration-300 rounded-lg border py-2 w-full mt-5 flex justify-center items-center' onClick={handleGoogleLogin}>
             <img src={google} alt="google" className='w-6 h-6' />
             <span className='ml-1 text-sm font-semibold'>Continue with Google</span>
           </button>
@@ -174,6 +170,6 @@ const Login = () => {
       </div>
     </section>
   )
-}
 
+}
 export default Login

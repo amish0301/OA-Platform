@@ -77,8 +77,6 @@ const AssignTest = () => {
         return () => clearTimeout(timer);
     }, [search])
 
-    if (isLoading) return <Loader show={isLoading} />
-
     return (
         <div className='w-full max-w-screen-lg px-6 lg:px-10 py-8 box-border'>
             <h1 className='text-3xl font-bold mb-6 lg:mb-10 text-gray-800'>Assign Test</h1>
@@ -129,39 +127,34 @@ const AssignTest = () => {
             {users?.length > 0 ? (
                 <div className='w-full mt-6 bg-white rounded-md border border-gray-300 shadow-sm'>
                     <List>
-                        {isUsersLoading ? (
-                            <div className="flex justify-center py-8">
-                                <Loader show={isUsersLoading} />
-                            </div>
-                        ) : (
-                            users.map((user) => (
-                                <ListItem
-                                    key={user._id}
-                                    sx={{
-                                        cursor: 'pointer',
-                                        width: '100%',
-                                        userSelect: 'none',
-                                        '&:hover': { backgroundColor: '#f0f0f0' }
+                        {isUsersLoading ? <Loader show={isUsersLoading} /> : users.map((user) => (
+                            <ListItem
+                                key={user._id}
+                                sx={{
+                                    cursor: 'pointer',
+                                    width: '100%',
+                                    userSelect: 'none',
+                                    '&:hover': { backgroundColor: '#f0f0f0' }
+                                }}
+                                onClick={() => handleToggle(user._id)}
+                            >
+                                <Checkbox
+                                    edge="start"
+                                    checked={selectedUserIds.indexOf(user._id) !== -1}
+                                    tabIndex={-1}
+                                    disableRipple
+                                />
+                                <ListItemText
+                                    primary={user.name}
+                                    primaryTypographyProps={{
+                                        fontSize: '1rem',
+                                        fontWeight: '500',
+                                        color: '#333'
                                     }}
-                                    onClick={() => handleToggle(user._id)}
-                                >
-                                    <Checkbox
-                                        edge="start"
-                                        checked={selectedUserIds.indexOf(user._id) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />
-                                    <ListItemText
-                                        primary={user.name}
-                                        primaryTypographyProps={{
-                                            fontSize: '1rem',
-                                            fontWeight: '500',
-                                            color: '#333'
-                                        }}
-                                    />
-                                </ListItem>
-                            ))
-                        )}
+                                />
+                            </ListItem>
+                        ))
+                        }
                     </List>
                 </div>
             ) : (

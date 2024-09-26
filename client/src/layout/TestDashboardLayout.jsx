@@ -63,7 +63,7 @@ const Navigation = () => {
                 clearLocalStorage()
             }
         } catch (error) {
-            console.log('error whie logging out', error)
+            throw error;
         }
     }
 

@@ -1,29 +1,8 @@
-const passport = require("passport");
-const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const path = require("path");
 const User = require("../db/user.model");
+require("dotenv").config();
 
-require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
-
-const passportUtil = (app) => {
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 5 * 60 * 1000, // 5 min
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      },
-    })
-  );
-
-  app.use(passport.initialize());
-  app.use(passport.session());
-
+const initializePassport = (passport) => {
   passport.use(
     new GoogleStrategy(
       {
@@ -44,10 +23,9 @@ const passportUtil = (app) => {
               password: Date.now().toString(),
             });
           }
-          
-          return done(null, user);
+          done(null, user);
         } catch (error) {
-          return done(error, null);
+          done(error, null);
         }
       }
     )
@@ -61,11 +39,11 @@ const passportUtil = (app) => {
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
-      return done(null, user);
+      done(null, user);
     } catch (error) {
-      return done(error, null);
+      done(error, null);
     }
   });
 };
 
-module.exports = passportUtil;
+module.exports = initializePassport;
