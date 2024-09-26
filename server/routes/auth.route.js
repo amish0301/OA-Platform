@@ -35,7 +35,6 @@ router.get("/login/success", async (req, res) => {
       const accessToken = await req.user.generateAccessToken();
       const refreshToken = await req.user.generateRefreshToken();
       const user = await User.findById(req.user._id).select("-password");
-      console.log(user);
 
       // set cookies
       res.cookie(process.env.AUTH_TOKEN, accessToken, cookieOption);
@@ -74,8 +73,7 @@ router.get("/logout", isAuthenticated, async (req, res) => {
     if(!user) {
       return res.status(401).json({ success: false, message: "User not found" });
     }
-    
-    console.log(user);
+  
     res.clearCookie(process.env.AUTH_TOKEN, cookieOption);
     res.clearCookie("refreshToken", cookieOption);
 

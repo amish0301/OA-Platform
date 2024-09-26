@@ -1,18 +1,16 @@
 const User = require("../db/user.model");
 const Test = require("../db/test.model");
 const { TryCatch } = require("../utils/helper");
+const ApiError = require("../utils/ApiError");
 
-const adminLogin = TryCatch(async (req, res) => {
+const adminLogin = TryCatch(async (req, res, next) => {
   const { key } = req.body;
 
-  if (!key)
-    return res
-      .status(400)
-      .json({ success: false, message: "Please enter key" });
+  if (!key) return next(new ApiError("Please provide Admin Key", 400));
 
   // check key is matching or not
   if (key !== process.env.ADMIN_KEY)
-    return res.status(400).json({ success: false, message: "Invalid key" });
+    return next(new ApiError("Invalid Admin Key", 400));
 
   const user = await User.findByIdAndUpdate(
     req.uId,
@@ -245,7 +243,9 @@ const dashboardStats = TryCatch(async (req, res) => {
     userChartData: dayToUserCount,
     testChartData,
     categoryChartData,
-    mostPopularTestCategoryName: categoryChartData.length ? categoryChartData[0].category : null,
+    mostPopularTestCategoryName: categoryChartData.length
+      ? categoryChartData[0].category
+      : null,
   };
 
   return res.status(200).json({ success: true, stats });

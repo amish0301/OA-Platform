@@ -1,6 +1,6 @@
-## Admin Credentials: `admin`
-
 <h2 align="center">Online Assessment Platform</h2>
+
+#### Admin Credentials: admin
 
 ## Day Wise Contribution:
 
