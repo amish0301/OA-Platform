@@ -1,9 +1,7 @@
 import { Box, Container, Paper, Stack, Typography } from '@mui/material'
 import React, { lazy, useEffect, useState } from 'react'
 import { SiGoogleanalytics as Analytics } from "react-icons/si"
-import { useDispatch, useSelector } from 'react-redux'
-import axioInstance from '../hooks/useAxios'
-import { setIsLoading } from '../redux/slices/misc'
+import useFetchQuery from '../hooks/useFetchData'
 import { DoughnutChart, LineChart } from './Charts'
 import Loader from './Loader'
 
@@ -12,23 +10,14 @@ const TestDashboardTable = lazy(() => import('./TestDashboardTable'));
 const TestWidget = lazy(() => import('../shared/TestWidget'));
 
 const TestDashboard = () => {
-
-  const { isLoading } = useSelector((state) => state.misc)
   const [stats, setStats] = useState({});
+  const { response, error, isLoading, refetch: getData } = useFetchQuery('/user/dashboard/stats');
 
-  const dispatch = useDispatch();
-
-  const getData = async () => {
-    dispatch(setIsLoading(true))
-    try {
-      const { data } = await axioInstance.get('/user/dashboard/stats')
-      if (data.success) setStats(data.stats)
-    } catch (error) {
-      throw error
-    } finally {
-      dispatch(setIsLoading(false))
-    }
-  }
+  useEffect(() => {
+    if (response) {
+      setStats(response.stats);
+    } else if (error) throw error;
+  }, [response, error])
 
   useEffect(() => {
     document.title = 'Test Dashboard'

@@ -9,10 +9,9 @@ import { toast } from 'react-toastify';
 import QuestionList from '../components/admin/QuestionList';
 import Results from '../components/admin/Results';
 import Loader from '../components/Loader';
-import axiosInstance from '../hooks/useAxios';
 import { removeFromDeleteQuestionList, resetAdminState, setIsEditTestName, setTestName, updateDeleteQuestionList } from '../redux/slices/admin';
-import { setIsLoading } from '../redux/slices/misc';
 import CustomInfoIcon from './InfoIcon';
+import useFetchQuery from '../hooks/useFetchData'
 
 const EditTest = () => {
     const { id } = useParams();
@@ -20,7 +19,11 @@ const EditTest = () => {
     const [data, setData] = useState([]);
     const [name, setName] = useState(data?.name);
     const { deleteQuestionList, isEditTestName, testName } = useSelector((state) => state.admin);
-    const { isLoading } = useSelector(state => state.misc);
+    const config = {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    }
+    const { response, error, isLoading, refetch: updateTest } = useFetchQuery(`/test/${id}`, 'PUT', null, config);
+    const { response: fetchTestResponse, error: fetchTestError, isLoading: isFetchTest, refetch: fetchTestData } = useFetchQuery(`/test/${id}`);
 
     const handleCheckboxChange = (qId, isChecked) => {
         if (isChecked) {
@@ -36,33 +39,7 @@ const EditTest = () => {
         formData.append('questionToDelete', JSON.stringify(deleteQuestionList));
         formData.append('name', testName);
 
-        const toastId = toast.loading('Updating Test...');
-        dispatch(setIsLoading(true));
-        try {
-            const { data } = await axiosInstance.put(`/test/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-            if (data.success) {
-                toast.update(toastId, { render: data.message, type: 'success', isLoading: false, autoClose: 1300 });
-            }
-        } catch (error) {
-            return toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1300 });
-        } finally {
-            dispatch(setIsLoading(false));
-        }
-    }
-
-    const fetchTestData = async () => {
-        dispatch(setIsLoading(true));
-        try {
-            const { data } = await axiosInstance.get(`/test/${id}`);
-            if (data.success) {
-                setData(data.test);
-                setName(data.test.name);
-            }
-        } catch (error) {
-            throw error;
-        } finally {
-            dispatch(setIsLoading(false));
-        }
+        updateTest(formData);
     }
 
     const closeEditTestName = () => {
@@ -76,15 +53,28 @@ const EditTest = () => {
     }
 
     useEffect(() => {
+        if (response) {
+            toast.success(response.message);
+        } else if (error) toast.error(error);
+    }, [response, error])
+
+    useEffect(() => {
+        if (fetchTestResponse) {
+            setData(fetchTestResponse.test);
+            setName(fetchTestResponse.test.name);
+        } else if (fetchTestError) throw fetchTestError;
+    }, [fetchTestResponse, fetchTestError])
+
+    useEffect(() => {
         fetchTestData();
         return () => {
             setData([]);
-            dispatch(setIsLoading(false));
             dispatch(resetAdminState());
         }
     }, [id]);
 
-    if (isLoading) return <Loader show={isLoading}  />
+    if (isLoading || isFetchTest) return <Loader show={isLoading || isFetchTest} />
+
     return (
         <div className='w-full px-10'>
             <Stack direction="row" justifyContent="space-between" alignItems={"center"}>
@@ -96,7 +86,7 @@ const EditTest = () => {
             </Stack>
 
             {/* Edit Test name */}
-            <Stack direction={'row'} gap={1} sx={{ display: 'flex', marginBottom: '.5rem', alignItems: 'center'}}>
+            <Stack direction={'row'} gap={1} sx={{ display: 'flex', marginBottom: '.5rem', alignItems: 'center' }}>
                 <Typography variant='h6' sx={{ minWidth: 'fit-content', fontWeight: '600', color: 'GrayText' }}>Test Name:</Typography>
                 {
                     isEditTestName ? <TextField label="Test Name" variant="outlined" size='small' sx={{ p: '.5rem', mt: '.5rem' }} value={name} onChange={(e) => setName(e.target.value)} /> :

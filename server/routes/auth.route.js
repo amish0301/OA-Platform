@@ -44,7 +44,7 @@ router.get("/login/success", async (req, res) => {
         user,
         success: true,
         message: "Login successfully",
-        refreshToken
+        refreshToken,
       });
     } else {
       return res.status(401).json({
@@ -68,16 +68,10 @@ router.get("/login/failed", async (req, res) => {
 
 router.get("/logout", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.uId);
-
-    if(!user) {
-      return res.status(401).json({ success: false, message: "User not found" });
-    }
-  
-    res.clearCookie(process.env.AUTH_TOKEN, cookieOption);
-    res.clearCookie("refreshToken", cookieOption);
-
+    await User.findByIdAndDelete(req.uId);
     return res
+      .clearCookie(process.env.AUTH_TOKEN)
+      .clearCookie("refreshToken")
       .status(200)
       .json({ success: true, message: "Logout successfully" });
   } catch (error) {

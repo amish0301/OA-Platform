@@ -1,31 +1,21 @@
 const User = require("../db/user.model");
-const {
-  TryCatch,
-  generateTokens,
-  cookieOption,
-} = require("../utils/helper");
+const { TryCatch, generateTokens, cookieOption } = require("../utils/helper");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const ApiError = require("../utils/ApiError");
 const bcrypt = require("bcryptjs");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
-const registerUser = TryCatch(async (req, res) => {
+const registerUser = TryCatch(async (req, res, next) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please fill all the fields",
-    });
-  }
+  if (!name || !email || !password)
+    return next(new ApiError("Please fill all the fields", 400));
 
   // check if same user email exist or not
   const userExist = await User.findOne({ email });
   if (userExist) {
-    return res
-      .status(409)
-      .json({ success: false, message: "User with email already exists" });
+    return next(new ApiError("User with email already exists", 409));
   }
 
   // hash password
@@ -39,13 +29,8 @@ const registerUser = TryCatch(async (req, res) => {
   });
 
   if (!user) {
-    return res.status(400).json({
-      success: false,
-      message: "User creation failed",
-    });
+    return next(new ApiError("User creation failed", 500));
   }
-
-  await user.save();
 
   return res.status(201).json({
     success: true,
@@ -53,39 +38,24 @@ const registerUser = TryCatch(async (req, res) => {
   });
 });
 
-const loginUser = TryCatch(async (req, res) => {
+const loginUser = TryCatch(async (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({
-      success: false,
-      message: "Please fill all the fields",
-    });
-  }
+  if (!email || !password)
+    return next(new ApiError("Please Provide Credentials", 404));
 
-  const user = await User.findOne({ email }).select("+password");
-  if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: "User not Found with this Email",
-    });
-  }
+  const user = await User.findOne({ email });
+  if (!user) return next(new ApiError("User Not Exist", 404));
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.status(401).json({
-      success: false,
-      message: "Password is incorrect",
-    });
+    return next(new ApiError("Password is Incorrect", 400));
   }
 
   // generate token
   const { accessToken, refreshToken } = await generateTokens(user);
   if (!accessToken || !refreshToken) {
-    return res.status(500).json({
-      success: false,
-      message: "Token generation failed",
-    });
+    return next(new ApiError("Token Generation Failed", 500));
   }
 
   const loggedInUser = await User.findById(user._id).select(
@@ -110,9 +80,7 @@ const refreshAccessToken = TryCatch(async (req, res) => {
 
   if (!incomingRefreshToken) {
     await User.findByIdAndDelete(req.uId);
-    return res
-      .status(401)
-      .json({ success: false, message: "No refresh token" });
+    return next(new ApiError("Refresh Token not Found", 401));
   }
 
   try {
@@ -124,22 +92,17 @@ const refreshAccessToken = TryCatch(async (req, res) => {
 
     const user = await User.findById(decoded.id);
     if (!user || user.refreshToken !== incomingRefreshToken) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid refresh token or Expired refresh token",
-      });
+      return next(
+        new ApiError("Invalid refresh token or Expired refresh token", 401)
+      );
     }
 
     const { accessToken, refreshToken: newRefreshToken } = await generateTokens(
       user
     );
 
-    if (!accessToken || !newRefreshToken) {
-      return res.status(400).json({
-        success: false,
-        message: "Token generation failed",
-      });
-    }
+    if (!accessToken || !newRefreshToken)
+      return next(new ApiError("Token Generation Failed", 500));
 
     return res
       .status(200)

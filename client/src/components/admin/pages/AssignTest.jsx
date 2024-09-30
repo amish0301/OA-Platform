@@ -1,17 +1,23 @@
 import { Button, Checkbox, List, ListItem, ListItemText } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../../hooks/useAxios';
+import useFetchQuery from '../../../hooks/useFetchData';
 import Loader from '../../Loader';
 
 const AssignTest = () => {
     const [selectedUserIds, setSelectedUserIds] = useState([]);
     const [search, setSearch] = useState('');
     const [testId, setTestId] = useState('');
-    const [isUsersLoading, setIsUsersLoading] = useState(false);
-
     const [users, setUsers] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { response: fetchUserResponse, error: fetchUserError, isLoading: isLoadingFetchUsers, refetch: fetchUsers } = useFetchQuery(`/admin/users?search=${search}`);
+    const { response: assignResponse, error: assignError, isLoading: isAssignLoading, refetch: assignTest } = useFetchQuery('/test/assign', 'POST', {
+        testId, userIds: selectedUserIds
+    }, {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
 
     const handleToggle = (userId) => {
         const currentIndex = selectedUserIds.indexOf(userId);
@@ -25,54 +31,31 @@ const AssignTest = () => {
 
         setSelectedUserIds(newSelected);
     };
-
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    }
-
     const resetState = () => {
         setSelectedUserIds([]);
         setTestId('');
-        setIsLoading(false);
-    }
-
-    const handleAssignTest = async () => {
-        setIsLoading(true);
-        const toastId = toast.loading('Assigning test...');
-        try {
-            const { data } = await axiosInstance.post('/test/assign', {
-                testId, userIds: selectedUserIds
-            }, config);
-
-            if (data.success) {
-                toast.update(toastId, { render: data.message, type: 'success', isLoading: false, autoClose: 1500 });
-            }
-        } catch (error) {
-            toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1500 });
-        } finally {
-            resetState();
-        }
-    };
-
-    const getUsers = async () => {
-        setIsUsersLoading(true);
-        try {
-            const { data } = await axiosInstance.get(`/admin/users?search=${search}`);
-            if (data.success) {
-                setUsers(data.users);
-            }
-        } catch (error) {
-            throw error;
-        } finally {
-            setIsUsersLoading(false);
-        }
     }
 
     useEffect(() => {
+        if (assignResponse) {
+            toast.success(assignResponse.message)
+        } else if (assignError) toast.error(assignError)
+
+        return () => {
+            resetState();
+        }
+    }, [assignResponse, assignError])
+
+    useEffect(() => {
+        if (fetchUserResponse) {
+            setUsers(fetchUserResponse.users);
+        }
+        if (fetchUserError) throw fetchUserError;
+    }, [fetchUserResponse, fetchUserError])
+
+    useEffect(() => {
         const timer = setTimeout(() => {
-            getUsers();
+            fetchUsers();
         }, 500);
         return () => clearTimeout(timer);
     }, [search])
@@ -115,8 +98,8 @@ const AssignTest = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleAssignTest}
-                    disabled={selectedUserIds.length === 0 || isLoading}
+                    onClick={assignTest}
+                    disabled={selectedUserIds.length === 0 || isAssignLoading}
                     sx={{ minWidth: '120px' }}
                 >
                     Assign Test
@@ -127,7 +110,7 @@ const AssignTest = () => {
             {users?.length > 0 ? (
                 <div className='w-full mt-6 bg-white rounded-md border border-gray-300 shadow-sm'>
                     <List>
-                        {isUsersLoading ? <Loader show={isUsersLoading} /> : users.map((user) => (
+                        {isLoadingFetchUsers ? <Loader show={isLoadingFetchUsers} /> : users.map((user) => (
                             <ListItem
                                 key={user._id}
                                 sx={{

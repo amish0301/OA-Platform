@@ -1,38 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
-import axiosInstance from '../hooks/useAxios';
-import Loader from '../components/Loader';
-import { Box, Button, CircularProgress, Divider, Paper, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Divider, Paper, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import Confetti from 'react-confetti';
 import { FaCheckCircle as CheckCircleIcon } from "react-icons/fa";
 import { MdCancel as CancelIcon } from "react-icons/md";
-import Confetti from 'react-confetti'
+import { useNavigate, useParams } from 'react-router-dom';
+import Loader from '../components/Loader';
+import useFetchQuery from '../hooks/useFetchData';
 
 const TestResult = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState({});
   const { id } = useParams();
   const navigate = useNavigate()
+  const { response, error, isLoading, refetch: getResultData } = useFetchQuery(`/user/result/${id}`);
 
-  const getResultData = async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await axiosInstance.get(`/user/result/${id}`);
-      if (data.success) {
-        setResult(data.result);
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  useEffect(() => {
+    if (response) setResult(response.result);
+    else if (error) throw error;
+  }, [response, error])
 
   useEffect(() => {
     if (document.fullscreenElement) document.exitFullscreen();
     getResultData()
     return () => {
       setResult({});
-      setIsLoading(false);
     }
   }, []);
 

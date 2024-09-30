@@ -3,6 +3,7 @@ import { Line, Pie } from 'react-chartjs-2';
 import { Doughnut } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
+    Filler,
     LineElement,
     CategoryScale,
     LinearScale,
@@ -19,6 +20,7 @@ ChartJS.register(
     CategoryScale,
     LinearScale,
     PointElement,
+    Filler,
     ArcElement,
     Title,
     Tooltip,
@@ -74,6 +76,9 @@ export const LineChart = ({ data, label, isTest = false }) => {
             legend: {
                 display: isTest ? false : true,
                 position: 'bottom',
+            },
+            filler: {
+                propagate: true
             }
         },
         scales: {

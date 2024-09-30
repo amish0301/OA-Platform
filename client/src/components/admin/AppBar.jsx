@@ -25,7 +25,7 @@ export const SearchField = ({ search, setSearch }) => {
           }}>
             <SearchIcon className={`text-xl opacity-50 ${search && 'hidden'}`} />
             <span className='ml-2 w-full'>
-                <input type='text' placeholder='Search here...' className='border-none outline-none bg-transparent py-1 w-full' onChange={e => setSearch(e.target.value)} value={search} />
+                <input type='text' name='search' placeholder='Search here...' className='border-none outline-none bg-transparent py-1 w-full' onChange={e => setSearch(e.target.value)} value={search} />
             </span>
         </Box>
     );
@@ -34,7 +34,6 @@ export const SearchField = ({ search, setSearch }) => {
 const AppBar = () => {
     const [search, setSearch] = useState('');
     const { user } = useSelector(state => state.user);
-    const profileImage = user?.profileImage;
     const settings = ['Profile', 'Account', 'Logout'];
 
     const [anchorElUser, setAnchorElUser] = useState(null);
@@ -48,12 +47,11 @@ const AppBar = () => {
     return (
         <Paper elevation={1} sx={{
             padding: { xs: '0.5rem', sm: '1rem' },
-            margin: { xs: '0.5rem', sm: '1rem' },
+            margin: { xs: '0.5rem', sm: '1rem 2.5rem' },
             borderRadius: '1rem',
-            maxWidth: { xs: '100vw', sm: '80vw', lg: '70vw' },
+            maxWidth: { xs: '100vw', sm: '85vw', lg: '70vw' },
             bgcolor: '#ffffff',
-            position: 'sticky',
-            top: 0,
+            position: '-moz-initial',
         }}>
             <Stack  direction={{ xs: 'column', sm: 'row' }} alignItems={'center'} justifyContent={'space-between'}>
                 <SearchField search={search} setSearch={setSearch} />
@@ -81,7 +79,7 @@ const AppBar = () => {
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Profile" src={profileImage} sx={{ width: 32, height: 32 }} />
+                                <Avatar alt="Profile" src={user?.profileImage} sx={{ width: 32, height: 32 }} />
                             </IconButton>
                         </Tooltip>
                         <Menu

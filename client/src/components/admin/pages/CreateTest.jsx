@@ -1,11 +1,11 @@
 import { Box, Button, CircularProgress, IconButton, Paper, Stack, TextField, Typography } from '@mui/material';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { BiSolidEdit as EditIcon } from "react-icons/bi";
 import { FaCheck as CheckIcon } from "react-icons/fa6";
 import { RxCross2 as CrossIcon } from "react-icons/rx";
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../../hooks/useAxios';
+import useFetchQuery from '../../../hooks/useFetchData';
 import { resetAdminState, setIsEditTestName, setTestName } from '../../../redux/slices/admin';
 import CustomAccordian from '../../../shared/Accordian';
 import Loader from '../../Loader';
@@ -14,9 +14,13 @@ import QuestionList from '../QuestionList';
 const CreateTest = () => {
 
   const [name, setName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const { isEditTestName, questions, testName, testDuration, categories, testDescription } = useSelector(state => state.admin);
+  const { response, error, isLoading, refetch: createTest } = useFetchQuery('/test/create', 'POST', {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 
   const closeEditTestName = () => {
     dispatch(setIsEditTestName(false));
@@ -40,25 +44,18 @@ const CreateTest = () => {
     formData.append('questions', JSON.stringify(questions));
     formData.append('description', testDescription);
 
-
-    // API call to create test
-    const config = {
-      'Content-Type': 'multipart/form-data',
-    };
-
-    const toastId = toast.loading('Creating test...');
-    setIsLoading(true);
-
-    try {
-      const res = await axiosInstance.post('/test/create', formData, config);
-      toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
-      dispatch(resetAdminState());
-    } catch (error) {
-      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1500 });
-    } finally {
-      setIsLoading(false);
-    }
+    createTest(formData);
   }
+  
+  useEffect(() => {
+    if (response) {
+      toast.success(response.message)
+      dispatch(resetAdminState());
+    }
+
+    if (error) toast.error(error);
+  }, [response, error])
+
 
   if (isLoading) return <Loader show={isLoading} />
 

@@ -8,30 +8,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios';
 import { clearLocalStorage } from '../redux/localStorage';
-import { resetUserState, userExists } from '../redux/slices/userSlice';
+import { userExists, userNotExists } from '../redux/slices/userSlice';
 
 const ProfileCard = ({ logoutHandler }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const adminLogout = async () => {
-    setAnchorEl(null);
-    const toastId = toast.loading('Logging out...');
-    try {
-      const res = await axiosInstance.get('/admin/logout', {
-        withCredentials: true
-      });
-
-      if (res.data.success) {
-        toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
-        dispatch(userExists({ ...res.data.user }));
-      }
-    } catch (error) {
-      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1200 });
-    }
-  }
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -41,8 +24,27 @@ const ProfileCard = ({ logoutHandler }) => {
     setAnchorEl(null);
   };
 
+  const adminLogout = async () => {
+    handleClose();
+    const toastId = toast.loading('Logging out...');
+    try {
+      const res = await axiosInstance.get('/admin/logout', {
+        withCredentials: true
+      });
+
+      if (res.data.success) {
+        toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
+        dispatch(userExists({ ...res.data.user }));
+        if(window.location.pathname !== '/') navigate('/', { replace: true });
+      }
+    } catch (error) {
+      toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1200 });
+    }
+  }
+
+
   const handleLogout = () => {
-    setAnchorEl(null);
+    handleClose();
     logoutHandler();
   }
 
@@ -115,9 +117,9 @@ const ProfileCard = ({ logoutHandler }) => {
 const Navbar = () => {
 
   const [updateNav, setUpdateNav] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector(state => state.user || {});
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector(state => state.user);
 
   window.addEventListener('scroll', () => {
     if (window.scrollY > 20) {
@@ -132,9 +134,8 @@ const Navbar = () => {
       const res = await axiosInstance.get('/auth/logout');
       if (res.data.success) {
         toast.success(res.data.message)
-        dispatch(resetUserState());
+        dispatch(userNotExists());
         clearLocalStorage();
-        navigate('/');
       }
     } catch (error) {
       toast.error(error.response?.data?.message)

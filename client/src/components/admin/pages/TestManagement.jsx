@@ -1,28 +1,21 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import axiosInstance from '../../../hooks/useAxios';
+import useFetchQuery from '../../../hooks/useFetchData';
 import Loader from '../../Loader';
 import TestCard from '../../TestCard';
-import { toast } from 'react-toastify';
 
 const TestManagement = () => {
 
   const [tests, setTests] = useState([])
-  const [loading, setLoading] = useState(false)
+  const { response, _, isLoading, refetch: fetchTests } = useFetchQuery('/test');
 
-  const fetchTests = async () => {
-    setLoading(true);
-
-    try {
-      const { data } = await axiosInstance.get('/test');
-      if (data.success) {
-        setTests(data.tests);
-      }
-    } catch (error) {
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (response) {
+      setTests(response.tests);
     }
-  }
+  }, [response])
 
   const handleDeleteTest = async (testId) => {
     try {
@@ -37,16 +30,16 @@ const TestManagement = () => {
   }
 
   useEffect(() => {
-    fetchTests();
+    fetchTests()
   }, [])
-
-  if (loading) return <Loader show={loading} />
 
   return (
     <Box sx={{ p: '1rem 2rem' }} spacing={3}>
       <Typography variant="h5" component={'h1'} sx={{ fontWeight: '600', color: 'GrayText', marginBottom: '.5rem' }}>
         Test Management
       </Typography>
+
+      {isLoading && <Loader show={isLoading} />}
 
       <Stack direction={'row'} sx={{ width: '100%', display: 'flex', alignItems: 'center', margin: '1rem 0', gap: 3, flexWrap: 'wrap' }}>
         {tests?.map((test, index) => (

@@ -1,5 +1,5 @@
-import axios from 'axios';
-import React, { useState } from 'react';
+import { CircularProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { FaUser as UserIcon } from "react-icons/fa";
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import { MdEmail as MailIcon } from "react-icons/md";
@@ -10,11 +10,10 @@ import { toast } from 'react-toastify';
 import google from '../assets/google.png';
 import sideImg from '../assets/learning.jpg';
 import signup from '../assets/login.jpg';
-import Loader from '../components/Loader';
-import { setToken, userExists } from '../redux/slices/userSlice';
+import useFetchQuery from '../hooks/useFetchData';
+import { userExists } from '../redux/slices/userSlice';
 
 const Login = () => {
-  document.title = 'Login | Online Assessment';
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -22,7 +21,13 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [formErrors, setFormErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }
+  const { response: signupResponse, error: signupError, isLoading: isLoadingSignUp, refetch: SignUpFnc } = useFetchQuery('/auth/signup', 'POST', formData, config);
+  const { response: loginResponse, error: loginError, isLoading: isLoadingLogin, refetch: LoginFnc } = useFetchQuery('/auth/login', 'POST', formData, config);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,45 +53,9 @@ const Login = () => {
     e.preventDefault();
 
     if (validateForm()) {
-      setLoading(true);
-      try {
-        if (isLogin) {
-          const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/login`, formData, {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-          if (res.data.success) {
-            toast.success(res.data.message);
-            dispatch(userExists({ ...res.data.user }));
-            localStorage.setItem("accessToken", res.data.accessToken);
-            navigate('/', { relative: true });
-          }
-
-          if (res.status === 401) {
-            toast.error(res.data.message);
-          }
-        } else {
-          const res = await axios.post(`${import.meta.env.VITE_SERVER_URI}/auth/signup`, formData, {
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-          if (res.data.success) {
-            toast.success(res.data.message);
-            setIsLogin(true);
-          } else {
-            toast.error(res.data?.message);
-          }
-        }
-      } catch (error) {
-        toast.error(error.response?.data?.message);
-      } finally {
-        setLoading(false);
-      }
+      if (isLogin) LoginFnc();
+      else SignUpFnc()
     }
-
     // empty fields
     setFormData({
       name: formErrors.name ? formData.name : '',
@@ -99,11 +68,30 @@ const Login = () => {
     }
   }
 
+  useEffect(() => {
+    if (loginResponse) {
+      toast.success(loginResponse.message);
+      dispatch(userExists(loginResponse.user));
+      localStorage.setItem("accessToken", loginResponse.accessToken);
+      navigate('/', { replace: true })
+    }
+    if (loginError) {
+      toast.error(loginError);
+    }
+  }, [loginResponse, loginError])
+
+  useEffect(() => {
+    if (signupResponse) {
+      toast.success(signupResponse.message);
+      setIsLogin(true);
+    } else if (signupError) {
+      toast.error(signupError);
+    }
+  }, [signupResponse, signupError])
+
   const handleGoogleLogin = async () => {
     window.open(`${import.meta.env.VITE_SERVER_URI}/auth/google`, "_self");
   };
-
-  if (loading) return <Loader show={loading} />
 
   return (
     <section className='bg-gray-50 min-h-screen flex items-center justify-center'>
@@ -122,6 +110,7 @@ const Login = () => {
                 {formErrors.name && <p className='text-red-500 text-xs'>{formErrors.name}</p>}
               </div>
             }
+
             <div className='relative'>
               <span className={`m-auto border-r border-r-orange-200 absolute p-2 ${isLogin ? 'top-[40px]' : 'top-[7px]'} left-0 rounded-l-lg items-center z-10`}><MailIcon className='text-gray-500 text-lg' /></span>
               <input type="email" className={`px-10 py-3 ${isLogin ? 'mt-8' : ''} rounded-lg border w-full`} placeholder='email' name='email' required value={formData.email} onChange={handleChange} autoComplete='on' aria-label='email' />
@@ -137,9 +126,9 @@ const Login = () => {
               {formErrors.password && <p className='text-red-500 text-xs'>{formErrors.password}</p>}
             </div>
 
-            <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' disabled={loading}>
+            <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' disabled={isLoadingSignUp || isLoadingLogin}>
               <div className='flex justify-center items-center gap-2'>
-                <Loader show={loading} size={20} borderColor="red" />
+                {(isLoadingLogin || isLoadingSignUp) && <CircularProgress color='inherit' size={18} />}
                 <span className='text-sm font-semibold'>{isLogin ? 'Login' : 'Signup'}</span>
               </div>
             </button>

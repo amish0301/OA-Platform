@@ -3,36 +3,27 @@ import React, { useEffect, useState } from 'react';
 import { AiFillLike as LikeIcon } from "react-icons/ai";
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
 import { IoMdPerson as PersonIcon } from "react-icons/io";
-import axiosInstance from '../../hooks/useAxios';
+import { toast } from 'react-toastify';
+import useFetchQuery from '../../hooks/useFetchData';
 import { Widget } from '../../shared/Widget';
 import { DoughnutChart, LineChart, PieChart } from '../Charts';
 import Loader from '../Loader';
 
 
 const Dashboard = () => {
-
   const [stats, setStats] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getData = async () => {
-    setIsLoading(true)
-    try {
-      const { data } = await axiosInstance.get('/admin/dashboard/stats');
-      if (data.success) {
-        setStats(data.stats);
-      }
-    } catch (error) {
-      throw error
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const { response, error, isLoading, refetch } = useFetchQuery('/admin/dashboard/stats');
+  
+  useEffect(() => {
+    if (response) setStats(response.stats)
+  }, [response])
 
   useEffect(() => {
     document.title = 'Admin Dashboard'
-    getData();
+    refetch()
   }, [])
 
+  if (error) return toast.error(error)
   if (isLoading) return <Loader show={isLoading} />
 
   const Widgets = <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: '1rem', sm: '4rem' }} justifyContent={'space-between'} alignItems={'center'} gap={{ xs: '1rem', sm: '2rem' }} margin={'2rem 0'}>
@@ -66,3 +57,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+

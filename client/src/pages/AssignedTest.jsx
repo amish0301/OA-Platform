@@ -1,35 +1,22 @@
 import { Container, Grid } from '@mui/material';
 import React, { lazy, useEffect, useState } from 'react';
 import Loader from '../components/Loader.jsx';
-import axiosInstance from '../hooks/useAxios.js';
+import useFetchQuery from '../hooks/useFetchData.js';
 const TestCard = lazy(() => import('../components/TestCard.jsx'));
 
 const AssignedTest = () => {
-
-    const [loading, setLoading] = useState(false);
     const [tests, setTests] = useState([]);
+    const { response, error, isLoading, refetch: fetchTests } = useFetchQuery('/test/assigned');
 
-    const fetchTests = async () => {
-        setLoading(true);
-        try {
-            const res = await axiosInstance.get('/test/assigned');
-            setTests(res.data.tests)
-        } catch (error) {
-            throw error
-        } finally {
-            setLoading(false);
-        }
-    }
+    useEffect(() => {
+        if (response) {
+            setTests(response.tests);
+        } else if (error) throw error;
+    }, [response, error])
 
     useEffect(() => {
         fetchTests();
-        return () => {
-            setTests([])
-            setLoading(false)
-        }
     }, [])
-
-    if (loading) return <Loader show={loading} />
 
     return (
         <Container sx={{ minWidth: '100%', height: '100vh', overflowY: 'auto', p: 3 }}>
@@ -37,7 +24,7 @@ const AssignedTest = () => {
                 <h1 className="text-2xl font-bold mb-4">Assigned Tests</h1>
             </div>
             <Grid container spacing={3} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                {tests?.length ? tests.map((test, index) => (
+                {isLoading ? <Loader show={isLoading} /> : tests?.map((test, index) => (
                     <Grid item xs={10} md={6} key={index}>
                         <TestCard
                             title={test?.name || 'No title'}
@@ -50,10 +37,8 @@ const AssignedTest = () => {
                         />
                     </Grid>
                 ))
-                    : (
-                        <p className='absolute top-1/2 text-xl opacity-50'>" No tests found. "</p>
-                    )
                 }
+                {!tests && <p className='absolute top-1/2 text-xl opacity-50'>" No tests found. "</p>}
             </Grid>
         </Container>
     );

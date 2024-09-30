@@ -1,5 +1,5 @@
 import { Box, Drawer, Grid, IconButton, Stack, Typography, styled } from '@mui/material';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { GrDocumentTest as TestIcon } from "react-icons/gr";
 import { IoCreateOutline as Create } from "react-icons/io5";
 import { MdAssignmentTurnedIn as Assign, MdOutlineClose as CloseIcon, MdDashboard as DashboardIcon, MdManageAccounts as ManageAccountsIcon, MdMenu as MenuIcon } from "react-icons/md";
@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link as LinkComponent, Outlet, useLocation } from 'react-router-dom';
 import AppBar from '../components/admin/AppBar';
 import { setIsMobile } from '../redux/slices/misc';
+import { AdminLayoutLoader } from '../layout/LayoutLoaders'
 
 const Link = styled(LinkComponent)(
     `text-decoration: none;
@@ -128,35 +129,37 @@ const AdminLayout = () => {
     }
 
     const handleClose = () => dispatch(setIsMobile(false))
-    
-    return (
-        <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9' }}>
-            <Box sx={{ display: { xs: 'block', sm: 'none' }, position: 'fixed', right: '1rem', top: '0.5rem', zIndex: 100 }}>
-                <IconButton onClick={handleMobile}>
-                    {isMobile ? <CloseIcon /> : <MenuIcon />}
-                </IconButton>
-            </Box>
-            <Grid item xs={12} sm={4} md={3} lg={2} sx={{
-                display: { xs: 'none', sm: 'block' },
-            }}>
-                <SideBar />
-            </Grid>
-            <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflowY: 'auto', p: { xs: 2, md: 1 }, height: '100vh', bgcolor: '#eff7f9' }}>
-                <AppBar />
-                <Outlet />
-            </Grid>
 
-            <Drawer
-                open={isMobile}
-                onClose={handleClose}
-                sx={{
-                    display: { xs: 'block', sm: 'none' },
-                    '& .MuiDrawer-paper': { width: '60vw', maxWidth: '300px' },
-                }}
-            >
-                <SideBar />
-            </Drawer>
-        </Grid>
+    return (
+        <Suspense fallback={<AdminLayoutLoader />}>
+            <Grid container minHeight={'100vh'} sx={{ bgcolor: '#eff7f9' }}>
+                <Box sx={{ display: { xs: 'block', sm: 'none' }, position: 'fixed', right: '1rem', top: '0.5rem', zIndex: 100 }}>
+                    <IconButton onClick={handleMobile}>
+                        {isMobile ? <CloseIcon /> : <MenuIcon />}
+                    </IconButton>
+                </Box>
+                <Grid item xs={12} sm={4} md={3} lg={2} sx={{
+                    display: { xs: 'none', sm: 'block' },
+                }}>
+                    <SideBar />
+                </Grid>
+                <Grid item xs={12} sm={8} md={9} lg={10} sx={{ overflowY: 'auto', p: { xs: 2, md: 1 }, height: '100vh', bgcolor: '#eff7f9' }}>
+                    <AppBar />
+                    <Outlet />
+                </Grid>
+
+                <Drawer
+                    open={isMobile}
+                    onClose={handleClose}
+                    sx={{
+                        display: { xs: 'block', sm: 'none' },
+                        '& .MuiDrawer-paper': { width: '60vw', maxWidth: '300px' },
+                    }}
+                >
+                    <SideBar />
+                </Drawer>
+            </Grid>
+        </Suspense>
     )
 }
 

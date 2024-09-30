@@ -3,32 +3,25 @@ import React, { useEffect, useState } from 'react';
 import { FaRegCalendarAlt as Calendar } from "react-icons/fa";
 import { RiAwardFill as Award } from "react-icons/ri";
 import { toast } from 'react-toastify';
-import axiosInstance from '../hooks/useAxios';
+import useFetchQuery from '../hooks/useFetchData';
 import Loader from './Loader';
 
 const TestCompleted = () => {
 
   // fetch completed tests
   const [completedTests, setCompletedTests] = useState([])
-  const [loading, setLoading] = useState(false)
+  const { response, error, isLoading: loading, refetch: fetchCompletedTests } = useFetchQuery('/user/completed');
 
-  const fetchCompletedTests = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axiosInstance.get('/user/completed');
-      setCompletedTests(data.testData);
-    } catch (error) {
-      toast.error(error.response.data.message);
-    } finally {
-      setLoading(false);
-    }
-  }
+  useEffect(() => {
+    if (response) setCompletedTests(response.testData);
+    else if (error) toast.error(error);
+  }, [response, error])
 
   useEffect(() => {
     fetchCompletedTests()
   }, [])
 
-  if (loading) return <Loader show={loading}  />
+  if (loading) return <Loader show={loading} />
   return (
     <Container
       sx={{

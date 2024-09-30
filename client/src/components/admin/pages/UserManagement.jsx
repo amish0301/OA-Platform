@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import { Avatar } from '@mui/material';
-import Table from '../../../shared/Table';
-import axiosInstance from '../../../hooks/useAxios'
-import Loader from '../../Loader';
+import React, { useEffect, useState } from 'react';
 import { GoCheckCircleFill as Check } from "react-icons/go";
-
+import useFetchQuery from '../../../hooks/useFetchData';
+import Table from '../../../shared/Table';
+import Loader from '../../Loader';
 const columns = [
     { field: 'id', headerName: 'ID', headerClassName: 'table-header', width: 200 },
     { field: 'avatar', headerName: 'Avatar', headerClassName: 'table-header', width: 100, renderCell: (params) => <Avatar src={params.row.profileImage} alt={params.row.avatar} /> },
@@ -19,28 +18,19 @@ const columns = [
 
 const UserManagement = () => {
     const [rows, setRows] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const fetchUsers = async () => {
-        setIsLoading(true);
-        try {
-            const res = await axiosInstance.get('/admin/users');
-            setRows(res.data.users.map((user) => ({ ...user, id: user?._id, name: user?.name, avatar: user?.profileImage, admin: user?.isAdmin, googleId: user?.googleId })));
-        } catch (error) {
-           throw error
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const { response, _, isLoading, refetch } = useFetchQuery('/admin/users');
 
     useEffect(() => {
-        fetchUsers();
+        if (response) {
+            setRows(response.users.map((user) => ({ ...user, id: user?._id, name: user?.name, avatar: user?.profileImage, admin: user?.isAdmin, googleId: user?.googleId })));
+        }
+    }, [response])
 
-        return () => setIsLoading(false)
+    useEffect(() => {
+        refetch();
     }, [])
 
-    if (isLoading) return <Loader show={isLoading}  />
-
+    if (isLoading) return <Loader show={isLoading} />
     return (
         <div>
             <Table rows={rows} cols={columns} heading={'All Users'} rowHeight={40} />

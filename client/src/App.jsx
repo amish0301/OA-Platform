@@ -1,17 +1,16 @@
 import { CircularProgress } from '@mui/material';
-import axios from 'axios';
-import React, { lazy, Suspense, useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import Loader from './components/Loader.jsx';
+import useFetchQuery from './hooks/useFetchData.js';
 import AppLayout from './layout/AppLayout.jsx';
 import { ProtectAdminRoute } from './lib/ProtectAdminRoute.jsx';
 import ProtectRoute from './lib/ProtectRoute.jsx';
 import { setToken, userExists } from './redux/slices/userSlice.js';
-import Loader from './components/Loader.jsx';
 
 // Lazy Load below all components
-
 const About = lazy(() => import('./components/About.jsx'));
 const ForgetPassword = lazy(() => import('./components/ForgetPassword.jsx'));
 const Home = lazy(() => import('./components/Home.jsx'));
@@ -38,41 +37,33 @@ const TestResult = lazy(() => import('./pages/TestResult.jsx'));
 
 const LoginSuccess = () => {
   const dispatch = useDispatch()
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  const fetchUser = async () => {
-    setIsLoading(true);
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_URI}/auth/login/success`, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        }
-      });
-      
-      if (res.data.success && res.data.user) {
-        dispatch(userExists(res.data.user))
-        dispatch(setToken(res.data.refreshToken))
-        navigate('/', { replace: true })
-      }
-    } catch (error) {
-      console.log('error in login success', error)
-    } finally {
-      setIsLoading(false);
+  const config = {
+    withCredentials: true,
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
     }
   }
+  const { response, error, isLoading, refetch: fetchUser } = useFetchQuery('/auth/login/success', null, config);
+
+  useEffect(() => {
+    if (response) {
+      dispatch(userExists(response.user));
+      dispatch(setToken(response.refreshToken));
+      navigate('/', { replace: true })
+    } else if (error) throw error;
+  }, [response, error])
 
   useEffect(() => {
     fetchUser()
   }, [dispatch])
 
-  if(isLoading) return <Loader show={isLoading} />
+  if (isLoading) return <Loader show={isLoading} />
 }
 
 const App = () => {
-  const { user, isAuthenticated } = useSelector(state => state.user || {});
+  const { user, isAuthenticated } = useSelector(state => state.user);
   const isAdmin = user?.isAdmin;
 
   return (
@@ -98,14 +89,14 @@ const App = () => {
         <Route path='/instruction' element={<ProtectRoute user={isAuthenticated}><Instruction /></ProtectRoute>} />
         <Route path='/profile/:id' element={<Profile />} />
 
-        <Route path='/test' element={<TestDashboardLayout />}>
+        <Route path='/test' element={<ProtectRoute user={isAuthenticated}><TestDashboardLayout /></ProtectRoute>}>
           <Route index path="dashboard" element={<TestDashboard />} />
           <Route path='assigned' element={<AssignedTest />} />
           <Route path='completed' element={<TestCompleted />} />
         </Route>
 
         {/* Admin routes */}
-        <Route path='/admin' element={<ProtectRoute user={isAuthenticated}><ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute></ProtectRoute>}>
+        <Route path='/admin' element={<ProtectAdminRoute isAdmin={isAdmin}><AdminLayout /></ProtectAdminRoute>}>
           <Route inedx path='dashboard' element={<Dashboard />} />
           <Route path='tests/create' element={<CreateTest />} />
           <Route path='users' element={<UserManagement />} />

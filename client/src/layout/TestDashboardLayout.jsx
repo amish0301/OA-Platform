@@ -1,5 +1,5 @@
 import { Grid, Stack, Typography, styled } from '@mui/material';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { FaTasks } from "react-icons/fa";
 import { MdAssignment, MdSpaceDashboard } from "react-icons/md";
 import { RxExit as Exit } from "react-icons/rx";
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../hooks/useAxios.js';
 import { clearLocalStorage } from '../redux/localStorage.js';
 import { resetUserState } from '../redux/slices/userSlice.js';
+import { TestLayoutLoader } from './LayoutLoaders.jsx';
 
 
 const navLinks = [
@@ -150,19 +151,21 @@ const Navigation = () => {
 
 const TestDashboardLayout = () => {
     return (
-        <Grid container minHeight={'100vh'} sx={{ overflow: 'hidden' }} >
-            <Grid item xs={12} md={4} lg={4} sx={{ position: { md: 'fixed' }, height: { md: '100vh' } }}>
-                <Navigation />
-            </Grid>
-            <Grid item xs={12} md={8} lg={11} sx={{
-                marginLeft: { md: '33.33%', lg: '20%' }, 
-                height: '100vh',
-                bgcolor: '#fafbfd',
-                overflowY: 'auto',                     
-            }}>
-                <Outlet />
-            </Grid>
-        </Grid >
+        <Suspense fallback={<TestLayoutLoader />}>
+            <Grid container minHeight={'100vh'} sx={{ overflow: 'hidden' }} >
+                <Grid item xs={12} md={4} lg={4} sx={{ position: { md: 'fixed' }, height: { md: '100vh' } }}>
+                    <Navigation />
+                </Grid>
+                <Grid item xs={12} md={8} lg={11} sx={{
+                    marginLeft: { md: '33.33%', lg: '20%' },
+                    height: '100vh',
+                    bgcolor: '#fafbfd',
+                    overflowY: 'auto',
+                }}>
+                    <Outlet />
+                </Grid>
+            </Grid >
+        </Suspense>
     )
 }
 

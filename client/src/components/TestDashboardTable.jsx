@@ -1,7 +1,7 @@
 import { Chip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { RxCheckCircled as CheckIcon, RxCrossCircled as CrossIcon } from "react-icons/rx";
-import axiosInstance from '../hooks/useAxios';
+import useFetchQuery from '../hooks/useFetchData';
 import Table from '../shared/Table';
 import Loader from './Loader';
 
@@ -24,32 +24,22 @@ const columns = [
 
 const TestDashboardTable = () => {
     const [rows, setRows] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const { response, error, isLoading, refetch: getData } = useFetchQuery('/user/dashboard/table');
 
-    const getData = async () => {
-        setIsLoading(true);
-        try {
-            const { data } = await axiosInstance.get('/user/dashboard/table');
+    useEffect(() => {
+        if (response) {
+            const uniqueRows = response.tableData.map(row => ({
+                id: row._id,
+                isPassed: row.isPassed,
+                name: row.name,
+                score: row.score,
+                completedAt: row.completedAt,
+                categories: row.categories
+            }));
 
-            if (data.success) {
-                const uniqueRows = data.tableData.map(row => ({
-                    id: row._id,
-                    isPassed: row.isPassed,
-                    name: row.name,
-                    score: row.score,
-                    completedAt: row.completedAt,
-                    categories: row.categories
-                }));
-
-                setRows(uniqueRows);
-            }
-        } catch (error) {
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
+            setRows(uniqueRows);
+        } else if (error) throw error;
+    }, [response, error])
 
     useEffect(() => {
         getData();

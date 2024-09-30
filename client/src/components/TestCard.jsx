@@ -39,13 +39,8 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
         gap: '12px',
     };
 
-    const handleClick = () => {
-        navigate(`/test/${id}/instruction`);
-    }
-
-    const handleEditTest = () => {
-        navigate(`/admin/tests/edit/${id}`)
-    }
+    const handleClick = () => navigate(`/test/${id}/instruction`);
+    const handleEditTest = () => navigate(`/admin/tests/edit/${id}`)
 
     const handleCopyID = () => {
         navigator.clipboard.writeText(id);
@@ -79,6 +74,7 @@ const TestCard = ({ title, description, category = [], subCategory = [], duratio
                         {title}
                     </Typography>
 
+                    {/* Icons */}
                     <Stack direction="row" alignItems="center" gap={"1rem"}>
                         {!admin && <Tooltip title="Total Questions">
                             <div className='flex items-center space-x-1 cursor-pointer'>

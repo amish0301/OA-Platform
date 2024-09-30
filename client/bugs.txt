@@ -58,6 +58,9 @@ Future Patch:
 2. auto submit if time exceed - ✔️
 3. delete test logic - ✔️
 
+NEW bug:
+1. check assign test logic noti is not being render
+
 Deployment in production:
 1. update monogDB url to render
 

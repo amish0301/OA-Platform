@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import { CircularProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { GoEyeClosed as ClosedIcon, GoEye as OpenIcon } from "react-icons/go";
 import { RiLockPasswordFill as PasswordIcon } from "react-icons/ri";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axiosInstance from '../../hooks/useAxios';
+import useFetchQuery from '../../hooks/useFetchData';
 import { userExists } from '../../redux/slices/userSlice';
-import { CircularProgress } from '@mui/material';
+import Loader from '../Loader';
 
 
 const AdminLogin = () => {
@@ -14,29 +15,28 @@ const AdminLogin = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [key, setKey] = useState('');
-    const [loading, setLoading] = useState(false);
+    const { response, error, isLoading, refetch } = useFetchQuery('/admin/login', 'POST', { key });
 
-    const handleClick = async () => {
-        setLoading(true);
-        const toastId = toast.loading('Logging in...');
-        try {
-            const res = await axiosInstance.post(`${import.meta.env.VITE_SERVER_URI}/admin/login`, { key });
 
-            if (res.data.success) {
-                setLoading(false);
-                toast.update(toastId, { render: res.data.message, type: 'success', isLoading: false, autoClose: 1000 });
-                dispatch(userExists({ ...res.data.user }));
-                navigate('/admin/dashboard', { replace: true });
-            }
-        } catch (error) {
-            toast.update(toastId, { render: error.response.data.message, type: 'error', isLoading: false, autoClose: 1200 });
-        } finally {
-            setLoading(false);
-        }
-
+    const handleClick = () => {
+        refetch();
         setKey('');
     }
 
+    useEffect(() => {
+        if (response) {
+            toast.success(response.message);
+            dispatch(userExists(response.user));
+            navigate('/admin/dashboard', { replace: true })
+        }
+        else if (error) toast.error(error);
+
+        return () => {
+            toast.dismiss()
+        }
+    }, [response, error])
+
+    if (isLoading) return <Loader show={isLoading} />
     return (
         <div className='bg-gray-50 min-h-screen flex items-center justify-center'>
             <div className='bg-gray-100 rounded-xl shadow-xl max-w-sm w-full p-8 items-center flex-col justify-center'>
@@ -49,8 +49,8 @@ const AdminLogin = () => {
                     </span>
                 </div>
 
-                {loading ? <div className='flex items-center justify-center mt-3'><CircularProgress color="inherit" size={25} /></div> :
-                    <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 w-full text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' onClick={handleClick}>
+                {isLoading ? <div className='flex items-center justify-center mt-3'><CircularProgress color="inherit" size={25} /></div> :
+                    <button className='bg-[#5783db] hover:bg-[#002D74]/90 duration-300 w-full text-white font-semibold py-2 rounded-lg mt-5 focus:outline-1 focus:border-none focus:outline-offset-1' onClick={handleClick} disabled={isLoading}>
                         Login
                     </button>
                 }

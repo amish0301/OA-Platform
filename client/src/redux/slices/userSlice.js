@@ -15,14 +15,14 @@ const userSlice = createSlice({
       state.isAuthenticated = true;
     },
     userNotExists: (state) => {
-      state.user = initialState.user;
-      state.isAuthenticated = initialState.isAuthenticated;
+      state.user = null;
+      state.isAuthenticated = null;
     },
     setToken: (state, action) => {
       state.refreshToken = action.payload;
     },
     removeToken: (state) => {
-      state.refreshToken = initialState.refreshToken;
+      state.refreshToken = null;
     },
     resetUserState: (state) => {
       state = initialState;
