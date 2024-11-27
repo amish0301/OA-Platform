@@ -12,8 +12,6 @@ const AssignTest = () => {
 
     const { response: fetchUserResponse, error: fetchUserError, isLoading: isLoadingFetchUsers, refetch: fetchUsers } = useFetchQuery(`/admin/users?search=${search}`);
     const { response: assignResponse, error: assignError, isLoading: isAssignLoading, refetch: assignTest } = useFetchQuery('/test/assign', 'POST', {
-        testId, userIds: selectedUserIds
-    }, {
         headers: {
             'Content-Type': 'application/json',
         }
@@ -42,7 +40,7 @@ const AssignTest = () => {
         } else if (assignError) toast.error(assignError)
 
         return () => {
-            resetState();
+            resetState()
         }
     }, [assignResponse, assignError])
 
@@ -59,6 +57,7 @@ const AssignTest = () => {
         }, 500);
         return () => clearTimeout(timer);
     }, [search])
+
 
     return (
         <div className='w-full max-w-screen-lg px-6 lg:px-10 py-8 box-border'>
@@ -98,8 +97,8 @@ const AssignTest = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={assignTest}
-                    disabled={selectedUserIds.length === 0 || isAssignLoading}
+                    onClick={() => assignTest({ testId, userIds: selectedUserIds })}
+                    disabled={selectedUserIds.length === 0 || isAssignLoading || !testId}
                     sx={{ minWidth: '120px' }}
                 >
                     Assign Test

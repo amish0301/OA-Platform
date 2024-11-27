@@ -23,6 +23,50 @@ const adminLogin = TryCatch(async (req, res, next) => {
     .json({ success: true, message: "Admin login successfully", user });
 });
 
+const assignAdmin = TryCatch(async (req, res, next) => {
+  const { userIds } = req.body;
+
+  await User.updateMany(
+    { _id: userIds },
+    {
+      isAdmin: true,
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json({ success: true, message: "Assigned Admin role successfully" });
+});
+
+const revokeAdminRole = TryCatch(async (req, res, next) => {
+  const { userIds } = req.body;
+
+  await User.updateMany(
+    { _id: userIds },
+    {
+      isAdmin: false,
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json({ success: true, message: "Revoked Admin role successfully" });
+});
+
+const adminRoleHandler = TryCatch(async (req, res, next) => {
+  const { action } = req.query;
+
+  if (action === "assign") {
+    return assignAdmin(req, res);
+  } else if (action === "revoke") {
+    return revokeAdminRole(req, res);
+  } else {
+    return res.status(400).json({ message: "Invalid action" });
+  }
+});
+
 const adminLogout = TryCatch(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.uId,
@@ -251,4 +295,10 @@ const dashboardStats = TryCatch(async (req, res) => {
   return res.status(200).json({ success: true, stats });
 });
 
-module.exports = { adminLogin, adminLogout, fetchUsers, dashboardStats };
+module.exports = {
+  adminLogin,
+  adminLogout,
+  fetchUsers,
+  dashboardStats,
+  adminRoleHandler,
+};

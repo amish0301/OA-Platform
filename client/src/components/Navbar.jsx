@@ -143,7 +143,7 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={`flex items-center justify-between w-full px-20 py-3 ${updateNav ? 'bg-gray-100 border-none fixed top-0' : 'bg-transparent backdrop-blur-[15px] border-b border-gray-300 sticky'}`}>
+    <nav className={`flex items-center justify-between w-full px-10 md:px-20 py-3 ${updateNav ? 'bg-gray-100 border-none fixed top-0' : 'bg-transparent backdrop-blur-[15px] border-b border-gray-300 sticky'}`}>
       <Link to={"/"} className='flex items-center'>
         <h2 className='text-xl font-bold text-blue-600'>YourPrepPartner</h2>
       </Link>

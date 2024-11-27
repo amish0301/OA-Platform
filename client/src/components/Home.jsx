@@ -6,7 +6,7 @@ import { IoAnalyticsSharp as AnalyticsIcon } from "react-icons/io5";
 
 export const ServiceCard = ({ title, desc, icon, type }) => {
   return (
-    <div className={`flex flex-col items-start p-4 ${type === 'testimonial' ? 'max-w-md' : 'max-w-sm'} shadow-md shadow-zinc-300 ${type === 'testimonial' ? 'bg-gray-100' : 'bg-blue-100'} rounded-lg`}>
+    <div className={`flex flex-col items-start  p-4 ${type === 'testimonial' ? 'max-w-md' : 'max-w-sm'} shadow-md shadow-zinc-300 ${type === 'testimonial' ? 'bg-gray-100' : 'bg-blue-100'} rounded-lg`}>
       {/* render quote icon */}
       {type === 'testimonial' ? <QuoteIcon className='text-3xl text-gray-700' /> :
         <div className='w-14 h-14 rounded-lg flex items-center justify-center bg-blue-600 text-white'>
@@ -59,9 +59,9 @@ const testimonials = [
 const Home = () => {
   return (
     <>
-      <div className='w-full min-h-screen px-14 gap-10 flex items-center'>
-        <div className='w-full md:w-1/2 pl-10 md:mb-32'>
-          <h1 className='text-4xl py-2 text-wrap font-semibold leading-snug'>Welcome to <span className='text-blue-600'>YourPrepPartner.</span> <br /> Prepare with confidence!</h1>
+      <div className='w-full min-h-screen px-5 md:px-14 gap-10 flex items-center'>
+        <div className='w-full md:w-1/2 pl-5 md:mb-32'>
+          <h1 className='text-2xl md:text-4xl py-2 text-wrap font-semibold leading-snug'>Welcome to <span className='text-blue-600'>YourPrepPartner.</span> <br /> Prepare with confidence!</h1>
           <p className='text-sm font-bold mt-2'>Excel every exam with our high yield <span className='text-blue-600'>MCQ's.</span></p>
 
           {/* test button */}
@@ -75,9 +75,9 @@ const Home = () => {
       </div>
 
       {/* Home-2 */}
-      <div className='p-20 flex flex-col justify-between gap-4 bg-[#f6f6f6]'>
-        <h2 className='text-4xl font-semibold font-poppins text-[#383838]'>What We Offer?</h2>
-        <div className='grid w-full grid-cols-1 md:grid-cols-3 gap-10 py-20'>
+      <div className='px-6 md:px-20 flex flex-col justify-between gap-4 bg-[#f6f6f6]'>
+        <h2 className='text-3xl md:text-4xl pt-5 font-semibold font-poppins text-[#383838]'>What We Offer?</h2>
+        <div className='grid w-full grid-cols-1 md:grid-cols-3 gap-10 py-10'>
           {
             cardDetails.map((card, index) => <ServiceCard key={index} {...card} />)
           }
@@ -85,21 +85,28 @@ const Home = () => {
       </div>
 
       {/* Home - 3 */}
-      <div className='w-full px-24 py-10'>
-        <div className='flex items-center gap-4'>
-          <h2 className='text-4xl my-5 font-semibold font-poppins text-[#383838]'>Our Testimonials</h2>
-          <img src="https://cdn-icons-png.flaticon.com/512/2013/2013639.png" alt="testimonial_icons" className='w-12 h-12 mb-5' />
+      <div className="w-full px-10 md:px-20 py-5 md:py-10">
+        <div className="flex items-center gap-2 md:gap-4">
+          <h2 className="text-2xl md:text-4xl my-5 font-semibold font-poppins text-[#383838] flex-shrink-0">
+            Our Testimonials
+          </h2>
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2013/2013639.png"
+            alt="testimonial_icons"
+            className="w-8 h-8 md:w-12 md:h-12 mb-0 md:mb-5"
+          />
         </div>
-        <p className='text-wrap text-base mt-1 px-1 font-semibold text-gray-700 leading-normal'>
-          We don't like to brag. but we don't mind letting our students do it for us. Here are a few nce things folks said about out services over the yeas.
+        <p className="text-base mt-2 max-w-xl font-semibold text-gray-700 leading-normal">
+          We don't like to brag, but we don't mind letting our students do it for us. Here are a few nice things folks said about our services over the years.
         </p>
 
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-10 my-14'>
-          {
-            testimonials.map((card, index) => <ServiceCard key={index} {...card} type="testimonial" />)
-          }
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 my-10 md:my-14">
+          {testimonials.map((card, index) => (
+            <ServiceCard key={index} {...card} type="testimonial" />
+          ))}
         </div>
       </div>
+
     </>
   )
 }
