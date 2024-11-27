@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
-import { FaArrowRightLong as RightIcon, FaQuoteLeft as QuoteIcon } from "react-icons/fa6";
-import { GrDocumentTest as TestIcon } from "react-icons/gr";
+import React from 'react';
 import { BsFillQuestionSquareFill as QuestionIcon } from "react-icons/bs";
+import { FaQuoteLeft as QuoteIcon, FaArrowRightLong as RightIcon } from "react-icons/fa6";
+import { GrDocumentTest as TestIcon } from "react-icons/gr";
 import { IoAnalyticsSharp as AnalyticsIcon } from "react-icons/io5";
 
 export const ServiceCard = ({ title, desc, icon, type }) => {
