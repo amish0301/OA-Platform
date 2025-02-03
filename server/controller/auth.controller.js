@@ -74,13 +74,13 @@ const loginUser = TryCatch(async (req, res, next) => {
     });
 });
 
-const refreshAccessToken = TryCatch(async (req, res) => {
+const refreshAccessToken = TryCatch(async (req, res, next) => {
   const incomingRefreshToken =
     req.cookies?.refreshToken || req.body?.refreshToken;
 
   if (!incomingRefreshToken) {
     await User.findByIdAndDelete(req.uId);
-    return next(new ApiError("Refresh Token not Found", 401));
+    next(new ApiError("Refresh Token not Found", 401));
   }
 
   try {
